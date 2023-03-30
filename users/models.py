@@ -14,13 +14,12 @@ class Profile(models.Model):
     email = models.EmailField(max_length=254)
     
     bio = models.TextField(blank=True, null=True)
-    avatar = models.ImageField(upload_to='avatars', )
+    avatar = models.ImageField(upload_to='images/avatars/', null=True, blank=True)
     location = models.CharField(max_length=100, blank=True, null=True)
-    birth_date = models.DateField()
+    birth_date = models.DateField(null=True, blank=True)
     
     class Meta:
-        db_table = "profile"
-    
+        pass
     
     @property
     def edit_username(self):
@@ -40,7 +39,7 @@ class Profile(models.Model):
     def add_slug(self):
         import random
         if not self.slug:
-            self.slug = random.randint()
+            self.slug = random.randint(1, 1000)
     
     
     def get_absolute_url(self):

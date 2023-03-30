@@ -138,6 +138,7 @@ GitHub.sublime-settings
 
 
 # special files
+not_pushed/
 todo.txt
 
 admin/

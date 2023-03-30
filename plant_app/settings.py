@@ -137,3 +137,6 @@ try:
     from plant_app.local_settings import *
 except ImportError:
     pass
+
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "home"

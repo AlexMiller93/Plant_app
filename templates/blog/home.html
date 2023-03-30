@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Home Page</h1>
+
+{% if user.is_authenticated %}
+    <p>Hello, {{ user.username }}!</p>
+    {% comment %} <a href="{% url 'profile' profile.pk %}">Profile</a> {% endcomment %}
+    <a href="{% url 'logout' %}">Logout</a>
+{% else %}
+    <p>You are not logged in.</p>
+    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'signup' %}">Register</a>
+{% endif %}
+
+{% endblock content %}
+
