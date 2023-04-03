@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import CreateView, TemplateView
 from django.views.generic.detail import DetailView
 
 from .forms import ProfileForm, UserForm

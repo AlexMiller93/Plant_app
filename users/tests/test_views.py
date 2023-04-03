@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse, reverse_lazy
-from .. models import Profile
+
+from ..models import Profile
+
 
 class TestViews(TestCase):
     ''' Testing signup-login-logout functions for User objects'''

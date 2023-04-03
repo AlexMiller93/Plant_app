@@ -1,0 +1,89 @@
+{% block content %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-success" aria-label="Eighth navbar example">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">Plant App</a>
+        <button class="navbar-toggler" type="button" 
+            data-bs-toggle="collapse" data-bs-target="#navbarsExample07" 
+            aria-controls="navbarsExample07" aria-expanded="false" 
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExample07">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" 
+                        href="{% url 'home' %}">
+                        &nbsp;<i class="bi bi-house-door-fill"></i> Home</a>
+                </li>
+                
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" 
+                    href="{% url 'user_profile' user.profile.pk %}">
+                    &nbsp;<i class="bi bi-person-circle"></i> Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" 
+                    href="{% url 'logout' %}">
+                    &nbsp;<i class="bi bi-box-arrow-left"></i> Logout</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" 
+                    href="{% url 'password_reset' %}">Reset Password</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" 
+                    href="{% url 'login' %}">
+                    &nbsp;<i class="bi bi-box-arrow-right"></i> Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" 
+                    href="{% url 'signup' %}">
+                    &nbsp;<i class="bi bi-person-plus-fill"></i> Sign Up</a>
+                </li>
+
+                {% endif %}
+            </ul>
+            
+            <!-- User avatar with dropdown menu -->
+            {% if user.is_authenticated %}
+            <div class="dropdown text-start">
+
+                <a href="{% url 'user_profile' user.profile.pk %}" 
+                    class="d-block link-dark text-decoration-none dropdown-toggle" 
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="{{user.profile.avatar.url}}" alt="mdo" 
+                        width="32" height="32" class="rounded-circle">
+                </a>
+
+                <ul class="dropdown-menu text-small">
+                    <li><a class="dropdown-item" 
+                        href="{% url 'user_profile' user.profile.pk %}">
+                        &nbsp;<i class="bi bi-person-circle"></i> Profile</a>
+                    </li>
+                    <li><a class="dropdown-item" 
+                        href="{% url 'update_profile' %}">
+                        &nbsp;<i class="bi bi-gear-fill"></i> Update Profile</a></li>
+                    <li><a class="dropdown-item" href="#">Some action...</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" 
+                        href="{% url 'logout' %}">
+                        &nbsp;<i class="bi bi-box-arrow-left"></i> Sign out</a></li>
+                </ul>
+            </div>
+            {% endif %}
+
+            <form role="search">
+                <input class="form-control" type="search" 
+                    placeholder="Search" aria-label="Search">
+            </form>
+
+        </div>
+    </div>
+</nav>
+{% endblock content %}
+    

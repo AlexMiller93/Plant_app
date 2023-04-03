@@ -16,9 +16,9 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 
-from users.views import SignUpView, ProfileView, ProfileUpdateView
+from users.views import ProfileUpdateView, ProfileView, SignUpView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
