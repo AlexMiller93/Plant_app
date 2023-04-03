@@ -2,15 +2,16 @@
 
 {% block title %}Sign Up Page{% endblock title %}
 
+{% load crispy_forms_tags %}
 
 {% block content %}
     <h2>Register Page</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p}}
+        {{ form|crispy }}
         <button type="submit">Register</button>
         <br><br>
-        <a href="{% url 'home' %}">Back</a>
+        <a href="{% url 'home' %}">Home</a>
     </form>
 {% endblock content %}
     

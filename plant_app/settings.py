@@ -39,7 +39,8 @@ DEFAULT_APPS = [
 
 # add apps which you install using pip
 THIRD_PARTY_APPS = [
-    
+    'crispy_forms',
+    'crispy_bootstrap5'
 ]
 
 # add local apps which you create using startapp
@@ -107,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -126,6 +127,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Media Files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

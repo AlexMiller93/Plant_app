@@ -1,26 +1,49 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from PIL import Image
+
 # Create your models here.
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    username = models.CharField(max_length=20, blank=True, null=True)
-    
-    first_name = models.CharField(max_length=70, blank=True, null=True)
-    last_name = models.CharField(max_length=70, blank=True, null=True)
-    slug = models.SlugField(max_length=50, unique=True)
-    
-    email = models.EmailField(max_length=254)
-    
+    slug = models.SlugField(max_length=50, null=True)
     bio = models.TextField(blank=True, null=True)
-    avatar = models.ImageField(upload_to='images/avatars/', null=True, blank=True)
+    avatar = models.ImageField(
+        default='images/default.jpg',
+        upload_to='images/avatars/',
+        null=True, blank=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
     
     class Meta:
-        pass
+        verbose_name = "profile"
     
+    def __str__(self):
+        return self.user.username
+    
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('user_profile', kwargs={'pk': self.pk})
+    
+    def save(self, *args, **kwargs):
+        import random
+        if not self.slug:
+            self.slug = random.randint(1, 1000)
+        return super().save(*args, **kwargs)
+        
+        '''
+        img = Image.open(self.avatar.url) # Open image
+        
+        # resize image
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size) # Resize image
+            img.save(self.avatar.url) # Save it again and override the larger image
+        '''
+    
+    
+    '''
     @property
     def edit_username(self):
         " Returns user's username."
@@ -34,19 +57,12 @@ class Profile(models.Model):
     @property
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
-    
-    @property 
-    def add_slug(self):
-        import random
-        if not self.slug:
-            self.slug = random.randint(1, 1000)
+    '''
     
     
-    def get_absolute_url(self):
-        from django.urls import reverse
-        return reverse('user_profile', kwargs={'pk': self.pk})
     
-    def __str__(self):
-        return self.username
+    
+    
+    
     
     

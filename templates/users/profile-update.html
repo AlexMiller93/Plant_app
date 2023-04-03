@@ -2,11 +2,17 @@
 
 {% block title %}Profile Page{% endblock title %}
 
+{% load crispy_forms_tags %}
+
 {% block content %} 
     <h2>Profile Page</h2>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
+        <p>User settings</p>
+        {{ user_form|crispy }}
+        <br>
+        <p>Profile settings</p>
+        {{ profile_form|crispy }}
         <button type="submit">Update</button>
         <br><br>
         <a href="{% url 'home' %}">Back</a>

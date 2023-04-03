@@ -4,13 +4,22 @@
 
 {% block content %}
     <h1>Profile Page</h1>
-    <p>Username: {{ user.username }}</p>
-    <p>First name: {{ user.first_name }}</p>
-    <p>Last name: {{ user.last_name }}</p>
-    <p>Email: {{ user.email }}</p>
-    <p>Bio: {{ user.profile.bio }}</p>
-    <p>Location: {{ user.profile.location }}</p>
-    <p>Birth_date: {{ user.profile.birth_date }}</p>
-    <a href="{% url 'update_profile' pk=profile.pk %}">Update Profile</a>
+    <article class="media content-section">
+        {% if user.profile.avatar %}
+            <img src="{{user.profile.avatar.url}}" 
+            class="rounded-circle article-img" 
+            height="60px" width="60px">
+        {% endif %}
+        <p>Username: {{ user.username }}</p>
+        <p>First name: {{ user.first_name }}</p>
+        <p>Last name: {{ user.last_name }}</p>
+        <p>Email: {{ user.email }}</p>
+        <p>Bio: {{ user.profile.bio }}</p>
+        <p>Location: {{ user.profile.location }}</p>
+        <p>Birth_date: {{ user.profile.birth_date }}</p>
+        <a href="{% url 'update_profile' %}">Update Profile</a>
+        <br><br>
+        <a href="{% url 'home' %}">Home</a>
+    </article>
 {% endblock content %}
     

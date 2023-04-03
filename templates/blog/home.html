@@ -6,7 +6,7 @@
 
 {% if user.is_authenticated %}
     <p>Hello, {{ user.username }}!</p>
-    {% comment %} <a href="{% url 'profile' profile.pk %}">Profile</a> {% endcomment %}
+    <a href="{% url 'user_profile' user.profile.pk %}">Profile</a>
     <a href="{% url 'logout' %}">Logout</a>
 {% else %}
     <p>You are not logged in.</p>
