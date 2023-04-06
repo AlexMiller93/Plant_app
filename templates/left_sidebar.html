@@ -1,0 +1,19 @@
+
+{% block content %}
+
+<h5>Users</h5>
+<hr>
+<div class="row g-2">
+    <div class="col-4">
+        <img src="{{ user.profile.avatar.url }}" 
+            class="rounded-circle article-img" 
+            height="40px" width="40px">
+    </div>
+    <div class="col-4">
+        <p>{{ user.profile | capfirst }}</p>
+    </div>
+</div>
+<hr>
+    
+{% endblock content %}
+    

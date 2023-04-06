@@ -6,11 +6,11 @@ from PIL import Image
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    slug = models.SlugField(max_length=50, null=True)
+    slug = models.SlugField(max_length=50, blank=True)
     bio = models.TextField(blank=True, null=True)
     avatar = models.ImageField(
         default='images/default.jpg',
-        upload_to='images/avatars/',
+        upload_to='images/users/{{ user.username }}/avatar/',
         null=True, blank=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)

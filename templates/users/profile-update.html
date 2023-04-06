@@ -5,16 +5,27 @@
 {% load crispy_forms_tags %}
 
 {% block content %} 
-    <h2>Profile Page</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <p>User settings</p>
-        {{ user_form|crispy }}
-        <br>
-        <p>Profile settings</p>
-        {{ profile_form|crispy }}
-        <button type="submit">Update</button>
-        <br><br>
-        <a href="{% url 'home' %}">Back</a>
-    </form>
+
+<h2 style="text-align:center;">Update Profile Page</h2>
+<div class="container col-md-6 col-4">
+    <a href="{% url 'user_profile' user.profile.pk %}" 
+        >Back</a><br>
+    <a href="{% url 'home' %}">Home</a>
+    <div class="form-group">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p>User settings</p>
+            {{ user_form|crispy }}
+            <br>
+            <p>Profile settings</p>
+            {{ profile_form|crispy }}
+            <button type="submit"
+                class="btn btn-primary">Update</button>
+            <br><br>
+        </form>
+    
+    </div>
+</div>
+<br><br><br>
+
 {% endblock content %}

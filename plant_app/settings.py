@@ -46,6 +46,7 @@ THIRD_PARTY_APPS = [
 # add local apps which you create using startapp
 LOCAL_APPS = [
     'users.apps.UsersConfig',
+    'blog.apps.BlogConfig',
 ]
 
 # Application definition

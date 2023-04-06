@@ -1,0 +1,12 @@
+{% block content %}
+    <h5>Tags</h5>
+    <hr>
+    <div class="row">
+        {% for tag in post.title_tag.all %}
+            <p>{{post.title_tag }}</p>
+            <hr>
+        {% endfor %}
+    </div>
+    <hr>
+    
+{% endblock content %}

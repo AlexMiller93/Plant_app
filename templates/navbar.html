@@ -34,6 +34,7 @@
                     <a class="nav-link" 
                     href="{% url 'password_reset' %}">Reset Password</a>
                 </li>
+
                 {% else %}
                 <li class="nav-item">
                     <a class="nav-link" 
@@ -45,7 +46,6 @@
                     href="{% url 'signup' %}">
                     &nbsp;<i class="bi bi-person-plus-fill"></i> Sign Up</a>
                 </li>
-
                 {% endif %}
             </ul>
             
