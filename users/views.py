@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView
 from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 
 from .forms import ProfileForm, UserForm
 from .models import Profile
@@ -59,3 +60,6 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
 
         return self.render_to_response(context)     
 
+class ProfilesListView(ListView):
+    model = Profile
+    template_name = 'left_sidebar.html'

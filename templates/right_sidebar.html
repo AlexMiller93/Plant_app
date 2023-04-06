@@ -2,8 +2,8 @@
     <h5>Tags</h5>
     <hr>
     <div class="row">
-        {% for tag in post.title_tag.all %}
-            <p>{{post.title_tag }}</p>
+        {% for post in posts %}
+            <p>{{ post.title_tag }}</p>
             <hr>
         {% endfor %}
     </div>

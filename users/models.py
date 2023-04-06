@@ -14,6 +14,11 @@ class Profile(models.Model):
         null=True, blank=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
+    follows = models.ManyToManyField("self",
+            related_name="followed_by", 
+            symmetrical=False, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    
     
     class Meta:
         verbose_name = "profile"

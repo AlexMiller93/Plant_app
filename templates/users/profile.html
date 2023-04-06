@@ -14,21 +14,21 @@
     <!-- If -->
 
     <div class="col-auto p-2 m-2 col-lg-1">
-        <img src="{{ user.profile.avatar.url }}" 
+        <img src="{{ profile.avatar.url }}" 
         class="rounded-circle article-img" 
         height="60px" width="60px">
     </div>
     <div class="col-auto px-2 col-lg-11">
 
         <!-- User attributes-->
-        <p>Username: {{ user.username }}</p>
-        <p>First name: {{ user.first_name }}</p>
-        <p>Last name: {{ user.last_name }}</p>
-        <p>Email: {{ user.email }}</p>
+        <p>Username: {{ profile.user.username }}</p>
+        <p>First name: {{ profile.user.first_name }}</p>
+        <p>Last name: {{ profile.user.last_name }}</p>
+        <p>Email: {{ profile.user.email }}</p>
         <!-- Profile attributes-->
-        <p>Bio: {{ user.profile.bio }}</p>
-        <p>Location: {{ user.profile.location }}</p>
-        <p>Birth_date: {{ user.profile.birth_date }}</p>
+        <p>Bio: {{ profile.bio }}</p>
+        <p>Location: {{ profile.location }}</p>
+        <p>Birth_date: {{ profile.birth_date }}</p>
     </div>
 
 <!-- post.author == user.profile -->

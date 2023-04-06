@@ -1,19 +1,22 @@
 
 {% block content %}
 
-<h5>Users</h5>
+<h5>All Users</h5>
 <hr>
-<div class="row g-2">
-    <div class="col-4">
-        <img src="{{ user.profile.avatar.url }}" 
-            class="rounded-circle article-img" 
-            height="40px" width="40px">
+{% for profile in profiles %}
+    <div class="row g-2">
+        <div class="col-4 px-2">
+            <a href="{% url 'user_profile' profile.pk %}">
+            <img src="{{ profile.avatar.url }}" 
+                class="rounded-circle article-img" 
+                height="40px" width="40px"></a>
+        </div>
+        <div class="col-4 px-4">
+            <p>{{ profile.user.username | capfirst }}</p>
+        </div>
     </div>
-    <div class="col-4">
-        <p>{{ user.profile | capfirst }}</p>
-    </div>
-</div>
-<hr>
+    <hr>
+{% endfor %}
     
 {% endblock content %}
     
