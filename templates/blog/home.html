@@ -20,12 +20,23 @@
             <h5 class="text-center">Feed</h5>
             <hr>
             {% if user.is_authenticated %}
-                <p>Hello, {{ request.user }}!</p>
+                <p>Hello, {{ request.user | capfirst }}!</p>
                 <a href="{% url 'post_create' %}" class="btn btn-primary">+Add post</a>
             {% else %}
                 <p>You're not logged.</p>
             {% endif %}
             <br><br>
+
+            <!-- Error messages -->
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-warning" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+                
+
             <!-- Posts -->
             {% for post in object_list %}
                 <article class="card border-success mb-3">

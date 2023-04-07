@@ -3,8 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
-from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
@@ -20,7 +20,7 @@ class SignUpView(CreateView):
     success_url = reverse_lazy('login')
     success_message = "Your profile was created successfully"
     
-class ProfileView(DetailView):
+class ProfileView(LoginRequiredMixin, DetailView):
     model = Profile
     template_name = 'users/profile.html'
     
@@ -30,6 +30,18 @@ class ProfileView(DetailView):
         context['profile'] = profile
         return context
     
+    def post(self, request, **kwargs):
+        current_user = request.user.profile
+        profile = get_object_or_404(Profile, id=self.kwargs['pk'])
+        action = request.POST['follow']
+        if action == "Unfollow":
+            current_user.follows.remove(profile)
+        elif action == "Follow":
+            current_user.follows.add(profile)
+        current_user.save()
+        return redirect('user_profile', pk=profile.pk)
+    
+        
 class ProfileUpdateView(LoginRequiredMixin, TemplateView):
     user_form = UserForm
     profile_form = ProfileForm
@@ -59,7 +71,3 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
                                     )
 
         return self.render_to_response(context)     
-
-class ProfilesListView(ListView):
-    model = Profile
-    template_name = 'left_sidebar.html'

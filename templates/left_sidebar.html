@@ -3,20 +3,22 @@
 
 <h5>All Users</h5>
 <hr>
-{% for profile in profiles %}
-    <div class="row g-2">
-        <div class="col-4 px-2">
-            <a href="{% url 'user_profile' profile.pk %}">
-            <img src="{{ profile.avatar.url }}" 
-                class="rounded-circle article-img" 
-                height="40px" width="40px"></a>
+{% if profiles %}
+    {% for profile in profiles %}
+        <div class="row g-2">
+            <div class="col-4 px-2">
+                <a href="{% url 'user_profile' profile.pk %}">
+                <img src="{{ profile.avatar.url }}" 
+                    class="rounded-circle article-img" 
+                    height="40px" width="40px"></a>
+            </div>
+            <div class="col-4 px-3">
+                <p>@{{ profile.user.username | lower }}</p>
+            </div>
         </div>
-        <div class="col-4 px-4">
-            <p>{{ profile.user.username | capfirst }}</p>
-        </div>
-    </div>
-    <hr>
-{% endfor %}
-    
+        <br>
+    {% endfor %}
+{% endif %}
+
 {% endblock content %}
     
