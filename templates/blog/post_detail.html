@@ -20,7 +20,7 @@
         </div>
         <div class="col-auto px-2 col-lg-11">
             <h5 class="card-title">{{ post.title }}</h5>
-            <p class="card-subtitle">{{ post.title_tag }}</p>
+            <span class="badge bg-info text-dark">{{ post.tag }}</span>
             <small>{{ post.author | capfirst }} · {{ post.created_on }}
             {% if post.created_on != post.updated_on %} 
             · last updated in {{ post.updated_on | timesince }}</small>

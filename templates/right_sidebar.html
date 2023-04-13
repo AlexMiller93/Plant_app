@@ -1,12 +1,20 @@
 {% block content %}
     <h5>Tags</h5>
     <hr>
-    <div class="row">
-        {% for post in posts %}
-            <p>{{ post.title_tag }}</p>
-            <hr>
-        {% endfor %}
+    <div class="row justify-content-center">
+        <div class="col-6">
+            {% if tags %}
+                {% for tag in tags %}
+                    <a href="{% url 'tag_posts' tag %}">
+                    <span class="badge bg-info text-dark">{{ tag }}</span></a>
+                    <br><br>
+                {% endfor %}
+            {% else %}
+                <p>No tags...</p>
+            {% endif %}
+        </div>
+        
     </div>
-    <hr>
     
 {% endblock content %}
+

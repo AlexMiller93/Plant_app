@@ -1,24 +1,24 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
-from PIL import Image
-
 from users.models import Profile
 
 # Create your models here.
+
 class Post(models.Model):
     title = models.CharField(max_length=128)
-    title_tag = models.CharField(max_length=128)
+    tag = models.CharField(max_length=128)
     author = models.ForeignKey(Profile, 
+            related_name='posts',
             on_delete=models.CASCADE)
     slug = models.SlugField(unique=True)
     content = models.TextField(
         help_text="You can write your thoughts here...", 
         blank=True, null=True)
-    
     images = models.ImageField(
-        upload_to='images/users/{{ user.username }}/plants/',
+        upload_to='images/users/plants/',
         help_text="Upload images with your plants",
         height_field=100, width_field=200,
         null=True, blank=True)
@@ -43,6 +43,7 @@ class Post(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
+        
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)

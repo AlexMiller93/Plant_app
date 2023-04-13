@@ -47,21 +47,6 @@ class Profile(models.Model):
         '''
     
     
-    '''
-    @property
-    def edit_username(self):
-        " Returns user's username."
-        # if user didn't input username
-        if not self.username:
-            self.username = '@' + self.user.lower()
-        self.username = '@' + self.username
-        
-        return self.username
-    
-    @property
-    def full_name(self):
-        return f'{self.first_name} {self.last_name}'
-    '''
     
     
     

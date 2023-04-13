@@ -5,7 +5,7 @@
 {% block content %}
 
 <h3 style="text-align:center;">
-    {{ profile.user.username }} profile page</h3>
+    {{ profile.user.username | capfirst }} profile page</h3>
 <div class="container">
     <a href="{% url 'home' %}">Home</a>
 </div>
@@ -83,13 +83,10 @@
         {% if request.user == profile.user %}
             <a href="{% url 'update_profile' %}">Edit Profile</a>
         {% endif %}
+        <a href="{% url 'user_posts' profile.pk %}">Show Feed</a>
     </div>
 
-
-    
-        
-        
 </article>
 
 {% endblock content %}
-    
+

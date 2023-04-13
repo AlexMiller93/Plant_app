@@ -38,37 +38,11 @@
                 
 
             <!-- Posts -->
-            {% for post in object_list %}
-                <article class="card border-success mb-3">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-auto px-2 col-lg-1">
-                                <a href="{% url 'user_profile' post.author.user.profile.pk %}">
-                                <img src="{{ post.author.avatar.url }}" 
-                                class="rounded-circle article-img" 
-                                    height="50px" width="50px"></a>
-                            </div>
-                                
-                            <div class="col-auto px-0 col-lg-11">
-                                <h5 class="card-title">
-                                    <a href="{% url 'post_detail' post.slug %}">
-                                        {{ post.title }}</a>
-                                </h5>
-                                <p class="card-subtitle mb-2 text-body-secondary">
-                                    {{ post.title_tag }}</p>
-                                <p class="mb-2 text-body-secondary">
-                                    by <b>{{ post.author | capfirst }}</b> · 
-                                    <i>{{ post.created_on }}</i></p>
-                            </div>
-                        </div>
-                        <p class="card-text">{{ post.content }}</p>
-                        {% if request.user == post.author.user %}
-                            <a href="{% url 'post_update' post.slug %}" class="card-link">Edit</a>
-                            <a href="{% url 'post_delete' post.slug %}" class="card-link">Delete</a>
-                        {% endif %}
-                    </div>
-                </article>
-            {% endfor %}
+            {% if posts %}
+                {% for post in posts %}
+                    {% include 'blog/post.html' %}
+                {% endfor %}
+            {% endif %}
             <br><br><br>
         </div>
 
@@ -83,4 +57,5 @@
 </main>
 
 {% endblock content %}
+
 

@@ -26,10 +26,11 @@ urlpatterns = [
     path('', include('blog.urls')),
     path('users/', include("django.contrib.auth.urls")),
     
-    
     path('signup/', SignUpView.as_view(), name='signup'),
-    path('profile/<int:pk>/', ProfileView.as_view(), name='user_profile'),
-    path('profile/edit/', ProfileUpdateView.as_view(), name='update_profile'),
+    path('profile/<int:pk>/', ProfileView.as_view(), 
+        name='user_profile'),
+    path('profile/edit/', ProfileUpdateView.as_view(), 
+        name='update_profile'),
 ]
 
 if settings.DEBUG:

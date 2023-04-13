@@ -11,6 +11,7 @@ from django.views.generic.list import ListView
 
 from .forms import ProfileForm, UserForm
 from .models import Profile
+from blog.models import Post
 
 # Create your views here.
 
