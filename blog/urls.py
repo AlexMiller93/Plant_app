@@ -8,6 +8,7 @@ from .views import (
     PostDeleteView,
     UserPostListView,
     TagPostListView,
+    SearchPostListView
     )
 
 urlpatterns = [
@@ -27,4 +28,6 @@ urlpatterns = [
     
     path('tag_posts/<str:tag>/', TagPostListView.as_view(),
         name='tag_posts'),
+    path('search_posts/', SearchPostListView.as_view(), 
+        name='search_posts'),
 ]

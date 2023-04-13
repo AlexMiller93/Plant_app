@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views import View
@@ -56,7 +57,7 @@ class UserPostListView(ListView):
     template_name = 'blog/user_post_list.html'
     
     def get_context_data(self, **kwargs):
-        context = super(UserPostListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         profile = get_object_or_404(Profile, 
             id=self.kwargs['pk'])
         context["profile"] = profile
@@ -69,10 +70,27 @@ class TagPostListView(ListView):
     template_name = 'blog/tag_post_list.html'
     
     def get_context_data(self, **kwargs):
-        context = super(TagPostListView, self).get_context_data(**kwargs)
-        # tag =  get_object_or_404(Post, slug=self.kwargs['tag_slug'])
+        context = super().get_context_data(**kwargs)
         tag = self.kwargs['tag']
         tag_posts = Post.objects.filter(tag=tag).order_by('-created_on')
         context["tag_posts"] = tag_posts
         context["tag"] = tag
+        return context
+
+class SearchPostListView(ListView):
+    model = Post
+    template_name = 'blog/search_post_list.html'
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        query = self.request.GET.get('q')
+        if query:
+            posts = self.model.objects.filter(
+                Q(content__icontains=query) | Q(title__icontains=query) | Q(tag__icontains=query)
+            )
+        else:
+            posts = self.model.objects.none()
+        context["query"] = query
+        context["posts"] = posts
         return context
