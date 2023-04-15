@@ -2,7 +2,6 @@
 
 {% block content %}
 
-<h3 style="text-align:center;">Home Page</h3>
 
 <main class="container">
     <div class="row">
@@ -43,7 +42,7 @@
                     {% include 'blog/post.html' %}
                 {% endfor %}
             {% endif %}
-            <br><br><br>
+            
         </div>
 
         <!-- Tags list -->
@@ -52,9 +51,14 @@
             >
             {% include 'right_sidebar.html' %}
         </div>
+
     </div>
+    {% include 'blog/pagination.html' %}
+
+<br><br><br>
 
 </main>
+
 
 {% endblock content %}
 

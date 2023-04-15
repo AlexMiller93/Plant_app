@@ -8,12 +8,16 @@ from .views import (
     PostDeleteView,
     UserPostListView,
     TagPostListView,
-    SearchPostListView
+    SearchPostListView,
+    PostLike,
     )
+
+from blog.views import *
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
-    path('post/<slug:slug>/', PostDetailView.as_view(), name='post_detail'),
+    path('post/<slug:slug>/', PostDetailView.as_view(), 
+        name='post_detail'),
     
     # CRUD function
     path('post_create/', PostCreateView.as_view(), 
@@ -30,4 +34,7 @@ urlpatterns = [
         name='tag_posts'),
     path('search_posts/', SearchPostListView.as_view(), 
         name='search_posts'),
+    
+    path('like/<slug:slug>/', PostLike, 
+        name='post_like'),
 ]

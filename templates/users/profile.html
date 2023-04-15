@@ -19,7 +19,7 @@
         class="rounded-circle article-img" 
         height="60px" width="60px">
     </div>
-    <div class="col-10 px-2 col-lg-11">
+    <div class="col-10 px-2 col-lg-11 p-2">
 
         <!-- Follower System -->
 
@@ -57,12 +57,14 @@
             {% if profile in user.profile.follows.all %}
                 <button class="btn btn-outline-danger" 
                     name="follow" value="Unfollow" type="submit">
-                        Unfollow @{{ profile.user.username | lower }}
+                    <i class="fa-solid fa-user-minus fa-sm"></i>
+                            Unfollow @{{ profile.user.username | lower }}
                 </button>
             {% else %}
                 <button class="btn btn-outline-success" 
                     name="follow" value="Follow" type="submit">
-                        Follow @{{ profile.user.username | lower }}
+                    <i class="fa-solid fa-user-plus fa-sm"></i>
+                            Follow @{{ profile.user.username | lower }}
                 </button>
             {% endif %}
         </form><br>
@@ -79,14 +81,14 @@
         <p>Bio: {{ profile.bio }}</p>
         <p>Location: {{ profile.location }}</p>
         <p>Birth_date: {{ profile.birth_date }}</p>
-        <br>
+        <p>Date profile created: {{ profile.created_on }}</p>
         {% if request.user == profile.user %}
-            <a href="{% url 'update_profile' %}">Edit Profile</a>
+            <a href="{% url 'update_profile' %}" class="btn btn-outline-primary">
+                <i class="bi bi-gear-fill"></i> Edit Profile</a>
         {% endif %}
-        <a href="{% url 'user_posts' profile.pk %}">Show Feed</a>
+        <a href="{% url 'user_posts' profile.pk %}" class="btn btn-outline-info">Show Feed</a>
     </div>
-
 </article>
-
+<br><br><br>
 {% endblock content %}
 

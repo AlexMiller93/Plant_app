@@ -6,7 +6,7 @@
             {% if tags %}
                 {% for tag in tags %}
                     <a href="{% url 'tag_posts' tag %}">
-                    <span class="badge bg-info text-dark">{{ tag }}</span></a>
+                    <span class="badge bg-warning text-dark">#{{ tag }}</span></a>
                     <br><br>
                 {% endfor %}
             {% else %}

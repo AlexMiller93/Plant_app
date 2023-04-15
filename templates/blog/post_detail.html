@@ -20,7 +20,7 @@
         </div>
         <div class="col-auto px-2 col-lg-11">
             <h5 class="card-title">{{ post.title }}</h5>
-            <span class="badge bg-info text-dark">{{ post.tag }}</span>
+            <span class="badge bg-info text-dark">#{{ post.tag }}</span>
             <small>{{ post.author | capfirst }} · {{ post.created_on }}
             {% if post.created_on != post.updated_on %} 
             · last updated in {{ post.updated_on | timesince }}</small>
@@ -29,10 +29,45 @@
     <br>
     </div>
         <p class="card-text m-2">{{ post.content }}</p>
+
+    <!-- Like system -->
+    {% if user.is_authenticated %}
+        <form action="{% url 'post_like' object.slug %}" method="post">
+            {% csrf_token %}
+            {% if post_is_liked %}
+                <button type="submit" name="post_id"
+                value="{{ object.slug }}">
+                    <i class="bi bi-heart-fill"></i>
+                </button>
+            {% else %}
+                <button type="submit" name="post_id"
+                value="{{ object.slug }}">
+                    <i class="bi bi-heart"></i>
+                </button>
+            {% endif %}
+        </form>
+    {% else %}
+        <a class="btn btn-outline-info" 
+            href="{% url 'login' %}?next={{request.path}}">
+            Log in to like this article!
+        </a><br>
+    {% endif %}
+    
+    {% if number_of_likes %}
+        <strong class="text-secondary">
+            {{ number_of_likes }} Like{{ number_of_likes | pluralize }}</strong>
+    {% else %}
+        <strong></strong>
+    {% endif %}
+
     <div class="m-2">
         {% if request.user == post.author.user %}
-            <a href="{% url 'post_update' post.slug %}">Edit</a>
-            <a href="{% url 'post_delete' post.slug %}">Delete</a>
+            <a href="{% url 'post_update' post.slug %}" 
+                class="btn btn-outline-primary btn-sm">
+                <i class="fa-solid fa-pen-to-square fa-sm"></i> Edit</a>
+            <a href="{% url 'post_delete' post.slug %}" 
+                class="btn btn-outline-danger btn-sm">
+                <i class="fa-solid fa-trash-can fa-sm"></i> Delete</a>
         {% endif %}
     </div>
 </article>

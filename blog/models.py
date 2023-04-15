@@ -27,7 +27,8 @@ class Post(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     
     post_noted = models.BooleanField(default=False)
-    # likes = models.ManyToManyField("self")
+    likes = models.ManyToManyField(
+        Profile, related_name="post_like", blank=True)
     
     class Meta:
         verbose_name = "post"

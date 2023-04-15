@@ -2,7 +2,7 @@
 
 {% block content %}
 <h2 style="text-align:center;">
-    {{ profile.user.username}}'s posts
+    {{ profile.user.username | capfirst }}'s posts
 </h2>
 <br><br>
 <div class="container">
@@ -10,8 +10,7 @@
         >Back</a><br>
     <div class="row">
 
-        <div class="col-auto col-sm-3 col-md-2 col-lg-2">
-        </div>
+        <div class="col-auto col-sm-3 col-md-2 col-lg-2"></div>
 
         <div class="col-sm-8 col-md-8">
             {% if user_posts %}
@@ -27,5 +26,7 @@
     </div>
 </div>
 
+<br><br><br>
         
 {% endblock content %}
+
