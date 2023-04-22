@@ -3,75 +3,168 @@
 {% block title %}{{ post.title }}{% endblock title %}
 
 {% block content %}
-<h1 style="text-align:center;">Post Detail</h1>
+<h4 style="text-align:center;">Post Detail</h1>
+
+<br>
 <div class="container">
     <a href="{% url 'home' %}" 
         >Back</a><br>
+    <article class="container card border-success-subtle mb-3 p-3 col-8">
+
+        <!-- 1 row -- Avatar, (Title, author), Icons -->
+        <div class="row">
+            <div class="col-auto m-2 p-1">
+                <a href="{% url 'user_profile' post.author.user.profile.pk %}">
+                <img src="{{ post.author.user.profile.avatar.url }}" 
+                class="rounded-circle article-img" 
+                    height="60px" width="60px"></a>
+            </div>
+            <div class="col my-2">
+                <h5 class="card-title mb-0">{{ post.title }}</h5>
+                <span class="badge bg-info text-dark">#{{ post.tag }}</span><br>
+                <strong class="fw-bold">{{ post.author | capfirst }}</strong> 
+                · <em>{{ post.created_on }}</em>
+                {% if post.created_on != post.updated_on %} 
+                · <small class="text-decoration-none">last updated in {{ post.updated_on | timesince }}</small>
+                {% endif %}
+                
+            </div>
+
+            <!-- Edit/ delete post and other icons -->
+            <div class="col-auto my-2">
+                {% if request.user == post.author.user %}
+                    <a href="{% url 'post_update' post.slug %}">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <a href="{% url 'post_delete' post.slug %}">
+                        <i class="fa-solid fa-trash-can px-2"></i>
+                    </a>
+                {% endif %}
+
+                {% if post.post_noted %}
+                    <i class="bi bi-bookmark-fill"></i>
+                {% else %}
+                    <i class="bi bi-bookmark"></i>
+                {% endif %}
+                <i class="bi bi-three-dots-vertical"></i>
+            </div>
+
+            <br>
+        </div>
+            
+        <p class="card-text lh-base">
+            {{ post.content }}</p>
+
+        <!-- 2 row like button, comment and replies count -->
+        <div class="row">
+            <!-- -->
+            <div class="col-auto">
+                <!-- Like system -->
+                {% if user.is_authenticated %}
+                    <form action="{% url 'post_like' object.slug %}" method="post">
+                        {% csrf_token %}
+                        {% if post_is_liked %}
+                            <button type="submit" name="post_id"
+                            value="{{ object.slug }}">
+                                <i class="bi bi-heart-fill"></i>
+                            </button>
+                            <strong class="text-dark ms-1">
+                                {{ number_of_likes }}
+                            </strong>
+                        {% else %}
+                            <button type="submit" name="post_id"
+                            value="{{ object.slug }}">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </div>
+
+            <div class="col-auto">
+                <!-- Render icon comments with quantity -->
+                {% if comments %}
+                    <i class="bi bi-chat-fill me-1"></i>
+                    <strong class="text-dark me-2">
+                        {{ comments_count }}
+                    </strong>
+                    {% if not comments.is_parent %}
+                        <i class="bi bi-reply-all-fill me-1"></i>
+                        <strong class="text-dark">
+                            {% if replies_count %}
+                                {{ replies_count }}
+                            {% else %}
+                                zero
+                            {% endif %}
+                        </strong>
+                    {% endif %}
+                {% else %}
+                    <i class="bi bi-chat"></i>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 3 row Comment form -->
+        <div class="row my-2">
+            {% if user.is_authenticated %}
+                <form action="" method="POST">
+                    <div class="col-auto">
+                        <label for="comment">Add comment: </label>
+                        {% csrf_token %}
+                        {{ comment_form.content }}
+                        <input type="submit" value="Post" 
+                        class="btn btn-outline-primary btn-sm">
+                    </div>
+                </form>
+            {% else %} 
+                <h6>You need to login to comment</h6> 
+            {% endif %}
+        </div>
+
+        <!-- 4 row Render Comments and replies -->
+        <div class="row">
+            {% if comments %}
+                {% include 'blog/comments.html' %}
+            {% else %}
+                <div class="row">
+                    <h6>No one wrote any comment ...</h6>
+                </div>
+            {% endif %}
+        </div>
+
+    </article>
 </div>
 
-<br>
-<article class="container card border-success mb-3 col-10 col-lg-6">
-    <div class="row">
-        <div class="col-auto p-2 m-2 col-lg-1">
-            <a href="{% url 'user_profile' post.author.user.profile.pk %}">
-            <img src="{{ post.author.user.profile.avatar.url }}" 
-            class="rounded-circle article-img" 
-                height="60px" width="60px"></a>
-        </div>
-        <div class="col-auto px-2 col-lg-11">
-            <h5 class="card-title">{{ post.title }}</h5>
-            <span class="badge bg-info text-dark">#{{ post.tag }}</span>
-            <small>{{ post.author | capfirst }} · {{ post.created_on }}
-            {% if post.created_on != post.updated_on %} 
-            · last updated in {{ post.updated_on | timesince }}</small>
-            {% endif %}
-        </div>
-    <br>
-    </div>
-        <p class="card-text m-2">{{ post.content }}</p>
+<!-- For testing purpose, delete -->
+<hr>
+<div class="text-center">
+    {% for comment in comments %}
+        <!-- For normal comments-->
+        {% if comment.is_parent %}  
+            Comment: {{ comment}} <br>
+            Comment_content: {{ comment.content}} <br>
+            Comment_reply: {{ comment.reply }} <br>
+            Comment_author: {{ comment.author }} <br>
 
-    <!-- Like system -->
-    {% if user.is_authenticated %}
-        <form action="{% url 'post_like' object.slug %}" method="post">
-            {% csrf_token %}
-            {% if post_is_liked %}
-                <button type="submit" name="post_id"
-                value="{{ object.slug }}">
-                    <i class="bi bi-heart-fill"></i>
-                </button>
-            {% else %}
-                <button type="submit" name="post_id"
-                value="{{ object.slug }}">
-                    <i class="bi bi-heart"></i>
-                </button>
-            {% endif %}
-        </form>
-    {% else %}
-        <a class="btn btn-outline-info" 
-            href="{% url 'login' %}?next={{request.path}}">
-            Log in to like this article!
-        </a><br>
-    {% endif %}
-    
-    {% if number_of_likes %}
-        <strong class="text-secondary">
-            {{ number_of_likes }} Like{{ number_of_likes | pluralize }}</strong>
-    {% else %}
-        <strong></strong>
-    {% endif %}
-
-    <div class="m-2">
-        {% if request.user == post.author.user %}
-            <a href="{% url 'post_update' post.slug %}" 
-                class="btn btn-outline-primary btn-sm">
-                <i class="fa-solid fa-pen-to-square fa-sm"></i> Edit</a>
-            <a href="{% url 'post_delete' post.slug %}" 
-                class="btn btn-outline-danger btn-sm">
-                <i class="fa-solid fa-trash-can fa-sm"></i> Delete</a>
+        <!-- For not usual comments (empty comments) -->
+        {% else %}  
+            <h3>Comment when is_parent = False</h3>
+            Comment: {{ comment}} <br>
+            Comment_reply: {{ comment.reply }} <br>
+            Comment_author: {{ comment.author }} <br>
         {% endif %}
-    </div>
-</article>
-<br><br>
+    
+        {% for replies in comment.children %}
+            <br>
+            Replies: {{ replies }} <br>
+            Reply_reply: {{ replies.reply }} <br>
+            Reply_author: {{ replies.author }} <br>
+        {% endfor %}
+        <hr>    
+    {% endfor %}
+        
+    <br><br><br><br>
+</div>
 
 
 

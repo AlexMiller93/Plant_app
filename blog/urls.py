@@ -19,7 +19,7 @@ urlpatterns = [
     path('post/<slug:slug>/', PostDetailView.as_view(), 
         name='post_detail'),
     
-    # CRUD function
+    # CRUD function for posts
     path('post_create/', PostCreateView.as_view(), 
         name='post_create'),
     path('post/edit/<slug:slug>/', PostUpdateView.as_view(), 

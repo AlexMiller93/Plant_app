@@ -1,0 +1,93 @@
+<h6 class="mx-0">Comments:</h6>
+<div class="">
+    {% for comment in comments %}
+        <div class="card border-1 border-secondary p-2 m-2">
+            
+            <!-- For non replied comments (is_parent)-->
+            {% if comment.is_parent %}
+
+                <!-- 1 row comment info -->
+                <div class="row m-1">
+                    <!-- Author's avatar -->
+                    <div class="col-auto px-0">
+                        <a href="{% url 'user_profile' comment.author.user.profile.pk %}">
+                        <img src="{{ comment.author.user.profile.avatar.url }}" 
+                        class="rounded-circle article-img" 
+                            height="50px" width="50px"></a>
+                    </div>
+                        
+                    <div class="col">
+                        <div class="row">
+                            <h6>
+                                <i class="bi bi-reply"></i>
+                                <b>{{ comment.author | capfirst }}: </b>{{ comment.content }}
+                                · <em><small>in {{ comment.created_on.date }}</em></small>
+                            </h6> 
+                            <p class="my-0">to answer from 
+                                <a href="{% url 'user_profile' post.author.user.profile.pk %}">
+                                    @{{ post.author | lower }}
+                                </a> 
+                            </p>
+                        </div>
+                        <div class="row">
+                        </div>
+                    </div>
+
+                    <!-- Icons for comment - like, edit, delete-->
+                    <div class="col-auto px-0">
+                        <i class="bi bi-heart"></i>
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <i class="fa-solid fa-trash-can"></i>
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </div>
+                </div>
+
+                <!-- 2 row Comment form -->
+                <div class="row">
+                    <!-- For nested comments - replyes -->
+                    <form action="" method="POST" id="main_form" class="comment_form">
+                        <div class="">
+                            &nbsp; &nbsp; &nbsp;<label for="comment">Reply here: </label>
+                                {{ comment_form.content }}
+                                <input type="hidden" value="{{ comment.pk }}" name="reply"> 
+                                {% csrf_token %} 
+                                <input type="submit" value="Post" class="btn btn-outline-primary btn-sm">
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
+            
+            <!-- For replied comments (child comments)-->
+            {% if comment.children %}
+                {% for replies in comment.replies.all %}
+                    <div class="row m-1">
+                        &nbsp; &nbsp; &nbsp; &nbsp;
+
+                        <div class="col-auto px-0">
+                            <a href="{% url 'user_profile' replies.author.user.profile.pk %}">
+                            <img src="{{ replies.author.user.profile.avatar.url }}" 
+                            class="rounded-circle article-img" 
+                                height="40px" width="40px"></a>
+                        </div>
+
+                        <div class="col">
+                            <div class="row px-0">
+                                <h6>
+                                    <i class="bi bi-reply-fill"></i>
+                                    <b>{{ replies.author | capfirst }}: </b> {{ replies.content }}
+                                    · <small><i>in {{ replies.created_on | timesince }}</i></small>
+                                </h6>
+                                <p class="my-0">to answer from 
+                                    <a href="{% url 'user_profile' comment.author.user.profile.pk %}">
+                                        @{{ comment.author | lower }}
+                                    </a> 
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+    {% endfor %}
+</div>

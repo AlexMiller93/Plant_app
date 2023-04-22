@@ -1,4 +1,4 @@
-<article class="card border-success mb-3">
+<article class="card border-success mb-4">
     <div class="card-body">
         <div class="row">
             <div class="col-auto px-2 col-lg-1">
@@ -11,7 +11,8 @@
             <div class="col-auto px-0 col-lg-11">
                 <h6 class="card-title">
                     <a href="{% url 'post_detail' post.slug %}">
-                        {{ post.title }}</a>
+                        {{ post.title }}
+                    </a>
                 </h6>
                 {% if post.tag %}
                     <a href="{% url 'tag_posts' post.tag %}">
@@ -26,16 +27,26 @@
 
             <!-- LIKES -->
             <strong class="text-secondary">
-                {% if post.likes.count %}
-                    <!-- Show red like when user like some post -->
-                    {% if request.user in post.likes.all%}
-                            <i class="bi bi-heart-fill" style="color:red;"></i>
-                        {% else %}
-                            <i class="bi bi-heart-fill"></i> 
-                    {% endif %} {{ post.likes.count }}
-                {% else %}
-                    <i class="bi bi-heart"></i>
-                {% endif %}
+                <div class="col-auto">
+                    {% if post.likes.count %}
+                        <!-- Show red like when user like some post -->
+                        {% if request.user in post.likes.all %}
+                                <i class="bi bi-heart-fill" style="color:red;"></i>
+                            {% else %}
+                                <i class="bi bi-heart-fill"></i> 
+                        {% endif %} {{ post.likes.count }}
+                    {% else %}
+                        <i class="bi bi-heart"></i>
+                    {% endif %}
+
+                    {% if post.comments %}
+                        <i class="bi bi-chat-fill"></i>{{ post.comment.count }}
+                    {% else %}
+                        <i class="bi bi-chat"></i>
+                    {% endif %}
+                </div>
+
+
             </strong>
             <!-- ./ LIKES -->
         </div>

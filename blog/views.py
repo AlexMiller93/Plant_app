@@ -11,9 +11,9 @@ from django.views.generic.edit import (
     DeleteView)
 from django.utils.text import slugify
 
-from .models import Post
+from .models import Post, Comment
 from users.models import Profile
-from .forms import PostForm, PostEditForm
+from .forms import PostForm, PostEditForm, CommentForm, CommentEditForm
 
 # Create your views here.
 class HomeView(ListView):
@@ -29,6 +29,11 @@ class HomeView(ListView):
         tags = [post.tag for post in Post.objects.all()]
         unique_tags = list(set(tags))
         context["tags"] = unique_tags
+        
+        for post in Post.objects.all():
+            # if post.comments.exists():
+            context["comments"] = post.comments
+        
         return context
     
 class PostDetailView(DetailView):
@@ -38,15 +43,61 @@ class PostDetailView(DetailView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         
-        post_for_like = get_object_or_404(Post, slug=self.kwargs['slug'])
+        # working with likes
+        post = get_object_or_404(Post, slug=self.kwargs['slug'])
         liked = False
-        if post_for_like.likes.filter(id=self.request.user.id).exists():
+        if post.likes.filter(id=self.request.user.id).exists():
             liked = True
-        data['number_of_likes'] = post_for_like.likes.count()
+        data['number_of_likes'] = post.likes.count()
         data['post_is_liked'] = liked
+        
+        # *** working with comments *** 
+        
+        # retrieve list of comments excluding replies
+        comments = Comment.objects.filter(post=self.get_object(), reply=None)
+        
+        all_comments = Comment.objects.filter(post=self.get_object())
+        
+        replies_count = sum(map(lambda x: not x.is_parent, all_comments))
+        
+        data['comments'] = comments
+        data['comments_count'] = comments.count()
+        data['replies_count'] = replies_count
+        data['comment_form'] = CommentForm()
         return data
     
-        
+    def post(self, request, *args, **kwargs):
+        if self.request.method == 'POST':
+            comment_form = CommentForm(self.request.POST)
+            if comment_form.is_valid():
+                content = comment_form.cleaned_data['content']
+                reply = comment_form.cleaned_data['reply']
+                
+                # normal comment
+                if not reply:
+                    new_comment = Comment(
+                            content=content, 
+                            author = self.request.user.profile, 
+                            post=self.get_object()
+                        )
+                    if new_comment.is_parent:
+                        new_comment.save()
+                    
+                # reply
+                else:
+                    new_comment = Comment(
+                            content=content, 
+                            author = self.request.user.profile, 
+                            post=self.get_object(), reply=reply
+                        )
+                    new_comment.save()
+                    
+            return redirect(self.request.path_info)
+        else:
+            comment_form = CommentForm()
+            return redirect(self.request.path_info)
+    
+    
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class= PostForm
@@ -121,6 +172,6 @@ def PostLike(request, slug):
         post.likes.add(request.user.profile)
         
     return redirect('post_detail', slug=post.slug)
-    # return HttpResponseRedirect(reverse('post_detail'), args=[slug])
+
 
 # https://www.youtube.com/watch?v=PXqRPqDjDgc

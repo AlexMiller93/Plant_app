@@ -40,28 +40,50 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse("post_detail", kwargs={"slug": self.slug})
     
+    def get_comments(self):
+        return self.comments.filter(reply=None)
+    
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
         
+        
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    text = models.TextField(
+    post = models.ForeignKey(Post, related_name="comments", on_delete=models.DO_NOTHING)
+    author = models.ForeignKey(Profile, on_delete=models.DO_NOTHING)
+    content = models.TextField(
         help_text="Write comment",
         blank=True, null=True)
     
     created_on = models.DateTimeField(auto_now_add=True)
-    likes = models.ManyToManyField("self")
+    updated_on = models.DateTimeField(auto_now=True)
+    # likes = models.ManyToManyField(Profile, related_name="comment_like", blank=True)
+    reply = models.ForeignKey(
+        'self', null=True, blank=True,
+        on_delete=models.CASCADE, related_name='replies')
     
     
     class Meta:
         verbose_name = "comment"
+        ordering=['-created_on']
     
     def __str__(self):
-        return self.text 
+        return self.content 
     
     def get_absolute_url(self):
         return reverse('comment_detail', kwargs={'pk': self.pk})
+    
+    def get_comments(self):
+        return Comment.objects.filter(reply=self)
+    
+    @property
+    def children(self):
+        return Comment.objects.filter(reply=self).reverse()
+
+    @property
+    def is_parent(self):
+        if self.reply is None:
+            return True
+        return False
