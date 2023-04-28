@@ -6,33 +6,35 @@
 <main class="container">
     <div class="row">
         <!-- Users list -->
-        <div class="col-auto col-sm-3 col-md-2 col-lg-2 text-center" 
-            {% comment %} style="background: #f54;" {% endcomment %}
-            >
+        <div class="col-auto col-sm-3 col-md-2 col-lg-2 text-center">
             {% include 'left_sidebar.html' %}
         </div>
 
         <!-- Feed with posts -->
-        <div class="col-sm-8 col-md-8 " 
-            {% comment %} style="background: #d94;" {% endcomment %}
-            >
+        <div class="col-sm-8 col-md-8 ">
             <h5 class="text-center">Feed</h5>
             <hr>
-            {% if user.is_authenticated %}
-                <p>Hello, {{ request.user | capfirst }}!</p>
-                <a href="{% url 'post_create' %}" class="btn btn-primary">+Add post</a>
-            {% else %}
-                <p>You're not logged.</p>
-            {% endif %}
-            <br><br>
+            <div class="pb-0">
+                {% if user.is_authenticated %}
+                    <p>Hello, {{ request.user | capfirst }}!</p>
+                    <a href="{% url 'post_create' %}" class="btn btn-primary">+Add post</a>
+                {% else %}
+                    
+                        <h6>You're not logged.</h6>
+                        <p>Please, <a href="{% url 'login' %}">login</a> to write posts</p>
+                {% endif %}
+            </div><br>
 
             <!-- Error messages -->
             {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-warning" role="alert">
-                    {{ message }}
+                <div class="messages">
+                    {% for message in messages %}
+                    <div {% if message.tags %} 
+                        class="alert alert-{{ message.tags }}" role="alert">
+                        {% endif %}{{ message }}
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             {% endif %}
                 
 
@@ -46,9 +48,7 @@
         </div>
 
         <!-- Tags list -->
-        <div class="col col-md-2 text-center" 
-            {% comment %} style="background: #f19;" {% endcomment %}
-            >
+        <div class="col col-md-2 text-center">
             {% include 'right_sidebar.html' %}
         </div>
 

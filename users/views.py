@@ -11,7 +11,7 @@ from django.views.generic.list import ListView
 
 from .forms import ProfileForm, UserForm
 from .models import Profile
-from blog.models import Post
+from blog.models import Post, Comment
 
 # Create your views here.
 
@@ -28,7 +28,16 @@ class ProfileView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProfileView, self).get_context_data(**kwargs)
         profile = get_object_or_404(Profile, id=self.kwargs['pk'])
+        
+        posts = Post.objects.filter(author=profile)
+        comments = Comment.objects.filter(author=profile).exclude(reply=None)
+        replies = Comment.objects.filter(author=profile)
+        
         context['profile'] = profile
+        context['posts'] = posts
+        context['comments'] = comments
+        context['replies'] = replies
+        
         return context
     
     def post(self, request, **kwargs):
@@ -49,11 +58,10 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
     template_name = 'users/profile-update.html'
     
     def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
+        return self.post(request)
     
     # when post new data - use post method
     def post(self, request):
-
         post_data = request.POST or None
         file_data = request.FILES or None
 
@@ -72,3 +80,12 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
                                     )
 
         return self.render_to_response(context)     
+
+def calculate_rating(request):
+    profiles = Profile.objects.all()
+    user_rating = 0
+    for profile in profiles:
+        rating = request.POST['rating']
+        user_rating += rating
+    user_rating = user_rating / Profile.objects.count()
+    return user_rating

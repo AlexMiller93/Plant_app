@@ -9,7 +9,9 @@ from .views import (
     UserPostListView,
     TagPostListView,
     SearchPostListView,
+    OneStatusPostListView,
     PostLike,
+    PostNote,
     )
 
 from blog.views import *
@@ -29,12 +31,15 @@ urlpatterns = [
     
     path('user_posts/<int:pk>/', UserPostListView.as_view(), 
         name='user_posts'),
-    
     path('tag_posts/<str:tag>/', TagPostListView.as_view(),
         name='tag_posts'),
     path('search_posts/', SearchPostListView.as_view(), 
         name='search_posts'),
+    path('status_posts/<str:status>/', OneStatusPostListView.as_view(),
+        name='status_posts'),
     
     path('like/<slug:slug>/', PostLike, 
         name='post_like'),
+    
+    path('post_noted/', PostNote, name='change_post_noted'),
 ]

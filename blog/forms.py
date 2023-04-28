@@ -37,8 +37,7 @@ class CommentForm(forms.ModelForm):
         }
         
         widgets = {
-            'content': forms.TextInput(attrs={
-            })
+            'content': forms.TextInput(attrs={})
         }
 
 class CommentEditForm(forms.ModelForm):
@@ -51,6 +50,5 @@ class CommentEditForm(forms.ModelForm):
         }
         
         widgets = {
-            'content': forms.TextInput(attrs={
-                })
+            'content': forms.TextInput(attrs={})
         }

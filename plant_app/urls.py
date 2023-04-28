@@ -18,7 +18,13 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from users.views import ProfileUpdateView, ProfileView, SignUpView
+from users.views import (
+    ProfileUpdateView, 
+    ProfileView, 
+    SignUpView,
+    calculate_rating
+    )
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,6 +37,8 @@ urlpatterns = [
         name='user_profile'),
     path('profile/edit/', ProfileUpdateView.as_view(), 
         name='update_profile'),
+    
+    path('', calculate_rating, name='calc_rating'),
 ]
 
 if settings.DEBUG:

@@ -21,7 +21,7 @@
                             <h6>
                                 <i class="bi bi-reply"></i>
                                 <b>{{ comment.author | capfirst }}: </b>{{ comment.content }}
-                                · <em><small>in {{ comment.created_on.date }}</em></small>
+                                · <em><small>in {{ comment.created_on }}</em></small>
                             </h6> 
                             <p class="my-0">to answer from 
                                 <a href="{% url 'user_profile' post.author.user.profile.pk %}">

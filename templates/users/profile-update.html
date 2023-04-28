@@ -6,24 +6,32 @@
 
 {% block content %} 
 
-<h2 style="text-align:center;">Update Profile Page</h2>
-<div class="container col-md-6 col-4">
+<div class="container col-6">
+    <br><br>
     <a href="{% url 'user_profile' user.profile.pk %}" 
         >Back</a><br>
     <a href="{% url 'home' %}">Home</a>
-    <div class="form-group">
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <p>User settings</p>
-            {{ user_form|crispy }}
-            <br>
-            <p>Profile settings</p>
-            {{ profile_form|crispy }}
-            <button type="submit"
-                class="btn btn-primary">Update</button>
-            <br><br>
-        </form>
-    
+    <br>
+    <div class="card border-2 border-success-subtle rounded-2 p-4 m-4">
+        <div class="form-group">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-auto">
+                        <p>User settings</p>
+                        {{ user_form|crispy }}
+                        <br>
+                    </div>
+                    <div class="col-auto">
+                        <p>Profile settings</p>
+                        {{ profile_form|crispy }}
+                    </div>
+                </div>
+                <button type="submit"
+                    class="btn btn-primary">Update
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 <br><br><br>

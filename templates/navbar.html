@@ -30,10 +30,6 @@
                     href="{% url 'logout' %}">
                     &nbsp;<i class="bi bi-box-arrow-left"></i> Logout</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" 
-                    href="{% url 'password_reset' %}">Reset Password</a>
-                </li>
 
                 {% else %}
                 <li class="nav-item">
@@ -67,7 +63,13 @@
                     </li>
                     <li><a class="dropdown-item" 
                         href="{% url 'update_profile' %}">
-                        &nbsp;<i class="bi bi-gear-fill"></i> Update Profile</a></li>
+                        &nbsp;<i class="bi bi-gear-fill"></i> Update Profile</a>
+                    </li>
+
+                    <li><a class="dropdown-item" 
+                        href="{% url 'password_reset' %}">
+                        &nbsp;<i class="bi bi-arrow-repeat"></i> Reset Password</a>
+                    </li>
                     <li><a class="dropdown-item" href="#">Some action...</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" 

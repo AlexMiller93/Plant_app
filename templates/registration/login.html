@@ -5,20 +5,22 @@
 {% load crispy_forms_tags %}
 
 {% block content %} 
-<h3 style="text-align:center;">Login Page</h3>
 <br>
-<div class="container col-md-6 col-4">
+<main class="container col-4 text-start">
     <a href="{% url 'home' %}">
-        Back</a><br>
-    <div class="form-group">
-        <form method="post">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <button type="submit"
-                class="btn btn-primary">Login</button>
-            <br><br>
-        </form>
+        Home</a><br><br>
+    <div class="card border-success p-4 pb-0 col-auto">
+        <div class="form-group">
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit"
+                    class="btn btn-primary">Login</button>
+                <br><br>
+            </form>
+        </div>
     </div>
-</div>
+</main>
+<br><br><br><br>
 
 {% endblock content %}

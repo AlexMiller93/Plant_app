@@ -1,94 +1,220 @@
 {% extends 'base.html' %}
 
-{% block title %}Profile Page{% endblock title %}
+
+<head>
+
+    {% block title %}Profile Page{% endblock title %}
+    <script type="text/javascript">
+        function ratingColor = () => {
+        let el = document.getElementById("user_status");
+        var status = {{ profile.user_status }};
+    
+        if (status === "Beginner") {
+            el.className = "badge text-bg-success";
+        } else if (status === "Amateur") {
+            el.className = "badge text-bg-info";
+        } else if (status === "Expert") {
+            el.className = "badge text-bg-primary";
+        } else {
+            el.className = "badge text-bg-danger";
+        } 
+    }
+    document.getElementById("user_status").onload = ratingColor();
+    
+    
+    </script>
+</head>
 
 {% block content %}
-
-<h3 style="text-align:center;">
-    {{ profile.user.username | capfirst }} profile page</h3>
-<div class="container">
+<br>
+<div class="container col-6 ">
     <a href="{% url 'home' %}">Home</a>
 </div>
 <br>
-<article class="container card border-success mb-3 col-10 col-lg-6">
-
-    <!-- If -->
-
-    <div class="col-2 p-2 m-2 col-lg-1">
-        <img src="{{ profile.avatar.url }}" 
-        class="rounded-circle article-img" 
-        height="60px" width="60px">
+<main class="container card border-success col-6 rounded-3 mb-3 p-3">
+    
+    <!-- 1 row Name of page  -->
+    <div class="row text-center">
+        <h4>{{ profile.user.username | capfirst }} profile</h4>
     </div>
-    <div class="col-10 px-2 col-lg-11 p-2">
 
-        <!-- Follower System -->
+    <!-- 2 row avatar, profile info and some staticstic -->
+    <div class="row p-2 m-1"
+        style="background: lightgreen;"
+        >
+        <!-- Avatar -->
+        <div class="col-auto p-1 me-2"
+            style="background: lightblue;"
+            >
+            <img src="{{ profile.avatar.url }}" 
+            class="rounded-circle article-img" 
+            height="70px" width="70px">
+        </div>
 
-        <strong>Followers:</strong><br>
-        {% if profile.follows.all %}
-            {% for following in profile.follows.all %}
-                <a href="{% url 'user_profile' following.user.id %}">
-                    @{{ following | lower }}</a><br>
-            {% endfor %}
-        {% else %}
-            {% if request.user == profile.user %}
-                <p>Oops! You haven't followed anyone. Just click a button and follow somebody!!!</p>
-            {% else %}
-                <p>Oops! .. {{ profile.user.username }}'s profile hasn't followed by anybody.</p>
-            {% endif %}
-        {% endif %}<br>
+        <!-- Profile info -->
+        <div class="col">
+            <div class="row"
+                style="background: pink;"
+                >
+                <p>
+                    <b>{{ profile.user | capfirst }}</b> ·
+                    <a href="{% url 'user_profile' user.profile.pk %}"
+                        class="link-offset-1">
+                        @{{ profile.user.username }} 
+                    </a> ·
+                    <a href="{% url 'status_posts' profile.user_status %}">
+                        <span class="badge text-bg-success" id="user_status">
+                            {{ profile.user_status }}
+                        </span>
+                    </a>
+                    · <span>
+                        {% if profile.sex == "W" %}
+                            <i class="bi bi-gender-female"></i>
+                        {% else %}
+                            <i class="bi bi-gender-male"></i>
+                        {% endif %} {{ profile.sex }}
+                    </span>
+                    {% if profile.location %}<i>· {{ profile.location }}</i>{% endif %}
+                    · {% if profile.age %}{{profile.age }} years {% endif %} 
+                </p>
+            </div>
 
-        <strong>Followed by:</strong><br>
-        {% if profile.followed_by.all %}
-            {% for following in profile.followed_by.all %}
-                <a href="{% url 'user_profile' following.user.id %}">
-                @{{ following | lower }}</a><br>
-            {% endfor %}
-        {% else %}
-            {% if request.user == profile.user %}
-                <p>Oops! You haven't followed by somebody. Write something cool!!</p>
-            {% else %}
-                <p>Oops! .. {{ profile.user.username }} don't follow anybody.</p>
-            {% endif %}
-        {% endif %}<br>
-        
+            <!-- Stats -->
+            <div class="row row-cols-4 text-center justify-content-between"
+                style="background: yellow;"
+                >
+                <div class="col-auto">
+                    <b>Posts</b><br>
+                    {{ posts.count }}
+                </div>
+                <div class="col-auto">
+                    <b>Comments</b><br>
+                    {{ comments.count }}
+                </div>
+                <div class="col-auto">
+                    <b>Replies</b><br>
+                    {{ replies.count }}
+                </div>
+                <div class="col-auto">
+                    <b>Followers</b><br>
+                    {{ profile.follows.count }}
+                </div>
+                <div class="col-auto">
+                    <b>Followed by</b><br>
+                    {{ profile.followed_by.count }}
+                </div>
+            </div>
+        </div>
+
         <!-- Follow system -->
-        <form action="" method="post">
-            {% csrf_token %}
-            {% if profile in user.profile.follows.all %}
-                <button class="btn btn-outline-danger" 
-                    name="follow" value="Unfollow" type="submit">
-                    <i class="fa-solid fa-user-minus fa-sm"></i>
-                            Unfollow @{{ profile.user.username | lower }}
-                </button>
-            {% else %}
-                <button class="btn btn-outline-success" 
-                    name="follow" value="Follow" type="submit">
-                    <i class="fa-solid fa-user-plus fa-sm"></i>
-                            Follow @{{ profile.user.username | lower }}
-                </button>
-            {% endif %}
-        </form><br>
+        <div class="col-auto m-2">
+            <form action="" method="post">
+                {% csrf_token %}
+                {% if profile in user.profile.follows.all %}
+                    <button class="btn btn-outline-secondary" 
+                        name="follow" value="Unfollow" type="submit"
+                        data-bs-toggle="tooltip" data-bs-placement="top"
+                        data-bs-custom-class="custom-tooltip" data-bs-title="Unfollow @{{ profile.user }}">
+                            - Unfollow
+                    </button>
+                {% else %}
+                    <button class="btn btn-outline-success" 
+                        name="follow" value="Follow" type="submit"
+                        data-bs-toggle="tooltip" data-bs-placement="top" 
+                        data-bs-custom-class="custom-tooltip" data-bs-title="Follow @{{ profile.user }}">
+                            + Follow 
+                    </button>
+                {% endif %}
+            </form>
+            {% comment %} {% if request.user != profile.user %}
+                <label for="rating">Pick user rating</label><br>
+                <input type="number" name="rating" 
+                    id="rating_id" step=1 min=1 max=5>
+            {% endif %} <br>
+            <b>Rating: </b>{{ profile.rating }} {% endcomment %}
+        </div>
 
-        <!-- User attributes-->
-        <strong>User settings</strong>
-        <p>Username: {{ profile.user.username }}</p>
-        <p>First name: {{ profile.user.first_name }}</p>
-        <p>Last name: {{ profile.user.last_name }}</p>
-        <p>Email: {{ profile.user.email }}</p>
-
-        <!-- Profile attributes-->
-        <strong>Profile settings</strong>
-        <p>Bio: {{ profile.bio }}</p>
-        <p>Location: {{ profile.location }}</p>
-        <p>Birth_date: {{ profile.birth_date }}</p>
-        <p>Date profile created: {{ profile.created_on }}</p>
-        {% if request.user == profile.user %}
-            <a href="{% url 'update_profile' %}" class="btn btn-outline-primary">
-                <i class="bi bi-gear-fill"></i> Edit Profile</a>
-        {% endif %}
-        <a href="{% url 'user_posts' profile.pk %}" class="btn btn-outline-info">Show Feed</a>
+        <!-- Profile icons -->
+        <div class="col-auto">
+            <i class="bi bi-heart"></i>
+            <i class="bi bi-three-dots-vertical"></i>
+        </div>
     </div>
-</article>
+    
+    
+    <div class="row p-2 m-1 justify-content-between">
+        <!-- User attributes-->
+        <div class="col-3 card border-2 rounded-2">
+            <p>Username: {{ profile.user.username }}</p>
+            <p>First name: {{ profile.user.first_name }}</p>
+            <p>Last name: {{ profile.user.last_name }}</p>
+            <p>Email: {{ profile.user.email }}</p>
+        </div>
+        
+        <!-- Profile attributes-->
+        <div class="col-auto card border-2 rounded-2">
+            <p><i class="bi bi-card-text"></i> 
+                {{ profile.bio }}</p>
+            <p><i class="bi bi-geo-alt-fill"></i> 
+                {{ profile.location }}</p>
+            <p><i class="fa-solid fa-cake-candles"></i> 
+                {{ profile.birth_date }}</p>
+            <p><i class="bi bi-calendar4-event"></i>
+                {{ profile.created_on.date }}</p>
+        </div>
+        
+        <!-- Follow info -->
+        <div class="col-auto card border-2 rounded-2">
+
+            <strong>Followers:</strong>
+            {% for following in profile.follows.all %}
+                <a href="{% url 'user_profile' following.user.id %}"
+                    class="link-offset-1">
+                    @{{ following | lower }}</a>
+
+            {% empty %}
+                {% if request.user == profile.user %}
+                    <p class="fst-normal">
+                        Oops! You haven't followed anyone.
+                    </p>
+                {% else %}
+                    <p>{{ profile.user.username | capfirst }}'s profile hasn't followed by anybody.</p>
+                {% endif %}
+            {% endfor %}<br>
+    
+            <strong>Followed by:</strong>
+            {% for following in profile.followed_by.all %}
+                <a href="{% url 'user_profile' following.user.id %}"
+                    class="link-offset-1">
+                    @{{ following | lower }}</a>
+
+            {% empty %}
+                {% if request.user == profile.user %}
+                <p class="fst-normal">
+                    Oops! You haven't followed by somebody.
+                </p>
+                {% else %}
+                    <p>{{ profile.user.username | capfirst }} don't follow anybody.</p>
+                {% endif %}
+            {% endfor %}<br>
+        </div>
+
+        <!-- Buttons -->
+        <div class="col-2">
+            {% if request.user == profile.user %}
+                <a href="{% url 'update_profile' %}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-gear-fill"></i> Edit Profile</a><br>
+            {% endif %} <br>
+            <a href="{% url 'user_posts' profile.pk %}" class="btn btn-outline-info btn-sm">
+                <i class="bi bi-chat-right-text"></i> Show Feed</a>
+        </div>
+    </div>
+
+
+</main>
 <br><br><br>
+
+
+
 {% endblock content %}
 
