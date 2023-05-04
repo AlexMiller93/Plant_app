@@ -49,7 +49,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
         elif action == "Follow":
             current_user.follows.add(profile)
         current_user.save()
-        return redirect('user_profile', pk=profile.pk)
+        return redirect(request.META.get("HTTP_REFERER"))
     
         
 class ProfileUpdateView(LoginRequiredMixin, TemplateView):

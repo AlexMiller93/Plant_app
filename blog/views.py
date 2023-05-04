@@ -1,8 +1,10 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView
@@ -46,7 +48,6 @@ class PostDetailView(DetailView):
         liked = False
         if post.likes.filter(id=self.request.user.id).exists():
             liked = True
-        data['number_of_likes'] = post.likes.count()
         data['post_is_liked'] = liked
         
         # who seen post
@@ -57,8 +58,6 @@ class PostDetailView(DetailView):
         
         
         # *** working with comments *** 
-        
-        # retrieve list of comments excluding replies
         comments = Comment.objects.filter(post=self.get_object(), reply=None)
         all_comments = Comment.objects.filter(post=self.get_object())
         replies_count = sum(map(lambda x: not x.is_parent, all_comments))
@@ -194,19 +193,22 @@ class OneStatusPostListView(ListView):
         # context["status_posts"] = status_posts
         # context["status"] = status
         return context
+    
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
+@login_required
 def PostLike(request, slug):
-    post = get_object_or_404(Post, slug=request.POST.get('post_id'))
+    post = get_object_or_404(Post, slug=slug)
     if post.likes.filter(id=request.user.profile.id).exists():
         post.likes.remove(request.user.profile)
     else:
         post.likes.add(request.user.profile)
-        
-    return redirect('post_detail', slug=post.slug)
+    return redirect(request.META.get("HTTP_REFERER"))
 
-def PostNote(request, slug):
+def PostNote(request):
     post_noted = request.GET.get('post_noted', False)
-    post = get_object_or_404(Post, slug=request.POST.get('post_id'))
+    post = get_object_or_404(Post, slug=request.POST.get('post_slug'))
     
     try:
         post.post_noted = post_noted

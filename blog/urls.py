@@ -38,8 +38,7 @@ urlpatterns = [
     path('status_posts/<str:status>/', OneStatusPostListView.as_view(),
         name='status_posts'),
     
-    path('like/<slug:slug>/', PostLike, 
-        name='post_like'),
+    path('like/<slug:slug>/', PostLike, name='post_like'),
     
     path('post_noted/', PostNote, name='change_post_noted'),
 ]

@@ -21,13 +21,12 @@
                     </a>
                 {% endif %}
                 <p class="mb-2 text-body-secondary">
-                    by <b>{{ post.author | capfirst }}</b>
-                    · 
+                    by <strong>{{ post.author | capfirst }}</strong> · 
                     <a href="{% url 'status_posts' post.author.user_status %}">
-                        <span class="badge text-bg-success" id="user_status">
+                        <span class="badge rounded-pill text-bg-success" id="user_status">
                             {{ post.author.user_status }}
                         </span>
-                    </a> ·
+                    </a> · 
                     <i>{{ post.created_on.date }}</i>
                 </p>
             </div>
@@ -35,19 +34,25 @@
 
             <!-- LIKES -->
             <div class="row text-secondary justify-content-start">
-                <div class="col-auto me-2">
+                <div class="col-auto">
                     {% if post.likes.count %}
-                        <!-- Show red like when user like some post -->
                         {% if request.user.profile in post.likes.all %}
-                                <i class="bi bi-heart-fill" style="color:red;"></i>
-                            {% else %}
-                                <i class="bi bi-heart-fill"></i> 
-                        {% endif %} {{ post.likes.count }}
+                            <a href="{% url 'post_like' post.slug %}">
+                                <i class="bi bi-heart-fill me-1" style="color:red"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'post_like' post.slug %}">
+                                <i class="bi bi-heart-fill me-1" style="color:gray"></i>
+                            </a>
+                        {% endif %}{{ post.likes.count }}
                     {% else %}
-                        <i class="bi bi-heart"></i>
+                        <a href="{% url 'post_like' post.slug %}">
+                            <i class="bi bi-heart me-3" style="color:black"></i>
+                        </a>
                     {% endif %}
+
                 </div>
-                <div class="col-auto me-2">
+                <div class="col-auto">
                     {% if post.get_comments %}
                         <i class="bi bi-chat-fill me-2"></i>{{ post.get_comments.count }}
                     {% else %}
@@ -63,6 +68,8 @@
                     {% endif %}
                 </div>
 
+                
+
                 <div class="col-auto">
                     {% if post.seen_by %}
                         <i class="bi bi-eye-fill me-2"></i>{{ post.seen_by.count }}
@@ -75,3 +82,8 @@
     </div>
 </article>
 
+<style>
+    a:link {
+text-decoration: none;
+}
+</style>
