@@ -52,7 +52,10 @@ class Post(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
-    
+
+class Share(Post):
+    post = models.ForeignKey(Post, related_name="shared_post", on_delete=models.CASCADE)
+
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name="comments", on_delete=models.DO_NOTHING)
     author = models.ForeignKey(Profile, on_delete=models.DO_NOTHING)
@@ -82,3 +85,4 @@ class Comment(models.Model):
         if self.reply is None:
             return True
         return False
+    

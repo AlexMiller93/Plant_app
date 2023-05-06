@@ -81,7 +81,6 @@
 
                     <!-- Post noted -->
                     {% comment %} change_post_noted {% endcomment %}
-                    {% csrf_token %}
                     {% if post.post_noted %}
                         <i class="bi bi-bookmark-fill"></i>
                     {% else %}
@@ -126,10 +125,10 @@
                         {% if not comments.is_parent %}
                             <i class="bi bi-reply-all-fill me-1"></i>
                             <strong class="text-dark me-2">
-                                {% if replies_count %}
-                                    {{ replies_count }}
-                                {% endif %}
+                                {{ replies_count }}
                             </strong>
+                        {% else %}
+                            <i class="bi bi-reply-all me-3"></i>
                         {% endif %}
                     {% else %}
                         <i class="bi bi-chat me-3"></i>
@@ -184,11 +183,6 @@
     <br><br><br><br>
     </div>
 
-    <style>
-        a:link {
-    text-decoration: none;
-    }
-    </style>
 
     <script>
     /*

@@ -2,29 +2,24 @@
 
 {% block content %}
 <h2 style="text-align:center;">
-    <span class="badge text-bg-success" id="user_status">
-        Posts with user_status {{status}}
-    </span>
+    Posts with status "{{ status }}"
 </h2>
 <br><br>
+
 <div class="container">
-    <a href="{% url 'user_profile' profile.pk %}" 
+    <a href="{% url 'home' %}" 
         >Back</a><br>
     <div class="row">
-
-        <div class="col-auto col-sm-3 col-md-2 col-lg-2"></div>
-
         <div class="col-sm-8 col-md-8">
             {% if status_posts %}
                 {% for post in status_posts %}
                     {% include 'blog/post.html' %}
                 {% endfor %}
             {% else %}
-                <p>{{ profile.user.username }} hasn't published any post</p>
+                <p>No one published post has published
+                    from user with status "{{ status }}" ...</p>
             {% endif %}
         </div>
-
-        <div class="col col-md-2"></div>
     </div>
 </div>
 

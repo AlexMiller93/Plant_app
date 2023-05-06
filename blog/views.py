@@ -1,7 +1,9 @@
+from typing import Any
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.db.models.query import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -14,7 +16,7 @@ from django.views.generic.edit import (
     DeleteView)
 from django.utils.text import slugify
 
-from .models import Post, Comment
+from .models import Post, Comment, Share
 from users.models import Profile
 from .forms import PostForm, PostEditForm, CommentForm, CommentEditForm
 
@@ -142,11 +144,14 @@ class UserPostListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
         profile = get_object_or_404(Profile, 
             id=self.kwargs['pk'])
-        context["profile"] = profile
-        context["user_posts"] = Post.objects.filter(
+        user_posts = Post.objects.filter(
             author__id = profile.id).order_by('-created_on')
+        
+        context["profile"] = profile
+        context["user_posts"] = user_posts
         return context
 
 class TagPostListView(ListView):
@@ -186,13 +191,15 @@ class OneStatusPostListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # status = self.kwargs['status']
-        # # profiles = Profile.objects.filter(user_status = status)
-        # # for profile in profiles: 
-        # status_posts = Post.objects.filter(author.profile.user_status=status).order_by('-created_on')
-        # context["status_posts"] = status_posts
-        # context["status"] = status
+        status = self.kwargs['status']
+        
+        profiles = Profile.objects.filter(user_status = status)
+        status_posts = Post.objects.filter(author__in = profiles).order_by('-created_on')
+        
+        context["status_posts"] = status_posts
+        context["status"] = status
         return context
+    
     
 def is_ajax(request):
     return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
@@ -205,6 +212,18 @@ def PostLike(request, slug):
     else:
         post.likes.add(request.user.profile)
     return redirect(request.META.get("HTTP_REFERER"))
+
+@login_required
+def SharePost(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    shared = False
+    shared_post = get_object_or_404(Share, post=post)
+        
+    if shared_post:
+        pass
+    else:
+        pass
+    
 
 def PostNote(request):
     post_noted = request.GET.get('post_noted', False)
