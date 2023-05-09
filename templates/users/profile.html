@@ -4,24 +4,8 @@
 <head>
 
     {% block title %}Profile Page{% endblock title %}
+
     <script type="text/javascript">
-        function ratingColor = () => {
-        let el = document.getElementById("user_status");
-        var status = {{ profile.user_status }};
-    
-        if (status === "Beginner") {
-            el.className = "badge text-bg-success";
-        } else if (status === "Amateur") {
-            el.className = "badge text-bg-info";
-        } else if (status === "Expert") {
-            el.className = "badge text-bg-primary";
-        } else {
-            el.className = "badge text-bg-danger";
-        } 
-    }
-    document.getElementById("user_status").onload = ratingColor();
-    
-    
     </script>
 </head>
 
@@ -60,7 +44,7 @@
                     <b>{{ profile.user | capfirst }}</b> ·
                     <a href="{% url 'user_profile' user.profile.pk %}"
                         class="link-offset-1">
-                        @{{ profile.user.username }} 
+                        @{{ profile.user.username | lower}} 
                     </a> ·
                     <a href="{% url 'status_posts' profile.user_status %}">
                         <span class="badge text-bg-success" id="user_status">

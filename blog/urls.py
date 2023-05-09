@@ -10,8 +10,13 @@ from .views import (
     TagPostListView,
     SearchPostListView,
     OneStatusPostListView,
+    # CommentCreateView,
+    CommentUpdateView,
+    CommentDeleteView,
     PostLike,
     PostNote,
+    CommentLike,
+    SharePost
     )
 
 from blog.views import *
@@ -25,7 +30,7 @@ urlpatterns = [
     path('post_create/', PostCreateView.as_view(), 
         name='post_create'),
     path('post/edit/<slug:slug>/', PostUpdateView.as_view(), 
-        name='post_update'),
+        name='post_edit'),
     path('post/delete/<slug:slug>/', PostDeleteView.as_view(), 
         name='post_delete'),
     
@@ -38,7 +43,18 @@ urlpatterns = [
     path('status_posts/<str:status>/', OneStatusPostListView.as_view(),
         name='status_posts'),
     
-    path('like/<slug:slug>/', PostLike, name='post_like'),
+    # path('post/<slug:slug>/add_comment/',
+    #     CommentCreateView.as_view(), name='add_comment'),
+    path('post/<slug:slug>/comment/<int:pk>/edit_comment/',
+        CommentUpdateView.as_view(), name='edit_comment'),
+    path('post/<slug:slug>/comment/<int:pk>/delete_comment/',
+        CommentDeleteView.as_view(), name='delete_comment'),
+    
+    
+    path('post_like/<slug:slug>/', PostLike, name='post_like'),
+    path('comment_like/<slug:slug>/comment/<int:pk>', CommentLike, name='comment_like'),
     
     path('post_noted/', PostNote, name='change_post_noted'),
+    
+    path('post_shared/<slug:slug>', SharePost, name='share_post'),
 ]

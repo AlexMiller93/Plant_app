@@ -49,22 +49,53 @@ class Post(models.Model):
         return self.comments.exclude(reply=None)
     
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.title)
-        super(Post, self).save(*args, **kwargs)
+        self.slug = self.generate_slug()
+        return super().save(*args, **kwargs)
 
+    def generate_slug(self, save_to_obj=False, add_random_suffix=True):
+        """
+        Generates and returns slug for this obj.
+        If `save_to_obj` is True, then saves to current obj.
+        Warning: setting `save_to_obj` to True
+            when called from `.save()` method
+            can lead to recursion error!
+
+        `add_random_suffix ` is to make sure that slug field has unique value.
+        """
+
+        # We rely on django's slugify function here. But if
+        # it is not sufficient for you needs, you can implement
+        # you own way of generating slugs.
+        generated_slug = slugify(self.title)
+
+        # Generate random suffix here.
+        import random, string
+        random_suffix = ""
+        if add_random_suffix:
+            random_suffix = ''.join([
+                random.choice(string.digits)
+                for i in range(3)
+            ])
+            generated_slug += '-%s' % random_suffix
+
+        if save_to_obj:
+            self.slug = generated_slug
+            self.save(update_fields=['slug'])
+        
+        return generated_slug
+    
 class Share(Post):
     post = models.ForeignKey(Post, related_name="shared_post", on_delete=models.CASCADE)
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, related_name="comments", on_delete=models.DO_NOTHING)
-    author = models.ForeignKey(Profile, on_delete=models.DO_NOTHING)
+    post = models.ForeignKey(Post, related_name="comments", on_delete=models.CASCADE)
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     content = models.TextField(
         help_text="Write comment",
         blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    # likes = models.ManyToManyField(Profile, related_name="comment_like", blank=True)
+    likes = models.ManyToManyField(Profile, related_name="comment_like", blank=True)
     reply = models.ForeignKey(
         'self', null=True, blank=True,
         on_delete=models.CASCADE, related_name='replies')

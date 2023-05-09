@@ -29,9 +29,10 @@
             <div class="row">
                 <div class="col-auto m-2 p-1">
                     <a href="{% url 'user_profile' post.author.user.profile.pk %}">
-                    <img src="{{ post.author.user.profile.avatar.url }}" 
-                    class="rounded-circle article-img" 
-                        height="60px" width="60px"></a>
+                        <img src="{{ post.author.user.profile.avatar.url }}" 
+                        class="rounded-circle article-img" 
+                            height="60px" width="60px">
+                    </a>
                 </div>
                 <div class="col my-2">
                     <h5 class="card-title mb-0">{{ post.title }}</h5>
@@ -40,7 +41,7 @@
                     <span class="badge text-bg-success" id="user_status">
                         {{ post.author.user.profile.user_status }}
                     </span> ·
-                    <em>{{ post.created_on }}</em>
+                    <i>{{ post.created_on }}</i>
                     {% if post.created_on != post.updated_on %} 
                     · <small class="text-decoration-none">last updated in {{ post.updated_on | timesince }}</small>
                     {% endif %}
@@ -69,9 +70,9 @@
                         {% endif %}
                     </form>
 
-
+                    <!-- Edit/delete post-->
                     {% if request.user == post.author.user %}
-                        <a href="{% url 'post_update' post.slug %}">
+                        <a href="{% url 'post_edit' post.slug %}">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </a>
                         <a href="{% url 'post_delete' post.slug %}">
@@ -80,7 +81,6 @@
                     {% endif %}
 
                     <!-- Post noted -->
-                    {% comment %} change_post_noted {% endcomment %}
                     {% if post.post_noted %}
                         <i class="bi bi-bookmark-fill"></i>
                     {% else %}
@@ -101,16 +101,22 @@
 
                     <!-- Like system, render icon likes, comments and replies with quantity -->
                     {% if post.likes.count %}
-                        <a href="{% url 'post_like' post.slug %}">
-                            <i class="bi bi-heart-fill me-1" style="color:red"></i>
-                        </a>
+                        {% if request.user.profile in post.likes.all %}
+                            <a href="{% url 'post_like' post.slug %}">
+                                <i class="bi bi-heart-fill me-1" style="color:red"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'post_like' post.slug %}">
+                                <i class="bi bi-heart-fill me-1" style="color:black"></i>
+                            </a>
+                        {% endif %}
                         <!-- likes quantity-->
                         <strong class="text-dark me-2">
                             {{ post.likes.count }}
                         </strong>
                     {% else %}
                         <a href="{% url 'post_like' post.slug %}">
-                            <i class="bi bi-heart me-1" style="color:black"></i>
+                            <i class="bi bi-heart me-3" style="color:black"></i>
                         </a>
                     {% endif %}
                     
@@ -120,21 +126,22 @@
                     {% if comments %}
                         <i class="bi bi-chat-fill me-1"></i>
                         <strong class="text-dark me-2">
-                            {{ comments_count }}
+                            {{ comments.count }}
                         </strong>
-                        {% if not comments.is_parent %}
-                            <i class="bi bi-reply-all-fill me-1"></i>
-                            <strong class="text-dark me-2">
-                                {{ replies_count }}
-                            </strong>
-                        {% else %}
-                            <i class="bi bi-reply-all me-3"></i>
-                        {% endif %}
                     {% else %}
                         <i class="bi bi-chat me-3"></i>
                     {% endif %}
                     
-                    <i class="fa-solid fa-retweet"></i>
+                    {% if replies %}
+                        <i class="bi bi-reply-all-fill me-1"></i>
+                        <strong class="text-dark me-2">
+                            {{ replies.count }}
+                        </strong>
+                    {% else %}
+                        <i class="bi bi-reply-all me-3"></i>
+                    {% endif %}
+
+                    <i class="fa-solid fa-retweet me-3"></i>
 
                     {% if post.seen_by %}
                         <i class="bi bi-eye-fill"></i>
@@ -150,19 +157,15 @@
 
             <!-- 3 row Comment form -->
             <div class="row my-2">
-                {% if user.is_authenticated %}
-                    <form action="" method="POST">
-                        <div class="col-auto">
-                            <label for="comment">Add comment: </label>
-                            {% csrf_token %}
-                            {{ comment_form.content }}
-                            <input type="submit" value="Post" 
-                            class="btn btn-outline-primary btn-sm">
-                        </div>
-                    </form>
-                {% else %} 
-                    <h6>You need to login to comment</h6> 
-                {% endif %}
+                <form action="" method="POST">
+                    <div class="col-auto">
+                        <label for="comment">Add comment: </label>
+                        {% csrf_token %}
+                        {{ comment_form.content }}
+                        <input type="submit" value="Post" 
+                        class="btn btn-outline-primary btn-sm">
+                    </div>
+                </form>
             </div>
 
             <!-- 4 row Render Comments and replies -->

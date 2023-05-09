@@ -29,7 +29,27 @@
         {% block title %}{% endblock title %}
     </title>    
 
-    
+    <script>
+        function ratingColor () {
+        let el = document.getElementById('user_status');
+        if ( el.classList.contains('badge') ){
+            alert('Element found')
+            let status = el.classList.contains('badge');
+        }
+        switch(status){
+            case 'Amateur':
+                el.className = "badge text-bg-info";
+            case 'Expert':
+                el.className = "badge text-bg-primary";
+            case 'Master':
+                el.className = "badge text-bg-danger";
+            default:
+                el.className = "badge text-bg-success";
+        }
+    }
+
+    document.getElementById("user_status").onload = ratingColor();
+    </script>
 </head>
 
 <body>

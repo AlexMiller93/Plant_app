@@ -1,7 +1,7 @@
-from typing import Any
+from typing import Any, Dict
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -15,7 +15,6 @@ from django.views.generic.edit import (
     UpdateView, 
     DeleteView)
 from django.utils.text import slugify
-
 from .models import Post, Comment, Share
 from users.models import Profile
 from .forms import PostForm, PostEditForm, CommentForm, CommentEditForm
@@ -61,19 +60,17 @@ class PostDetailView(DetailView):
         
         # *** working with comments *** 
         comments = Comment.objects.filter(post=self.get_object(), reply=None)
-        all_comments = Comment.objects.filter(post=self.get_object())
-        replies_count = sum(map(lambda x: not x.is_parent, all_comments))
+        replies = Comment.objects.exclude(post=self.get_object(), reply=None)
         
         data['comments'] = comments
-        data['comments_count'] = comments.count()
-        data['replies_count'] = replies_count
         data['comment_form'] = CommentForm()
         return data
     
     def post(self, request, *args, **kwargs):
         if self.request.user.is_authenticated:
             if self.request.method == 'POST':
-                '''
+                
+                """
                 # user who follows or unfollow
                 current_user = request.user.profile
                 # post of author which user want to follow/unfollow
@@ -89,7 +86,8 @@ class PostDetailView(DetailView):
                     current_user.save()
                 except:
                     return redirect(self.request.path_info)
-                '''
+                """
+                
                 
                 comment_form = CommentForm(self.request.POST)
                 if comment_form.is_valid():
@@ -137,6 +135,17 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
     template_name = 'blog/post_delete.html'
     success_url = reverse_lazy('home')
+    
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return self.model.objects.all()
+        return Post.objects.filter(author=self.request.user)
+    
+    # def test_func(self):
+    #     post = get_object_or_404(Post, slug=self.kwargs['slug'])
+    #     if self.request.user.profile == post.author:
+    #         return True
+    #     return False
 
 class UserPostListView(ListView):
     model = Post
@@ -201,6 +210,43 @@ class OneStatusPostListView(ListView):
         return context
     
     
+class CommentUpdateView(LoginRequiredMixin, UpdateView):
+    model = Comment
+    fields = ['content']  # What needs to appear in the page for update
+    template_name = 'blog/comment_update.html'  # <app>/<model>_<viewtype>.html
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        data = super().get_context_data(**kwargs)
+        post = get_object_or_404(Post, slug=self.kwargs['slug'])
+        comment = get_object_or_404(Comment, post=post, pk=self.kwargs['pk'])
+        data['post'] = post
+        data['comment'] = comment
+        return data
+    
+
+    def form_invalid(self, form):
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        post = Post.objects.get(slug=self.object.post.slug)
+        return post.get_absolute_url()
+
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'  # <app>/<model>_<viewtype>.html
+    
+    def get_success_url(self):
+        post = Post.objects.get(slug=self.object.post.slug)
+        return post.get_absolute_url()
+    
+    def test_func(self):
+        comment = self.get_object()
+        if self.request.user.profile == comment.author or self.request.user.is_superuser:
+            return True
+        return False
+    
+    
 def is_ajax(request):
     return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
@@ -211,6 +257,17 @@ def PostLike(request, slug):
         post.likes.remove(request.user.profile)
     else:
         post.likes.add(request.user.profile)
+    return redirect(request.META.get("HTTP_REFERER"))
+
+@login_required
+def CommentLike(request, slug, pk):
+    post = get_object_or_404(Post, slug=slug)
+    comment = get_object_or_404(Comment, post=post, pk=pk)
+    
+    if comment.likes.filter(id=request.user.profile.id).exists():
+        comment.likes.remove(request.user.profile)
+    else:
+        comment.likes.add(request.user.profile)
     return redirect(request.META.get("HTTP_REFERER"))
 
 @login_required
