@@ -1,0 +1,18 @@
+{% if post.likes.count %}
+    {% if request.user.profile in post.likes.all %}
+        <a href="{% url 'post_like' post.slug %}">
+            <i class="bi bi-heart-fill me-1" style="color:red"></i>
+        </a>
+    {% else %}
+        <a href="{% url 'post_like' post.slug %}">
+            <i class="bi bi-heart-fill me-1" style="color:gray"></i>
+        </a>
+    {% endif %}
+    <strong class="text-dark me-2">
+        {{ post.likes.count }}
+    </strong>
+{% else %}
+    <a href="{% url 'post_like' post.slug %}">
+        <i class="bi bi-heart me-3" style="color:black"></i>
+    </a>
+{% endif %}

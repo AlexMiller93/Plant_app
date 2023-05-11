@@ -1,69 +1,149 @@
 <h6 class="mx-0">Comments:</h6>
-<div class="">
-    {% for comment in comments %}
-        <div class="card border-1 border-secondary p-2 m-2">
-            
-            <!-- For non replied comments (is_parent)-->
-            {% if comment.is_parent %}
+<div class="row">
 
-                <!-- 1 row comment info -->
-                <div class="row m-1">
-                    <!-- Author's avatar -->
-                    <div class="col-auto px-0">
-                        <a href="{% url 'user_profile' comment.author.user.profile.pk %}">
-                        <img src="{{ comment.author.user.profile.avatar.url }}" 
-                        class="rounded-circle article-img" 
-                            height="50px" width="50px"></a>
+{% for comment in comments %}
+    <div class="card border-1 border-secondary m-2 p-2">
+        
+        <!-- For non replied comments -->
+        {% if comment.is_parent %}
+
+            <!-- 1 row comment info -->
+            <div class="row m-2">
+
+                <!-- Author's avatar -->
+                <div class="col-auto px-0">
+                    <a href="{% url 'user_profile' comment.author.user.profile.pk %}">
+                    <img src="{{ comment.author.user.profile.avatar.url }}" 
+                    class="rounded-circle article-img" 
+                        height="50px" width="50px"></a>
+                </div>
+                
+                <!-- Comment attributes-->
+                <div class="col">
+                    <div class="row">
+                        <h6>
+                            <i class="bi bi-reply"></i>
+                            <b>{{ comment.author | capfirst }}: </b>{{ comment.content }}
+                            · <i>in {{ comment.created_on | timesince }}</i>
+                            {% if comment.created_on != comment.updated_on %}
+                            · <em style="color: #03f;">last update in 
+                                <small>{{ comment.updated_on | time:"H\h i\m"}}</small>
+                            </em>
+                            {% endif %}
+                        </h6> 
+                        <p class="my-0">to answer from 
+                            <a href="{% url 'user_profile' post.author.user.profile.pk %}">
+                                @{{ post.author | lower }}
+                            </a> 
+                        </p>
                     </div>
-                        
+                </div>
+
+                <!-- Icons for comment - like, edit, delete-->
+                <div class="col-auto px-0">
+                    {% if request.user.is_authenticated %}
+                        {% if comment.likes.count %}
+                            {% if request.user.profile in comment.likes.all %}
+                                <a href="{% url 'comment_like' post.slug comment.pk %}">
+                                    <i class="bi bi-heart-fill me-1" style="color:red"></i>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'comment_like' post.slug comment.pk %}">
+                                    <i class="bi bi-heart-fill me-1" style="color:gray"></i>
+                                </a>
+                            {% endif %}{{ comment.likes.count }}
+                        {% else %}
+                            <a href="{% url 'comment_like' post.slug comment.pk %}">
+                                <i class="bi bi-heart me-1" style="color:black"></i>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if request.user == comment.author.user or request.user.is_superuser %}
+                        <a href="{% url 'edit_comment' post.slug comment.pk %}">
+                            <i class="fa-solid fa-pen-to-square me-1"></i>
+                        </a>
+                        <a href="{% url 'delete_comment' post.slug comment.pk %}">
+                            <i class="fa-solid fa-trash-can me-1"></i>
+                        </a>
+                    {% endif %}
+                    <i class="bi bi-three-dots-vertical"></i>
+                </div>
+            </div>
+
+            <!-- 2 row Comment form -->
+            <div class="row">
+                <!-- For nested comments - replyes -->
+                <form action=" " method="POST" id="main_form" class="comment_form">
+                    <div class="">
+                        <label for="comment">&nbsp;Reply here: </label>
+                            {{ comment_form.content }}
+                            <input type="hidden" value="{{ comment.pk }}" name="reply"> 
+                            {% csrf_token %} 
+                            <input type="submit" value="Post" class="btn btn-outline-primary btn-sm">
+                    </div>
+                </form>
+            </div>
+        {% endif %} 
+        
+        <!-- For replied comments (child comments)-->
+        {% if comment.children %}
+            {% for replies in comment.replies.all %}
+                <div class="row m-2">
+                    &nbsp; &nbsp; &nbsp; &nbsp;
+
+                    <div class="col-auto px-0">
+                        <a href="{% url 'user_profile' replies.author.user.profile.pk %}">
+                        <img src="{{ replies.author.user.profile.avatar.url }}" 
+                        class="rounded-circle article-img" 
+                            height="40px" width="40px"></a>
+                    </div>
+
                     <div class="col">
-                        <div class="row">
+                        <div class="row px-0">
                             <h6>
-                                <i class="bi bi-reply"></i>
-                                <b>{{ comment.author | capfirst }}: </b>{{ comment.content }}
-                                · <i>in {{ comment.created_on | timesince  }}</i>
-                                {% if comment.created_on != comment.updated_on %}
+                                <i class="bi bi-reply-fill"></i>
+                                <b>{{ replies.author | capfirst }}: </b> {{ replies.content }}
+                                ·<i> in {{ replies.created_on | timesince }}</i>
+                                    {% if replies.created_on != replies.updated_on %}
                                 · <em style="color: #03f;">last update in 
-                                    <small>{{ comment.updated_on | time:"H\h i\m"}}</small>
+                                    <small>{{ replies.updated_on | time:"H\h i\m"}}</small>
                                 </em>
                                 {% endif %}
-                            </h6> 
+                            </h6>
                             <p class="my-0">to answer from 
-                                <a href="{% url 'user_profile' post.author.user.profile.pk %}">
-                                    @{{ post.author | lower }}
+                                <a href="{% url 'user_profile' comment.author.user.profile.pk %}">
+                                    @{{ comment.author | lower }}
                                 </a> 
                             </p>
                         </div>
-                        <div class="row">
-                        </div>
                     </div>
 
-                    <!-- Icons for comment - like, edit, delete-->
+                    <!-- Icons for replies - like, edit, delete-->
                     <div class="col-auto px-0">
                         {% if request.user.is_authenticated %}
-                            {% if comment.likes.count %}
-                                {% if request.user.profile in comment.likes.all %}
-                                    <a href="{% url 'comment_like' post.slug comment.pk %}">
-                                        <i class="bi bi-heart-fill me-1" style="color:red"></i>
+                            {% if replies.likes.count %}
+                                {% if request.user.profile in replies.likes.all %}
+                                    <a href="{% url 'comment_like' post.slug replies.pk %}">
+                                        <i class="bi bi-heart-fill" style="color:red"></i>
                                     </a>
                                 {% else %}
-                                    <a href="{% url 'comment_like' post.slug comment.pk %}">
-                                        <i class="bi bi-heart-fill me-1" style="color:gray"></i>
+                                    <a href="{% url 'comment_like' post.slug replies.pk %}">
+                                        <i class="bi bi-heart-fill" style="color:gray"></i>
                                     </a>
-                                {% endif %}{{ comment.likes.count }}
+                                {% endif %}{{ replies.likes.count }}
                             {% else %}
-                                <a href="{% url 'comment_like' post.slug comment.pk %}">
+                                <a href="{% url 'comment_like' post.slug replies.pk %}">
                                     <i class="bi bi-heart me-1" style="color:black"></i>
                                 </a>
                             {% endif %}
                         {% endif %}
 
-                        {% if request.user == comment.author.user or request.user.is_superuser %}
-                            <a href="{% url 'edit_comment' post.slug comment.pk %}">
+                        {% if request.user == replies.author.user or request.user.is_superuser %}
+                            <a href="{% url 'edit_comment' post.slug replies.pk %}">
                                 <i class="fa-solid fa-pen-to-square me-1"></i>
                             </a>
-
-                            <a href="{% url 'delete_comment' post.slug comment.pk %}">
+                            <a href="{% url 'delete_comment' post.slug replies.pk %}">
                                 <i class="fa-solid fa-trash-can me-1"></i>
                             </a>
 
@@ -71,90 +151,8 @@
                         <i class="bi bi-three-dots-vertical"></i>
                     </div>
                 </div>
-
-                <!-- 2 row Comment form -->
-                <div class="row">
-                    <!-- For nested comments - replyes -->
-                    <form action=" " method="POST" id="main_form" class="comment_form">
-                        <div class="">
-                            &nbsp; &nbsp; &nbsp;<label for="comment">Reply here: </label>
-                                {{ comment_form.content }}
-                                <input type="hidden" value="{{ comment.pk }}" name="reply"> 
-                                {% csrf_token %} 
-                                <input type="submit" value="Post" class="btn btn-outline-primary btn-sm">
-                        </div>
-                    </form>
-                </div>
-            {% endif %} 
-            
-            <!-- For replied comments (child comments)-->
-            {% if comment.children %}
-                {% for replies in comment.replies.all %}
-                    <div class="row m-1">
-                        &nbsp; &nbsp; &nbsp; &nbsp;
-
-                        <div class="col-auto px-0">
-                            <a href="{% url 'user_profile' replies.author.user.profile.pk %}">
-                            <img src="{{ replies.author.user.profile.avatar.url }}" 
-                            class="rounded-circle article-img" 
-                                height="40px" width="40px"></a>
-                        </div>
-
-                        <div class="col">
-                            <div class="row px-0">
-                                <h6>
-                                    <i class="bi bi-reply-fill"></i>
-                                    <b>{{ replies.author | capfirst }}: </b> {{ replies.content }}
-                                    ·<i> in {{ replies.created_on | timesince }}</i>
-                                        {% if replies.created_on != replies.updated_on %}
-                                    · <em style="color: #03f;">last update in 
-                                        <small>{{ replies.updated_on | time:"H\h i\m"}}</small>
-                                    </em>
-                                    {% endif %}
-                                </h6>
-                                <p class="my-0">to answer from 
-                                    <a href="{% url 'user_profile' comment.author.user.profile.pk %}">
-                                        @{{ comment.author | lower }}
-                                    </a> 
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Icons for replies - like, edit, delete-->
-                        <div class="col-auto px-0">
-                            {% if request.user.is_authenticated %}
-                                {% if replies.likes.count %}
-                                    {% if request.user.profile in replies.likes.all %}
-                                        <a href="{% url 'comment_like' post.slug replies.pk %}">
-                                            <i class="bi bi-heart-fill" style="color:red"></i>
-                                        </a>
-                                    {% else %}
-                                        <a href="{% url 'comment_like' post.slug replies.pk %}">
-                                            <i class="bi bi-heart-fill" style="color:gray"></i>
-                                        </a>
-                                    {% endif %}{{ replies.likes.count }}
-                                {% else %}
-                                    <a href="{% url 'comment_like' post.slug replies.pk %}">
-                                        <i class="bi bi-heart me-1" style="color:black"></i>
-                                    </a>
-                                {% endif %}
-                            {% endif %}
-
-                            {% if request.user == replies.author.user or request.user.is_superuser %}
-                                <a href="{% url 'edit_comment' post.slug replies.pk %}">
-                                    <i class="fa-solid fa-pen-to-square me-1"></i>
-                                </a>
-                                <a href="{% url 'delete_comment' post.slug replies.pk %}">
-                                    <i class="fa-solid fa-trash-can me-1"></i>
-                                </a>
-
-                            {% endif %}
-                            <i class="bi bi-three-dots-vertical"></i>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-
-    {% endfor %}
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endfor %}
 </div>

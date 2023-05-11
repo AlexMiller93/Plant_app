@@ -1,0 +1,27 @@
+{% if request.user.profile != post.author %}
+    {% if post.share.count %}
+        {% if request.user.profile in post.share.all %}
+            <a href="{% url 'share_post' post.slug %}">
+                <i class="fa-solid fa-retweet" style="color:green"></i>
+            </a>
+        {% else %}
+            <a href="{% url 'share_post' post.slug %}">
+                <i class="fa-solid fa-retweet me-1"></i>
+            </a>
+        {% endif %}
+        <strong class="text-dark me-2">
+            {{ post.share.count }}
+        </strong>
+    {% else %}
+        <a href="{% url 'share_post' post.slug %}">
+            <i class="fa-solid fa-retweet me-3"></i>
+        </a>
+    {% endif %}
+
+{% else %}
+    {% if post.share.count %}
+        <i class="fa-solid fa-retweet"></i>{{ post.share.count }}
+    {% else %}
+        <i class="fa-solid fa-retweet"></i>
+    {% endif %}
+{% endif %}

@@ -30,11 +30,13 @@ class ProfileView(LoginRequiredMixin, DetailView):
         profile = get_object_or_404(Profile, id=self.kwargs['pk'])
         
         posts = Post.objects.filter(author=profile)
+        shared_posts = Post.objects.filter(share=profile)
         comments = Comment.objects.filter(author=profile).exclude(reply=None)
         replies = Comment.objects.filter(author=profile)
         
         context['profile'] = profile
         context['posts'] = posts
+        context['shared_posts'] = shared_posts
         context['comments'] = comments
         context['replies'] = replies
         

@@ -1,6 +1,7 @@
 <article class="card border-success rounded-4 mb-3">
     <div class="card-body">
-        <!-- Share info if user shared post-->
+
+        <!-- 1 row Share info if user shared post-->
         <div class="row mb-2">
             <div class="col-auto">
                 {% if request.user.profile in post.share.all %}
@@ -11,7 +12,9 @@
             </div>
         </div>
 
+        <!-- 2 row - Avatar, Post info -->
         <div class="row">
+            <!-- Avatar-->
             <div class="col-auto mx-2">
                 <a href="{% url 'user_profile' post.author.user.profile.pk %}">
                 <img src="{{ post.author.avatar.url }}" 
@@ -19,7 +22,8 @@
                     height="50px" width="50px">
                 </a>
             </div>
-                
+            
+            <!-- Post attributes -->
             <div class="col-auto px-0">
                 <h6 class="card-title">
                     <a href="{% url 'post_detail' post.slug %}">
@@ -44,106 +48,85 @@
                     {% endif %}
                 </p>
             </div>
+        </div>
 
-            <p class="card-text">{{ post.content| safe | truncatewords:10}}</p>
+        <!-- 3 row Post content -->
+        <p class="card-text">{{ post.content| safe | truncatewords:10}}</p>
 
-            <!-- LIKES -->
-            <div class="row text-secondary justify-content-between">
-                <div class="col-auto">
-                    {% if post.likes.count %}
-                        {% if request.user.profile in post.likes.all %}
-                            <a href="{% url 'post_like' post.slug %}">
-                                <i class="bi bi-heart-fill me-1" style="color:red"></i>
+        <!-- 4 row Post info -->
+        <div class="row text-secondary justify-content-between">
+
+            <!-- Like system and count -->
+            <div class="col-auto">
+                {% include 'blog/add/post_likes.html' %}
+            </div>
+
+            <!-- Comments count if exist -->
+            <div class="col-auto">
+                {% if post.get_comments %}
+                    <i class="bi bi-chat-fill me-2"></i>
+                    <strong class="text-dark me-2">{{ post.get_comments.count }}</strong>
+                {% else %}
+                    <i class="bi bi-chat"></i>
+                {% endif %} 
+            </div>
+
+            <!-- Replies  count if exist-->
+            <div class="col-auto">
+                {% if post.get_replies %}
+                    <i class="bi bi-reply-all-fill me-2"></i>
+                    <strong class="text-dark me-2">{{ post.get_replies.count }}</strong>
+                {% else %}
+                    <i class="bi bi-reply-all"></i>
+                {% endif %}
+            </div>
+
+            <!-- Share system and count if exist -->
+            <div class="col-auto">
+                {% include 'blog/add/post_share.html' %}
+            </div>
+
+            <!-- Favorites system and count if exist -->
+            <div class="col-auto">
+                {% if request.user.profile != post.author %}
+                    {% if post.favorites.count %}
+                        <!-- Add post to favorites -->
+                        {% if request.user.profile in post.favorites.all %}
+                            <a href="{% url 'add_post_favorites' post.slug %}">
+                                <i class="bi bi-bookmark-fill me-1"></i>
                             </a>
-                        {% else %}
-                            <a href="{% url 'post_like' post.slug %}">
-                                <i class="bi bi-heart-fill me-1" style="color:gray"></i>
-                            </a>
-                        {% endif %}{{ post.likes.count }}
-                    {% else %}
-                        <a href="{% url 'post_like' post.slug %}">
-                            <i class="bi bi-heart me-3" style="color:black"></i>
-                        </a>
-                    {% endif %}
-
-                </div>
-                <div class="col-auto">
-                    {% if post.get_comments %}
-                        <i class="bi bi-chat-fill me-2"></i>{{ post.get_comments.count }}
-                    {% else %}
-                        <i class="bi bi-chat"></i>
-                        {% endif %} 
-                </div>
-
-                <div class="col-auto">
-                    {% if post.get_replies %}
-                        <i class="bi bi-reply-all-fill me-2"></i>{{ post.get_replies.count }}
-                    {% else %}
-                        <i class="bi bi-reply-all"></i>
-                    {% endif %}
-                </div>
-
-                <div class="col-auto">
-                    {% if request.user.profile != post.author %}
-                        {% if post.share.count %}
-                            {% if request.user.profile in post.share.all %}
-                                <a href="{% url 'share_post' post.slug %}">
-                                    <i class="fa-solid fa-retweet" style="color:green"></i>
-                                </a>
-                            {% else %}
-                                <a href="{% url 'share_post' post.slug %}">
-                                    <i class="fa-solid fa-retweet me-1"></i>
-                                </a>
-                            {% endif %}{{ post.share.count }}
-                        {% else %}
-                            <a href="{% url 'share_post' post.slug %}">
-                                <i class="fa-solid fa-retweet me-3"></i>
-                            </a>
-                        {% endif %}
-
-                    {% else %}
-                        {% if post.share.count %}
-                            <i class="fa-solid fa-retweet"></i>{{ post.share.count }}
-                        {% else %}
-                            <i class="fa-solid fa-retweet"></i>
-                        {% endif %}
-                    {% endif %}
-                </div>
-
-                <div class="col-auto">
-                    {% if request.user.profile != post.author %}
-                        {% if post.favorites.count %}
-                            <!-- Add post to favorites -->
-                            {% if request.user.profile in post.favorites.all %}
-                                <a href="{% url 'add_post_favorites' post.slug %}">
-                                    <i class="bi bi-bookmark-fill me-1"></i>
-                                </a>
-                            {% else %}
-                                <a href="{% url 'add_post_favorites' post.slug %}">
-                                    <i class="bi bi-bookmark me-1" style="color:gray"></i>
-                                </a>
-                            {% endif %} {{ post.favorites.count }}
                         {% else %}
                             <a href="{% url 'add_post_favorites' post.slug %}">
-                                <i class="bi bi-bookmark me-2"></i>
+                                <i class="bi bi-bookmark me-1" style="color:gray"></i>
                             </a>
-                        {% endif %}
+                        {% endif %} 
+                        <strong class="text-dark me-2">
+                            {{ post.favorites.count }}
+                        </strong>
                     {% else %}
-                        {% if post.favorites.count %}
-                            <i class="bi bi-bookmark-fill me-1" style="color:gray"></i>{{ post.favorites.count }}
-                        {% else %}
-                            <i class="bi bi-bookmark me-1" style="color:gray"></i>
-                        {% endif %}
+                        <a href="{% url 'add_post_favorites' post.slug %}">
+                            <i class="bi bi-bookmark me-2"></i>
+                        </a>
                     {% endif %}
-                </div>
+                {% else %}
+                    {% if post.favorites.count %}
+                        <i class="bi bi-bookmark-fill me-1" style="color:gray"></i>{{ post.favorites.count }}
+                    {% else %}
+                        <i class="bi bi-bookmark me-1" style="color:gray"></i>
+                    {% endif %}
+                {% endif %}
+            </div>
 
-                <div class="col-auto">
-                    {% if post.seen_by.count %}
-                        <i class="bi bi-eye-fill me-2"></i>{{ post.seen_by.count }}
-                    {% else %}
-                        <i class="bi bi-eye me-2"></i>
-                    {% endif %}
-                </div>
+            <!-- Count of post visitors if exist -->
+            <div class="col-auto">
+                {% if post.seen_by.count %}
+                    <i class="bi bi-eye-fill me-2"></i>
+                    <strong class="text-dark me-2">
+                        {{ post.seen_by.count }}
+                    </strong>
+                {% else %}
+                    <i class="bi bi-eye me-2"></i>
+                {% endif %}
             </div>
         </div>
     </div>
