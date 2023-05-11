@@ -27,7 +27,7 @@ from users.views import (
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, name="admin"),
     
     path('', include('blog.urls')),
     path('users/', include("django.contrib.auth.urls")),

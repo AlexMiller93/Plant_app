@@ -70,6 +70,10 @@
                         href="{% url 'password_reset' %}">
                         &nbsp;<i class="bi bi-arrow-repeat"></i> Reset Password</a>
                     </li>
+
+                    {% if request.user.is_superuser %}
+                        <li><a class="dropdown-item" href="#"> Admin site</a></li>
+                    {% endif %}
                     <li><a class="dropdown-item" href="#">Some action...</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" 

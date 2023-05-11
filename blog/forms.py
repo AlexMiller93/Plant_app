@@ -29,12 +29,12 @@ class PostEditForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ('content',)
+        fields = ('content', 'reply')
     
         
-        # labels = {
-        #     'content': _(''),
-        # }
+        labels = {
+            'content': _(''),
+        }
         
         widgets = {
             'content': forms.TextInput(attrs={})
@@ -45,9 +45,9 @@ class CommentEditForm(forms.ModelForm):
         model = Comment
         fields = ('content',)
         
-        # labels = {
-        #     'content': _(''),
-        # }
+        labels = {
+            'content': _(''),
+        }
         
         widgets = {
             'content': forms.TextInput(attrs={})

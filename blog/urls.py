@@ -10,11 +10,10 @@ from .views import (
     TagPostListView,
     SearchPostListView,
     OneStatusPostListView,
-    # CommentCreateView,
     CommentUpdateView,
     CommentDeleteView,
     PostLike,
-    PostNote,
+    AddFavorites,
     CommentLike,
     SharePost
     )
@@ -42,9 +41,10 @@ urlpatterns = [
         name='search_posts'),
     path('status_posts/<str:status>/', OneStatusPostListView.as_view(),
         name='status_posts'),
+    path('favorites_posts/<int:pk>', FavoritesPostListView.as_view(), 
+        name='favorites_posts'),
     
-    # path('post/<slug:slug>/add_comment/',
-    #     CommentCreateView.as_view(), name='add_comment'),
+    
     path('post/<slug:slug>/comment/<int:pk>/edit_comment/',
         CommentUpdateView.as_view(), name='edit_comment'),
     path('post/<slug:slug>/comment/<int:pk>/delete_comment/',
@@ -54,7 +54,7 @@ urlpatterns = [
     path('post_like/<slug:slug>/', PostLike, name='post_like'),
     path('comment_like/<slug:slug>/comment/<int:pk>', CommentLike, name='comment_like'),
     
-    path('post_noted/', PostNote, name='change_post_noted'),
+    path('post_favorites/<slug:slug>', AddFavorites, name='add_post_favorites'),
     
     path('post_shared/<slug:slug>', SharePost, name='share_post'),
 ]

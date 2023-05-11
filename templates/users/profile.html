@@ -186,8 +186,12 @@
         <!-- Buttons -->
         <div class="col-2">
             {% if request.user == profile.user %}
-                <a href="{% url 'update_profile' %}" class="btn btn-outline-primary btn-sm">
-                    <i class="bi bi-gear-fill"></i> Edit Profile</a><br>
+                <a href="{% url 'update_profile' %}" 
+                class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-gear-fill"></i> Edit Profile</a><br><br>
+                <a href="{% url 'favorites_posts' profile.pk %}" 
+                class="btn btn-outline-success btn-sm">
+                    <i class="bi bi-stars"></i>Favorites Posts</a><br>
             {% endif %} <br>
             <a href="{% url 'user_posts' profile.pk %}" class="btn btn-outline-info btn-sm">
                 <i class="bi bi-chat-right-text"></i> Show Feed</a>

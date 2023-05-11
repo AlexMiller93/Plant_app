@@ -1,3 +1,4 @@
+from itertools import chain
 from typing import Any, Dict
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -15,7 +16,7 @@ from django.views.generic.edit import (
     UpdateView, 
     DeleteView)
 from django.utils.text import slugify
-from .models import Post, Comment, Share
+from .models import Post, Comment
 from users.models import Profile
 from .forms import PostForm, PostEditForm, CommentForm, CommentEditForm
 
@@ -39,7 +40,7 @@ class HomeView(ListView):
     
 class PostDetailView(DetailView):
     model = Post
-    template_name = "blog/post_detail.html"
+    template_name = "blog/crud/post_detail.html"
     
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -57,12 +58,16 @@ class PostDetailView(DetailView):
         
         # noted functionality
         
+        # share post functionality
+        # profile = Profile.object.get(pk=request.user.profile.id)
+        
         
         # *** working with comments *** 
         comments = Comment.objects.filter(post=self.get_object(), reply=None)
         replies = Comment.objects.exclude(post=self.get_object(), reply=None)
         
         data['comments'] = comments
+        data['replies'] = replies
         data['comment_form'] = CommentForm()
         return data
     
@@ -120,26 +125,30 @@ class PostDetailView(DetailView):
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class= PostForm
-    template_name = "blog/post_create.html"
+    template_name = "blog/crud/post_create.html"
+    success_url = reverse_lazy('home')
     
     def form_valid(self, form):
         form.instance.author = self.request.user.profile
         return super().form_valid(form)
+    
+    # def get_success_url(self):
+    #     return redirect('home')
 
 class PostUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class= PostEditForm
-    template_name = 'blog/post_update.html'
+    template_name = 'blog/crud/post_update.html'
 
 class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
-    template_name = 'blog/post_delete.html'
+    template_name = 'blog/crud/post_delete.html'
     success_url = reverse_lazy('home')
     
     def get_queryset(self):
         if self.request.user.is_staff:
             return self.model.objects.all()
-        return Post.objects.filter(author=self.request.user)
+        return Post.objects.filter(author=self.request.user.profile)
     
     # def test_func(self):
     #     post = get_object_or_404(Post, slug=self.kwargs['slug'])
@@ -149,7 +158,7 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
 
 class UserPostListView(ListView):
     model = Post
-    template_name = 'blog/user_post_list.html'
+    template_name = 'blog/posts/user_post_list.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -157,15 +166,18 @@ class UserPostListView(ListView):
         profile = get_object_or_404(Profile, 
             id=self.kwargs['pk'])
         user_posts = Post.objects.filter(
-            author__id = profile.id).order_by('-created_on')
+            author__id = profile.id)
+        shared_posts = Post.objects.filter(
+            share = profile)
         
+        all_posts = list(chain(user_posts, shared_posts))
         context["profile"] = profile
-        context["user_posts"] = user_posts
+        context["user_posts"] = all_posts
         return context
 
 class TagPostListView(ListView):
     model = Post
-    template_name = 'blog/tag_post_list.html'
+    template_name = 'blog/posts/tag_post_list.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -177,7 +189,7 @@ class TagPostListView(ListView):
     
 class SearchPostListView(ListView):
     model = Post
-    template_name = 'blog/search_post_list.html'
+    template_name = 'blog/posts/search_post_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -196,7 +208,7 @@ class SearchPostListView(ListView):
 
 class OneStatusPostListView(ListView):
     model = Post
-    template_name = 'blog/status_post_list.html'
+    template_name = 'blog/posts/status_post_list.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -209,11 +221,20 @@ class OneStatusPostListView(ListView):
         context["status"] = status
         return context
     
+class FavoritesPostListView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = 'blog/posts/favorites_post_list.html'
+    
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        data = super().get_context_data(**kwargs)
+        profile = get_object_or_404(Profile, id=self.kwargs['pk'])
+        data["favor_posts"] = Post.objects.filter(favorites=profile)
+        return data
     
 class CommentUpdateView(LoginRequiredMixin, UpdateView):
     model = Comment
     fields = ['content']  # What needs to appear in the page for update
-    template_name = 'blog/comment_update.html'  # <app>/<model>_<viewtype>.html
+    template_name = 'blog/comment/comment_update.html'  # <app>/<model>_<viewtype>.html
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         data = super().get_context_data(**kwargs)
@@ -223,7 +244,6 @@ class CommentUpdateView(LoginRequiredMixin, UpdateView):
         data['comment'] = comment
         return data
     
-
     def form_invalid(self, form):
         return HttpResponseRedirect(self.get_success_url())
 
@@ -231,10 +251,9 @@ class CommentUpdateView(LoginRequiredMixin, UpdateView):
         post = Post.objects.get(slug=self.object.post.slug)
         return post.get_absolute_url()
 
-
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
-    template_name = 'blog/comment_confirm_delete.html'  # <app>/<model>_<viewtype>.html
+    template_name = 'blog/comment/comment_confirm_delete.html'  # <app>/<model>_<viewtype>.html
     
     def get_success_url(self):
         post = Post.objects.get(slug=self.object.post.slug)
@@ -246,10 +265,6 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         return False
     
-    
-def is_ajax(request):
-    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
-
 @login_required
 def PostLike(request, slug):
     post = get_object_or_404(Post, slug=slug)
@@ -271,29 +286,25 @@ def CommentLike(request, slug, pk):
     return redirect(request.META.get("HTTP_REFERER"))
 
 @login_required
+def AddFavorites(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    if request.user.profile != post.author:
+        if post.favorites.filter(id=request.user.profile.id).exists():
+            post.favorites.remove(request.user.profile)
+        else:
+            post.favorites.add(request.user.profile)
+    return redirect(request.META.get("HTTP_REFERER"))
+
+@login_required
 def SharePost(request, slug):
     post = get_object_or_404(Post, slug=slug)
-    shared = False
-    shared_post = get_object_or_404(Share, post=post)
-        
-    if shared_post:
-        pass
-    else:
-        pass
-    
+    if request.user.profile != post.author:
+        if post.share.filter(id=request.user.profile.id).exists():
+            post.share.remove(request.user.profile)
+        else:
+            post.share.add(request.user.profile)
+    return redirect(request.META.get("HTTP_REFERER"))
 
-def PostNote(request):
-    post_noted = request.GET.get('post_noted', False)
-    post = get_object_or_404(Post, slug=request.POST.get('post_slug'))
-    
-    try:
-        post.post_noted = post_noted
-        post.save()
-        return JsonResponse({"noted": True})
-    except Exception as e:
-        return JsonResponse({"noted": False})
-    return JsonResponse(data)
     
     
-
 # https://www.youtube.com/watch?v=PXqRPqDjDgc

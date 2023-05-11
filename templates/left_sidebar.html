@@ -6,14 +6,16 @@
 {% if profiles %}
     {% for profile in profiles %}
         <div class="row g-2">
-            <div class="col-4 px-2">
+            <div class="col-3 ps-2">
                 <a href="{% url 'user_profile' profile.pk %}">
                 <img src="{{ profile.avatar.url }}" 
                     class="rounded-circle article-img" 
                     height="40px" width="40px"></a>
             </div>
-            <div class="col-4 px-2">
+            <div class="col-4 pe-1">
                 <p>@{{ profile.user.username | lower }}</p>
+            </div>
+            <div class="col-5">
             </div>
         </div>
         <br>

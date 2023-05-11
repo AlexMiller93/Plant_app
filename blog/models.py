@@ -31,6 +31,10 @@ class Post(models.Model):
     seen_by = models.ManyToManyField(
         settings.AUTH_USER_MODEL
         )
+    favorites = models.ManyToManyField(
+        Profile, related_name="favorites", default=None, blank=True)
+    share = models.ManyToManyField(
+        Profile, related_name="shared_post", default=None, blank=True)
     
     class Meta:
         verbose_name = "post"
@@ -84,8 +88,6 @@ class Post(models.Model):
         
         return generated_slug
     
-class Share(Post):
-    post = models.ForeignKey(Post, related_name="shared_post", on_delete=models.CASCADE)
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name="comments", on_delete=models.CASCADE)

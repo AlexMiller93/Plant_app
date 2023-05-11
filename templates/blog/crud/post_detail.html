@@ -50,6 +50,7 @@
 
                 <!-- Edit/ delete post and other icons -->
                 <div class="col-auto my-2">
+
                     <!-- Follow system -->
                     <form action="" method="post">
                         {% csrf_token %}
@@ -80,12 +81,19 @@
                         </a>
                     {% endif %}
 
-                    <!-- Post noted -->
-                    {% if post.post_noted %}
-                        <i class="bi bi-bookmark-fill"></i>
-                    {% else %}
-                        <i class="bi bi-bookmark"></i>
+                    <!-- Add post to favorites -->
+                    {% if request.user.profile != post.author %}
+                        {% if request.user.profile in post.favorites.all %}
+                            <a href="{% url 'add_post_favorites' post.slug %}">
+                                <i class="bi bi-bookmark-star-fill"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'add_post_favorites' post.slug %}">
+                                <i class="bi bi-bookmark-star"></i>
+                            </a>
+                        {% endif %}
                     {% endif %}
+
                     <i class="bi bi-three-dots-vertical"></i>
                 </div>
 
@@ -123,25 +131,60 @@
 
                     
 
-                    {% if comments %}
+                    {% if post.get_comments %}
                         <i class="bi bi-chat-fill me-1"></i>
                         <strong class="text-dark me-2">
-                            {{ comments.count }}
+                            {{ post.get_comments.count }}
                         </strong>
                     {% else %}
                         <i class="bi bi-chat me-3"></i>
                     {% endif %}
                     
-                    {% if replies %}
+                    {% if post.get_replies %}
                         <i class="bi bi-reply-all-fill me-1"></i>
                         <strong class="text-dark me-2">
-                            {{ replies.count }}
+                            {{ post.get_replies.count }}
                         </strong>
                     {% else %}
                         <i class="bi bi-reply-all me-3"></i>
                     {% endif %}
 
-                    <i class="fa-solid fa-retweet me-3"></i>
+                    {% if request.user.profile != post.author %}
+                        {% if post.share.count %}
+                            {% if request.user.profile in post.share.all %}
+                                <a href="{% url 'share_post' post.slug %}">
+                                    <i class="fa-solid fa-retweet" style="color:green"></i>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'share_post' post.slug %}">
+                                    <i class="fa-solid fa-retweet" style="color:black"></i>
+                                </a>
+                            {% endif %}
+                            <strong class="text-dark me-2">
+                                {{ post.share.count }}
+                            </strong>
+                        {% else %}
+                            <a href="{% url 'share_post' post.slug %}">
+                                <i class="fa-solid fa-retweet me-3"></i>
+                            </a>
+                        {% endif %}
+
+                    {% else %}
+                        {% if post.share.count %}
+                            <i class="fa-solid fa-retweet" style="color:black"></i>{{ post.share.count }}
+                        {% else %}
+                            <i class="fa-solid fa-retweet me-3"></i>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if post.favorites.count %}
+                        <i class="bi bi-bookmark-fill"></i>
+                        <strong class="text-dark me-2">
+                            {{ post.favorites.count }}
+                        </strong>
+                    {% else %}
+                        <i class="bi bi-bookmark me-3"></i>
+                    {% endif %}
 
                     {% if post.seen_by %}
                         <i class="bi bi-eye-fill"></i>
@@ -159,7 +202,7 @@
             <div class="row my-2">
                 <form action="" method="POST">
                     <div class="col-auto">
-                        <label for="comment">Add comment: </label>
+                        <label for="comment">Add comment:&nbsp;</label>
                         {% csrf_token %}
                         {{ comment_form.content }}
                         <input type="submit" value="Post" 
@@ -171,7 +214,7 @@
             <!-- 4 row Render Comments and replies -->
             <div class="row">
                 {% if comments %}
-                    {% include 'blog/comments.html' %}
+                    {% include 'blog/comment/comments.html' %}
                 {% else %}
                     <div class="row">
                         <h6>No one wrote any comment ...</h6>
