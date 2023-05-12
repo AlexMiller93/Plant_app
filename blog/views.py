@@ -3,7 +3,7 @@ from typing import Any, Dict
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.db.models.query import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -230,7 +230,41 @@ class FavoritesPostListView(LoginRequiredMixin, ListView):
         profile = get_object_or_404(Profile, id=self.kwargs['pk'])
         data["favor_posts"] = Post.objects.filter(favorites=profile)
         return data
+
+class MostLikedPostListView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = 'blog/posts/most_liked.html'
+    paginate_by = 3
     
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        data = super().get_context_data(**kwargs)
+        data["most_liked_posts"] = Post.objects.annotate(
+                like_count=Count('likes')).order_by('-like_count')
+        return data
+    
+class MostCommentedPostListView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = 'blog/posts/most_commented.html'
+    paginate_by = 3
+    
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        data = super().get_context_data(**kwargs)
+        data["most_commented_posts"] = Post.objects.annotate(
+                comment_count=Count('comments')).order_by('-comment_count')
+        return data
+    
+class ChangeOrderPostListView(ListView):
+    model = Post
+    template_name = 'blog/home.html'
+    context_object_name = 'posts'
+    paginate_by = 3
+    
+    def get_context_data(self,  **kwargs):
+        context = super().get_context_data(**kwargs)
+        posts = Post.objects.order_by('created_on')
+        context["posts"] = posts
+        return context
+
 class CommentUpdateView(LoginRequiredMixin, UpdateView):
     model = Comment
     fields = ['content']  # What needs to appear in the page for update

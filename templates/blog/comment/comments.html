@@ -2,7 +2,7 @@
 <div class="row">
 
 {% for comment in comments %}
-    <div class="card border-1 border-secondary m-2 p-2">
+    <div class="card border-1 shadow border-secondary m-2 p-2">
         
         <!-- For non replied comments -->
         {% if comment.is_parent %}
@@ -21,16 +21,24 @@
                 <!-- Comment attributes-->
                 <div class="col">
                     <div class="row">
-                        <h6>
+                        <p class="m-0">
                             <i class="bi bi-reply"></i>
-                            <b>{{ comment.author | capfirst }}: </b>{{ comment.content }}
-                            · <i>in {{ comment.created_on | timesince }}</i>
+                            <strong>{{ comment.author | capfirst }}: </strong>
+                            <b>{{ comment.content }}</b> -
+                            <small>
+                                in {{ comment.created_on | time:"H:i" }} ·
+                                {{ comment.created_on | date:"d M y"}} ·
+                                {{ comment.created_on | date:"D"}}
+                            </small>
                             {% if comment.created_on != comment.updated_on %}
-                            · <em style="color: #03f;">last update in 
-                                <small>{{ comment.updated_on | time:"H\h i\m"}}</small>
-                            </em>
+                            · <i style="color: #03f;">
+                                last update in 
+                                <small>
+                                    {{ comment.updated_on | timesince}}
+                                </small>
+                            </i>
                             {% endif %}
-                        </h6> 
+                        </p> 
                         <p class="my-0">to answer from 
                             <a href="{% url 'user_profile' post.author.user.profile.pk %}">
                                 @{{ post.author | lower }}
@@ -101,16 +109,21 @@
 
                     <div class="col">
                         <div class="row px-0">
-                            <h6>
+                            <p class="m-0">
                                 <i class="bi bi-reply-fill"></i>
-                                <b>{{ replies.author | capfirst }}: </b> {{ replies.content }}
-                                ·<i> in {{ replies.created_on | timesince }}</i>
+                                <strong>{{ replies.author | capfirst }}: </strong>
+                                <b>{{ replies.content }}</b>
+                                
+                                ·<small> in {{ replies.created_on | timesince }}</small>
                                     {% if replies.created_on != replies.updated_on %}
-                                · <em style="color: #03f;">last update in 
-                                    <small>{{ replies.updated_on | time:"H\h i\m"}}</small>
-                                </em>
+                                · <i style="color: #03f;">
+                                    last update in 
+                                    <small>
+                                        {{ replies.updated_on | timesince }}
+                                    </small>
+                                </i>
                                 {% endif %}
-                            </h6>
+                            </p>
                             <p class="my-0">to answer from 
                                 <a href="{% url 'user_profile' comment.author.user.profile.pk %}">
                                     @{{ comment.author | lower }}

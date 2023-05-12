@@ -1,4 +1,4 @@
-<article class="card border-success rounded-4 mb-3">
+<article class="card border-success shadow rounded-4 mb-3">
     <div class="card-body">
 
         <!-- 1 row Share info if user shared post-->
@@ -42,12 +42,16 @@
                             {{ post.author.user_status }}
                         </span>
                     </a> · 
-                    <i>{{ post.created_on.date }}</i>
+                    <i>
+                        {{ post.created_on | time:"H:i" }} ·
+                        {{ post.created_on | date:"d M Y" }} 
+                    </i>
                     {% if post.created_on != post.updated_on %} 
                     · <small class="text-decoration-none">last updated in {{ post.updated_on | timesince }}</small>
                     {% endif %}
                 </p>
             </div>
+
         </div>
 
         <!-- 3 row Post content -->
@@ -97,7 +101,7 @@
                             </a>
                         {% else %}
                             <a href="{% url 'add_post_favorites' post.slug %}">
-                                <i class="bi bi-bookmark me-1" style="color:gray"></i>
+                                <i class="bi bi-bookmark-fill me-1" style="color:gray"></i>
                             </a>
                         {% endif %} 
                         <strong class="text-dark me-2">

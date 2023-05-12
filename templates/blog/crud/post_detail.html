@@ -36,16 +36,22 @@
 
                 <!-- Post attributes -->
                 <div class="col my-2">
-                    <h5 class="card-title mb-0">{{ post.title }}</h5>
+                    <h5 class="card-title mb-0">{{ post.title }}
+                        {% if post.created_on != post.updated_on %}
+                        <sup>
+                            <i class="bi bi-pencil-fill" style="color:#03f; font-size:15px;"></i>
+                        </sup>
+                            
+                        {% endif %}
+                    </h5>
                     <span class="badge bg-info text-dark">#{{ post.tag }}</span><br>
                     <strong class="fw-bold">{{ post.author | capfirst }}</strong> · 
                     <span class="badge text-bg-success" id="user_status">
                         {{ post.author.user.profile.user_status }}
-                    </span> ·
-                    <i>{{ post.created_on }}</i>
-                    {% if post.created_on != post.updated_on %} 
-                    · <small class="text-decoration-none">last updated in {{ post.updated_on | timesince }}</small>
-                    {% endif %}
+                    </span> · 
+                    <small> 
+                        <i class="bi bi-globe"></i>
+                        {{ post.author.user.profile.location }}</small>
                     
                 </div>
 
@@ -103,8 +109,36 @@
             </div>
             
             <!-- Post content -->
-            <p class="card-text lh-base">
+            <p class="card-text lh-base my-2">
                 {{ post.content }}</p>
+            <hr>
+            
+            <!-- Post date created -->
+            <div class="row">
+                <small>
+                    {{ post.created_on | time:"H:i" }} ·
+                    {{ post.created_on | date:"d M Y"}} ·
+                    {{ post.created_on | date:"D"}}
+                    {% if post.created_on != post.updated_on %} · 
+                    <em style="color: blue;">
+                        last update in {{ post.updated_on | timesince }}
+                    </em>
+                    {% endif %}
+                </small>
+            </div>
+            <hr>
+
+            <!-- Post info -->
+            <div class="row ">
+                <h6 class="m-0">
+                    {{ post.likes.count}} likes ·
+                    {{ post.get_comments.count}} comments ·
+                    {{ post.get_replies.count}} replies ·
+                    {{ post.share.count}} shared ·
+                    {{ post.seen_by.count}} views
+                </h6>
+            </div>
+            <hr>
 
             <!-- 2 row like button, comment and replies count -->
             <div class="row text-secondary justify-content-between">
@@ -189,6 +223,7 @@
     </div>
 
             
+    <br><br>
     <br><br>
 
 

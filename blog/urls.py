@@ -10,6 +10,9 @@ from .views import (
     TagPostListView,
     SearchPostListView,
     OneStatusPostListView,
+    MostLikedPostListView,
+    MostCommentedPostListView,
+    ChangeOrderPostListView,
     CommentUpdateView,
     CommentDeleteView,
     PostLike,
@@ -44,11 +47,16 @@ urlpatterns = [
     path('favorites_posts/<int:pk>', FavoritesPostListView.as_view(), 
         name='favorites_posts'),
     
+    path('most_liked/', MostLikedPostListView.as_view(), name='most_liked_posts'),
+    path('most_commented/', MostCommentedPostListView.as_view(), name='most_commented_posts'),
+    
+    path('reverse_order/', ChangeOrderPostListView.as_view(), name='change_order'),
     
     path('post/<slug:slug>/comment/<int:pk>/edit_comment/',
         CommentUpdateView.as_view(), name='edit_comment'),
     path('post/<slug:slug>/comment/<int:pk>/delete_comment/',
         CommentDeleteView.as_view(), name='delete_comment'),
+    
     
     
     path('post_like/<slug:slug>/', PostLike, name='post_like'),
