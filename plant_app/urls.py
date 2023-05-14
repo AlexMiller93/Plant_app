@@ -30,6 +30,7 @@ urlpatterns = [
     path('admin/', admin.site.urls, name="admin"),
     
     path('', include('blog.urls')),
+    path('plants/', include('plants.urls')),
     path('users/', include("django.contrib.auth.urls")),
     
     path('signup/', SignUpView.as_view(), name='signup'),
