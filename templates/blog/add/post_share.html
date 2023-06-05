@@ -20,7 +20,10 @@
 
 {% else %}
     {% if post.share.count %}
-        <i class="fa-solid fa-retweet"></i>{{ post.share.count }}
+        <i class="fa-solid fa-retweet"></i>
+            <strong class="text-dark me-2">
+                {{ post.share.count }}
+            </strong>
     {% else %}
         <i class="fa-solid fa-retweet"></i>
     {% endif %}

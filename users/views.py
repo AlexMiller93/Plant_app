@@ -83,11 +83,11 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
 
         return self.render_to_response(context)     
 
-def calculate_rating(request):
-    profiles = Profile.objects.all()
-    user_rating = 0
-    for profile in profiles:
-        rating = request.POST['rating']
-        user_rating += rating
-    user_rating = user_rating / Profile.objects.count()
-    return user_rating
+# def calculate_rating(request):
+#     profiles = Profile.objects.all()
+#     user_rating = 0
+#     for profile in profiles:
+#         rating = request.POST['rating']
+#         user_rating += rating
+#     user_rating = user_rating / Profile.objects.count()
+#     return user_rating

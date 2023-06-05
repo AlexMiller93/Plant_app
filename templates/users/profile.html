@@ -10,11 +10,8 @@
 </head>
 
 {% block content %}
-<br>
-<div class="container col-6 ">
-    <a href="{% url 'home' %}">Home</a>
-</div>
-<br>
+<br><br>
+
 <main class="container card border-success col-6 rounded-3 mb-3 p-3">
     
     <!-- 1 row Name of page  -->
@@ -23,13 +20,9 @@
     </div>
 
     <!-- 2 row avatar, profile info and some staticstic -->
-    <div class="row p-2 m-1"
-        style="background: lightgreen;"
-        >
+    <div class="row  p-2 m-1">
         <!-- Avatar -->
-        <div class="col-auto p-1 me-2"
-            style="background: lightblue;"
-            >
+        <div class="col-auto p-1 me-2">
             <img src="{{ profile.avatar.url }}" 
             class="rounded-circle article-img" 
             height="70px" width="70px">
@@ -37,9 +30,8 @@
 
         <!-- Profile info -->
         <div class="col">
-            <div class="row"
-                style="background: pink;"
-                >
+            <!-- Info -->
+            <div class="row">
                 <p>
                     <b>{{ profile.user | capfirst }}</b> ·
                     <a href="{% url 'user_profile' user.profile.pk %}"
@@ -63,10 +55,10 @@
                 </p>
             </div>
 
+            <hr class="m-0">
+
             <!-- Stats -->
-            <div class="row row-cols-4 text-center justify-content-between"
-                style="background: yellow;"
-                >
+            <div class="row row-cols-4 text-center justify-content-between">
                 <div class="col-auto">
                     <b>Posts</b><br>
                     {{ posts.count }}
@@ -99,39 +91,82 @@
             <form action="" method="post">
                 {% csrf_token %}
                 {% if profile in user.profile.follows.all %}
-                    <button class="btn btn-outline-secondary" 
+                    <button class="btn btn-outline-secondary btn-sm" 
                         name="follow" value="Unfollow" type="submit"
                         data-bs-toggle="tooltip" data-bs-placement="top"
                         data-bs-custom-class="custom-tooltip" data-bs-title="Unfollow @{{ profile.user }}">
                             - Unfollow
                     </button>
                 {% else %}
-                    <button class="btn btn-outline-success" 
+                    <button class="btn btn-outline-success btn-sm" 
                         name="follow" value="Follow" type="submit"
                         data-bs-toggle="tooltip" data-bs-placement="top" 
                         data-bs-custom-class="custom-tooltip" data-bs-title="Follow @{{ profile.user }}">
                             + Follow 
                     </button>
                 {% endif %}
-            </form>
-            {% comment %} {% if request.user != profile.user %}
-                <label for="rating">Pick user rating</label><br>
-                <input type="number" name="rating" 
-                    id="rating_id" step=1 min=1 max=5>
-            {% endif %} <br>
-            <b>Rating: </b>{{ profile.rating }} {% endcomment %}
+            </form><br>
+
+            <!-- Buttons,  Profile options - dropdown-->
+            <div class="dropdown">
+                <button class="btn btn-outline-info btn-sm dropdown-toggle dropend" 
+                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Profile options
+                </button>
+                <ul class="dropdown-menu">
+                    {% if request.user == profile.user %}
+                        <li>
+                            <a href="{% url 'user_posts' profile.pk %}" 
+                                class="dropdown-item">
+                                <i class="bi bi-chat-right-text"></i> Show Feed
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'favorites_posts' profile.pk %}" 
+                            class="dropdown-item">
+                                <i class="bi bi-stars"></i> Favorites Posts
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        
+                        <li>
+                            <a href="{% url 'favorites_plants' profile.pk %}" 
+                                class="dropdown-item">
+                                <i class="ti ti-star me-1" style="color:red"></i>
+                                Favorites Plants
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a href="{% url 'update_profile' %}" 
+                            class="dropdown-item">
+                                <i class="bi bi-gear-fill"></i> Edit Profile
+                            </a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{% url 'user_plants' profile.pk %}" 
+                                class="dropdown-item">
+                                <i class="ti ti-plant"></i> Show Plants
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+
         </div>
 
-        <!-- Profile icons -->
+        <!-- Profile additional functions -->
         <div class="col-auto">
             <i class="bi bi-three-dots-vertical"></i>
         </div>
     </div>
+
     
-    
-    <div class="row p-2 m-1 justify-content-between">
+    <div class="row p-2 m-1 justify-content-between g-2">
         <!-- User attributes-->
-        <div class="col-3 card border-2 rounded-2">
+        <div class="col-3 card border-1 rounded-2 p-3">
+            <b class="text-center">User settings</b>
             <p>Username: {{ profile.user.username }}</p>
             <p>First name: {{ profile.user.first_name }}</p>
             <p>Last name: {{ profile.user.last_name }}</p>
@@ -139,7 +174,8 @@
         </div>
         
         <!-- Profile attributes-->
-        <div class="col-auto card border-2 rounded-2">
+        <div class="col-3 card border-1 rounded-2 p-3">
+            <b class="text-center">Profile settings</b>
             <p><i class="bi bi-card-text"></i> 
                 {{ profile.bio }}</p>
             <p><i class="bi bi-geo-alt-fill"></i> 
@@ -151,56 +187,55 @@
         </div>
         
         <!-- Follow info -->
-        <div class="col-auto card border-2 rounded-2">
+        <div class="col-auto">
+            <div class="dropdown">
+                <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Followers:
+                </button>
+                <ul class="dropdown-menu">
+                    {% for following in profile.follows.all %}
+                        <a href="{% url 'user_profile' following.user.id %}"
+                            class="dropdown-item link-offset-1">
+                            @{{ following | lower }}</a>
 
-            <strong>Followers:</strong>
-            {% for following in profile.follows.all %}
-                <a href="{% url 'user_profile' following.user.id %}"
-                    class="link-offset-1">
-                    @{{ following | lower }}</a>
+                    {% empty %}
+                        {% if request.user == profile.user %}
+                            <p class="dropdown-item fst-normal">
+                                Oops! You haven't followed anyone.
+                            </p>
+                        {% else %}
+                            <p>{{ profile.user.username | capfirst }}'s profile hasn't followed by anybody.</p>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
 
-            {% empty %}
-                {% if request.user == profile.user %}
-                    <p class="fst-normal">
-                        Oops! You haven't followed anyone.
-                    </p>
-                {% else %}
-                    <p>{{ profile.user.username | capfirst }}'s profile hasn't followed by anybody.</p>
-                {% endif %}
-            {% endfor %}<br>
-    
-            <strong>Followed by:</strong>
-            {% for following in profile.followed_by.all %}
-                <a href="{% url 'user_profile' following.user.id %}"
-                    class="link-offset-1">
-                    @{{ following | lower }}</a>
+            </div>
+            <br><br>
 
-            {% empty %}
-                {% if request.user == profile.user %}
-                <p class="fst-normal">
-                    Oops! You haven't followed by somebody.
-                </p>
-                {% else %}
-                    <p>{{ profile.user.username | capfirst }} don't follow anybody.</p>
-                {% endif %}
-            {% endfor %}<br>
-        </div>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Followed by:
+                </button>
+                <ul class="dropdown-menu">
+                    {% for following in profile.followed_by.all %}
+                        <a href="{% url 'user_profile' following.user.id %}"
+                            class="dropdown-item link-offset-1">
+                            @{{ following | lower }}
+                        </a>
 
-        <!-- Buttons -->
-        <div class="col-2">
-            {% if request.user == profile.user %}
-                <a href="{% url 'update_profile' %}" 
-                class="btn btn-outline-primary btn-sm">
-                    <i class="bi bi-gear-fill"></i> Edit Profile</a><br><br>
-                <a href="{% url 'favorites_posts' profile.pk %}" 
-                class="btn btn-outline-success btn-sm">
-                    <i class="bi bi-stars"></i>Favorites Posts</a><br>
-            {% endif %} <br>
-            <a href="{% url 'user_posts' profile.pk %}" class="btn btn-outline-info btn-sm">
-                <i class="bi bi-chat-right-text"></i> Show Feed</a>
+                    {% empty %}
+                        {% if request.user == profile.user %}
+                            <p class="dropdown-item fst-normal">
+                                Oops! You haven't followed by somebody.
+                            </p>
+                        {% else %}
+                            <p>{{ profile.user.username | capfirst }} don't follow anybody.</p>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
-
 
 </main>
 <br><br><br>

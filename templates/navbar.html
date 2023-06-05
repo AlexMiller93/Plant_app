@@ -20,28 +20,33 @@
                 </li>
                 
                 {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" 
-                    href="{% url 'user_profile' user.profile.pk %}">
-                    &nbsp;<i class="bi bi-person-circle"></i> Profile</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" 
-                    href="{% url 'logout' %}">
-                    &nbsp;<i class="bi bi-box-arrow-left"></i> Logout</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" 
+                        href="{% url 'user_plants' user.profile.pk %}">
+                        &nbsp;<i class="ti ti-plant"></i> My plants</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" 
+                        href="{% url 'user_profile' user.profile.pk %}">
+                        &nbsp;<i class="bi bi-person-circle"></i> Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" 
+                        href="{% url 'logout' %}">
+                        &nbsp;<i class="bi bi-box-arrow-left"></i> Logout</a>
+                    </li>
 
                 {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" 
-                    href="{% url 'login' %}">
-                    &nbsp;<i class="bi bi-box-arrow-right"></i> Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" 
-                    href="{% url 'signup' %}">
-                    &nbsp;<i class="bi bi-person-plus-fill"></i> Sign Up</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" 
+                        href="{% url 'login' %}">
+                        &nbsp;<i class="bi bi-box-arrow-right"></i> Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" 
+                        href="{% url 'signup' %}">
+                        &nbsp;<i class="bi bi-person-plus-fill"></i> Sign Up</a>
+                    </li>
                 {% endif %}
             </ul>
             

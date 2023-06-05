@@ -15,16 +15,73 @@
         <div class="col-sm-8 col-lg-6 ">
             <h5 class="text-center">Feed</h5>
             <hr>
-            <div class="pb-0">
+            <div class="row">
                 {% if user.is_authenticated %}
                     <p>Hello, {{ request.user | capfirst }}!</p>
-                    <a href="{% url 'post_create' %}" class="btn btn-primary">+Add post</a>
                 {% else %}
-                    
-                        <h6>You're not logged.</h6>
-                        <p>Please, <a href="{% url 'login' %}">login</a> to write posts</p>
+                    <h6>You're not logged.</h6>
+                    <p>Please, <a href="{% url 'login' %}">login</a> to write posts or add plants</p>
                 {% endif %}
-            </div><br>
+            </div>
+
+            <div class="row">
+                <div class="col-auto mb-0">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'post_create' %}" 
+                            class="btn btn-primary"><i class="ti ti-writing"></i>
+                            + Post
+                        </a>
+                        <a href="{% url 'plant_add' %}" 
+                            class="btn btn-success"><i class="ti ti-plant"></i>
+                            + Plant
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!--Empty div to push next div to the end of the row-->
+                <div class="col"></div>
+
+                <!-- Additional post options  -->
+                <div class="col-auto dropdown">
+                    <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        See another post options
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{% url 'most_liked_posts' %}" 
+                            class="btn btn-info btn-sm dropdown-item">
+                            <i class="bi bi-heart-fill me-1" style="color:red"></i> 
+                            Most Liked
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'most_commented_posts' %}" 
+                                class="btn btn-info btn-sm dropdown-item">
+                                <i class="ti ti-message-circle-2-filled" style="color:red"></i> 
+                                Most Commented
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'change_order' %}" 
+                                class="btn btn-info btn-sm dropdown-item">
+                                <i class="ti ti-transform"></i>
+                                Change order
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% if request.user.is_authenticated %}
+                            <li>
+                                <a href="{% url 'feed_plants' request.user.profile.pk %}" 
+                                    class="btn btn-info btn-sm dropdown-item">
+                                    <i class="ti ti-plant me-1" style="color:green"></i> 
+                                    Watch followers plants
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <br>
 
             <!-- Error messages -->
             {% if messages %}
@@ -37,20 +94,7 @@
                     {% endfor %}
                 </div>
             {% endif %}
-                
-            <div class="row justify-content-end p-0">
-                <div class="col-auto ">
-                    <a href="{% url 'most_liked_posts' %}" 
-                        class="btn btn-info btn-sm">Most Liked
-                    </a>
-                    <a href="{% url 'most_commented_posts' %}" 
-                        class="btn btn-info btn-sm">Most Commented
-                    </a>
-                    <a href="{% url 'change_order' %}" 
-                        class="btn btn-info btn-sm">Change order
-                    </a>
-                </div>
-            </div><br>
+
 
             <!-- Posts -->
             {% if posts %}
@@ -67,7 +111,7 @@
         </div>
 
     </div>
-    {% include 'blog/pagination.html' %}
+    {% include 'pagination.html' %}
 
 <br><br><br>
 

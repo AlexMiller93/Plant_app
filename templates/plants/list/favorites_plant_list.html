@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <h2 style="text-align:center;">
+    My Favorites plants 
+</h2>
+<br><br>
+<div class="container">
+    
+    <div class="row">
+
+        <div class="col-auto col-sm-3 col-md-2 col-lg-2"></div>
+
+        <div class="col-sm-8 col-md-8">
+            <a href="{% url 'home' %}">Home</a><br><br>
+            
+            {% for plant in favor_plants %}
+                {% include 'plants/plant.html' %}
+            {% endfor %}
+        </div>
+
+        <div class="col col-md-2"></div>
+    </div>
+</div>
+
+<br><br><br>
+{% endblock content %}

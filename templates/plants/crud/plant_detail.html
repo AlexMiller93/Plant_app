@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ plant.title }}{% endblock title %}
+
+
+{% block content %}
+    <br>
+    <div class="container col-8">
+
+        <a href="{% url 'home' %}">Home</a><br><br>
+
+        <div class="col-3"></div>
+
+        <!-- Error messages -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div {% if message.tags %} 
+                    class="alert alert-{{ message.tags }}" role="alert">
+                    {% endif %}{{ message }}
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <article class="card border-success-subtle shadow rounded-3 mb-2 col-8">
+            <!-- Plant info -->
+            <div class="card-body">
+
+                <!-- 1 row Picture and main info -->
+                <div class="row g-4">
+                    <div class="col-auto">
+                        <div class="card border-1 shadow-sm">
+                            <a href="{% url 'plant_detail' plant.slug %}">
+                            <img src="{{ plant.picture.url }}" 
+                            class="rounded-circle article-img" 
+                                height="50px" width="50px">
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Plant attributes -->
+                    <div class="col">
+                        <p class="m-0">
+                            <h6 class="card-title">
+                                <a href="{% url 'plant_detail' plant.slug %}">
+                                    {{ plant.title }}
+                                </a>
+                            </h6>
+                            {% if plant.short_title %}
+                                <small>{{ plant.short_title }}</small> ·
+                            {% endif %}
+            
+                            {% if plant.latin_title %}
+                                <i>{{ plant.latin_title }}</i>
+                            {% endif %}
+                        </p>
+
+                        {% if plant.category %}
+                            <a href="#">
+                                <span class="badge bg-info text-dark">#{{ plant.category }}</span>
+                            </a><br>
+                        {% endif %}
+
+                        <p class="mb-2 text-body-secondary">
+                            posted by
+                            <a href="{% url 'user_profile' plant.owner.pk %}">
+                                <strong> {{ plant.owner | capfirst}}</strong>
+                            </a>·
+                            
+                            <a href="{% url 'status_posts' plant.owner.user_status %}">
+                                <span class="badge rounded-pill text-bg-success" id="user_status">
+                                    {{ plant.owner.user_status }}
+                                </span>
+                            </a> · 
+                            <i>{{ plant.created_on | time:"H:i" }} ·
+                                {{ plant.created_on | date:"d M Y" }} </i> ·
+
+                            {% if plant.appear_date %}
+                                <small>
+                                    from {{ plant.appear_date | date:"M Y"}} ·
+                                    about {{ plant.duration }} year
+                                </small>
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <!-- Edit/delete post-->
+                    <div class="col-auto">
+
+                        <!--  Like plant-->
+                        {% if plant.likes.count %}
+                            {% if request.user.profile in plant.likes.all %}
+                                <a href="{% url 'plant_like' plant.slug %}">
+                                    <i class="bi bi-heart-fill me-1" style="color:red"></i>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'plant_like' plant.slug %}">
+                                    <i class="bi bi-heart-fill me-1" style="color:gray"></i>
+                                </a>
+                            {% endif %}
+                            <strong class="text-dark me-2">{{ plant.likes.count }}</strong>
+                        {% else %}
+                            <a href="{% url 'plant_like' plant.slug %}">
+                                <i class="bi bi-heart me-3" style="color:black"></i>
+                            </a>
+                        {% endif %}
+
+                        <!--  Favorites plant-->
+                        {% if request.user.profile != plant.owner %}
+                            {% if plant.fav_plants.count %}
+                                <!-- Add post to favorites -->
+                                {% if request.user.profile in plant.fav_plants.all %}
+                                    <a href="{% url 'add_plant_favorites' plant.slug %}">
+                                        <i class="bi bi-bookmark-fill me-1"></i>
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'add_plant_favorites' plant.slug %}">
+                                        <i class="bi bi-bookmark-fill me-1" style="color:gray"></i>
+                                    </a>
+                                {% endif %} 
+                                <strong class="text-dark me-2">
+                                    {{ plant.fav_plants.count }}
+                                </strong>
+                            {% else %}
+                                <a href="{% url 'add_plant_favorites' plant.slug %}">
+                                    <i class="bi bi-bookmark me-2"></i>
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            {% if post.fav_plants.count %}
+                                <i class="bi bi-bookmark-fill me-1" style="color:gray"></i>{{ post.favorites.count }}
+                            {% else %}
+                                <i class="bi bi-bookmark me-1" style="color:gray"></i>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if plant.seen_by %}
+                            <i class="bi bi-eye-fill me-1"></i>
+                            <strong class="text-dark me-1">
+                                {{ plant.seen_by.count }}
+                            </strong>
+                        {% else %}
+                            <i class="bi bi-eye me-2"></i>
+                        {% endif %}
+
+                        {% if request.user == plant.owner.user %}
+                            <a href="{% url 'plant_edit' plant.slug %}">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <a href="{% url 'plant_delete' plant.slug %}">
+                                <i class="fa-solid fa-trash-can px-2"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- 2 row Plant content -->
+                <p class="card-text">{{ plant.description }}</p>
+
+
+            </div>
+        </article>
+
+        <div class="col-3"></div>
+    </div>
+{% endblock content %}
+    

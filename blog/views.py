@@ -31,7 +31,11 @@ class HomeView(ListView):
         context = super().get_context_data(**kwargs)
         context["profiles"] = Profile.objects.order_by('-created_on')
         
-        posts = Post.objects.all()
+        # profile = get_object_or_404(Profile, id=self.kwargs['pk'])
+        # followers = Profile.objects.filter(followed_by = profile)
+        # posts = Post.objects.filter(
+        #     author__in=followers).order_by('-created_on')
+        posts = Post.objects.all().order_by('-created_on')
         tags = [post.tag for post in posts]
         unique_tags = list(set(tags))
         context["tags"] = unique_tags
@@ -75,7 +79,7 @@ class PostDetailView(DetailView):
         if self.request.user.is_authenticated:
             if self.request.method == 'POST':
                 
-                """
+                '''
                 # user who follows or unfollow
                 current_user = request.user.profile
                 # post of author which user want to follow/unfollow
@@ -91,7 +95,7 @@ class PostDetailView(DetailView):
                     current_user.save()
                 except:
                     return redirect(self.request.path_info)
-                """
+                '''
                 
                 
                 comment_form = CommentForm(self.request.POST)
@@ -165,12 +169,16 @@ class UserPostListView(ListView):
         
         profile = get_object_or_404(Profile, 
             id=self.kwargs['pk'])
+        followers = Profile.objects.filter(followed_by = profile)
+        
         user_posts = Post.objects.filter(
             author__id = profile.id)
         shared_posts = Post.objects.filter(
             share = profile)
+        feed_posts = Post.objects.filter(
+            author__in=followers)
         
-        all_posts = list(chain(user_posts, shared_posts))
+        all_posts = list(chain(user_posts, shared_posts, feed_posts))
         context["profile"] = profile
         context["user_posts"] = all_posts
         return context

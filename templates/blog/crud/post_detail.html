@@ -45,13 +45,18 @@
                         {% endif %}
                     </h5>
                     <span class="badge bg-info text-dark">#{{ post.tag }}</span><br>
-                    <strong class="fw-bold">{{ post.author | capfirst }}</strong> · 
-                    <span class="badge text-bg-success" id="user_status">
-                        {{ post.author.user.profile.user_status }}
-                    </span> · 
-                    <small> 
-                        <i class="bi bi-globe"></i>
-                        {{ post.author.user.profile.location }}</small>
+                    <strong class="fw-bold">{{ post.author | capfirst }}</strong>
+                    {% if post.author.user.profile.user_status %} ·
+                        <span class="badge text-bg-success" id="user_status">
+                            {{ post.author.user.profile.user_status }}
+                        </span>  
+                    {% endif %}
+                    {% if post.author.user.profile.location %} ·
+                        <small> 
+                            <i class="bi bi-globe"></i>
+                            {{ post.author.user.profile.location }}
+                        </small>
+                    {% endif %}
                     
                 </div>
 

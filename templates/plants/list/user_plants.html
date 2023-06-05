@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <h2 style="text-align:center;">
+        {% if request.user == plant.owner %}
+            My plants
+        {% else %}
+            {{ request.user.profile.user.username | capfirst }}'s plants
+        {% endif %}
+    </h2>
+<br><br>
+
+<div class="container">
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <a href="{% url 'user_profile' request.user.profile.pk %}">
+                Profile page</a>
+            <a href="{% url 'home' %}">Home</a><br><br>
+            
+            <div class="row justify-content-between">
+                <div class="col-auto">
+                    {% if request.user.is_authenticated %}
+                    <a href="{% url 'plant_add' %}" 
+                        class="btn btn-success">
+                        <i class="ti ti-plant"></i> + Plant
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="btn-group dropend col-auto">
+                    <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        Plant options
+                    </button>
+                    <ul class="dropdown-menu">
+                        <!-- Dropdown menu links -->
+                        <li>
+                            <a href="{% url 'most_liked_posts' %}" 
+                                class="dropdown-item">
+                                <i class="bi bi-heart-fill me-1" style="color:red"></i> 
+                                Most liked plants
+                            </a>
+                            <a href="{% url 'most_viewed_plants' %}" 
+                                class="dropdown-item">
+                                <i class="ti ti-eye" style="color:red"></i>
+                                Most viewed plants
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <br>
+            {% if user_plants %}
+                {% for plant in user_plants %}
+                    {% include 'plants/plant.html' %}
+                {% endfor %}
+            {% else %}
+                <p>{{ request.user.profile.user.username }} hasn't shared any plant</p>
+            {% endif %}
+        </div>
+        <div class="col-3"></div>
+    </div>
+</div>
+<br><br><br><br>
+
+{% endblock content %}
+    

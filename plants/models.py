@@ -1,14 +1,14 @@
 from django.db import models
-
+from django.conf import settings 
 from users.models import Profile
 from blog.models import Post
 
 # Create your models here.
 class Plant(models.Model):
     title = models.CharField(max_length=128)
-    short_title = models.CharField(max_length=128)
+    short_title = models.CharField(max_length=128, null=True, blank=True)
     latin_title = models.CharField(max_length=128)
-    category = models.CharField(max_length=128)
+    category = models.CharField(max_length=128, null=True, blank=True)
     description = models.TextField(
         help_text="You can write some description about your plant ...", 
         blank=True, null=True)
@@ -42,6 +42,9 @@ class Plant(models.Model):
     
     rel_posts = models.ManyToManyField(
         Post, related_name="plant_posts", blank=True)
+    seen_by = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="plant_view"
+        )
     
     class Meta:
         verbose_name = "plant"

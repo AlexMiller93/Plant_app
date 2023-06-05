@@ -1,35 +1,32 @@
 {% extends 'base.html' %}
 
+
 {% block content %}
-<h2 style="text-align:center;">
-    Most commented posts
+    <h2 style="text-align:center;">
+    Plants with category "{{ category }}"
 </h2>
-<br><br>
+<br>
 <div class="container">
     
     <div class="row">
 
-        <div class="col-auto col-sm-3 col-md-2 col-lg-2">
-        </div>
+        <div class="col-auto col-sm-3 col-md-2 col-lg-2"></div>
 
         <div class="col-sm-8 col-md-8">
             <a href="{% url 'home' %}">Home</a><br><br>
             
-            {% if most_commented_posts %}
-                {% for post in most_commented_posts %}
-                    {% include 'blog/post.html' %}
+            {% if category_plants %}
+                {% for plant in category_plants %}
+                    {% include 'plants/plant.html' %}
                 {% endfor %}
             {% else %}
-                <p> No one post has published yet ...</p>
+                <p>Nobody has shared any plant with category "{{ plant.category }}"</p>
             {% endif %}
         </div>
 
         <div class="col col-md-2"></div>
     </div>
 </div>
-<br><br>
-{% include 'pagination.html' %}
 
 <br><br><br>
-        
 {% endblock content %}

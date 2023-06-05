@@ -40,7 +40,8 @@ DEFAULT_APPS = [
 # add apps which you install using pip
 THIRD_PARTY_APPS = [
     'crispy_forms',
-    'crispy_bootstrap5'
+    'crispy_bootstrap5',
+    'fontawesomefree'
 ]
 
 # add local apps which you create using startapp

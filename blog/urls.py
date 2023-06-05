@@ -15,13 +15,13 @@ from .views import (
     ChangeOrderPostListView,
     CommentUpdateView,
     CommentDeleteView,
+    FavoritesPostListView,
     PostLike,
     AddFavorites,
     CommentLike,
     SharePost
     )
 
-from blog.views import *
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),

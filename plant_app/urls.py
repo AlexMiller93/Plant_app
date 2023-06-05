@@ -22,7 +22,7 @@ from users.views import (
     ProfileUpdateView, 
     ProfileView, 
     SignUpView,
-    calculate_rating
+    # calculate_rating
     )
 
 
@@ -39,7 +39,7 @@ urlpatterns = [
     path('profile/edit/', ProfileUpdateView.as_view(), 
         name='update_profile'),
     
-    path('', calculate_rating, name='calc_rating'),
+    # path('', calculate_rating, name='calc_rating'),
 ]
 
 if settings.DEBUG:

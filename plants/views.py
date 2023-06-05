@@ -2,8 +2,9 @@ from typing import Any, Dict
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import Q, Count
 from django.db.models.query import QuerySet
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import (
@@ -16,71 +17,139 @@ from users.models import Profile
 from .forms import PlantForm, PlantEditForm
 
 # Create your views here.
-class PlantsView(ListView):
+class UserFeedPlantsView(ListView):
     model = Plant
-    template_name = 'plants/all_plants.html'
-
-class UserPlantsView(ListView):
-    model = Plant
-    template_name = 'plants/user_plants.html'
-    context_object_name = 'plants'
+    template_name = 'plants/list/follow_plants.html'
+    # context_object_name = 'plants'
     
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         data = super().get_context_data(**kwargs)
-        profile = get_object_or_404(Profile, 
-            id=self.kwargs['pk'])
+        profile = get_object_or_404(Profile, id=self.kwargs['pk'])
+        
+        followers = Profile.objects.filter(followed_by = profile)
+        feed_plants = Plant.objects.filter(
+            owner__in=followers).order_by('-created_on')
+        data["feed_plants"] = feed_plants
+        return data
+
+class UserPlantsView(ListView):
+    model = Plant
+    template_name = 'plants/list/user_plants.html'
+    context_object_name = 'plants'
+    paginate_by = 3
+    
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        data = super().get_context_data(**kwargs)
+        profile = get_object_or_404(Profile, id=self.kwargs['pk'])
         user_plants = Plant.objects.filter(owner=profile).order_by('-created_on')
         data["user_plants"] = user_plants
         return data
 
 class PlantDetailView(DetailView):
     model = Plant
-    template_name = 'plants/plant_detail.html'
+    template_name = 'plants/crud/plant_detail.html'
     
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         
         plant = get_object_or_404(Plant, slug=self.kwargs['slug'])
+        
+        # who seen plant
+        if self.request.user.is_authenticated:
+            plant.seen_by.add(self.request.user)
+            
         context["plant"] = plant
         return context
 
 class PlantCreateView(LoginRequiredMixin, CreateView):
     model = Plant
     form_class = PlantForm
-    template_name = 'plants/plant_add.html'
+    template_name = 'plants/crud/plant_add.html'
     success_url = reverse_lazy('home')
 
-    def form_valid(self, request, form):
+    def form_valid(self, form):
         form.instance.owner = self.request.user.profile
-        messages.success(request, 'You add plant! Wow!!')
         return super().form_valid(form)
     
 class PlantUpdateView(LoginRequiredMixin, UpdateView):
     model = Plant
     form_class = PlantEditForm
-    template_name = 'plants/plant_update.html'
+    template_name = 'plants/crud/plant_update.html'
 
 class PlantDeleteView(LoginRequiredMixin, DeleteView):
     model = Plant
-    template_name = 'plants/plant_delete.html'
+    template_name = 'plants/crud/plant_delete.html'
     success_url = reverse_lazy('home')
 
 class CategoryPlantView(ListView):
-    pass
+    model = Plant
+    template_name = 'plants/list/category_plant_list.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category = self.kwargs['category']
+        category_plants = Plant.objects.filter(category=category).order_by('-created_on')
+        context["category_plants"] = category_plants
+        context["category"] = category
+        return context
 
 class LatinNamePlantView(ListView):
-    pass
+    model = Plant
+    template_name = 'plants/list/latin_plant_list.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        latin_title = self.kwargs['latin_title']
+        latin_plants = Plant.objects.filter(latin_title=latin_title).order_by('-created_on')
+        context["latin_plants"] = latin_plants
+        context["latin_title"] = latin_title
+        return context
 
 class MostLikedPlantView(LoginRequiredMixin, ListView):
-    pass
+    model = Plant
+    template_name = 'plants/list/most_liked.html'
+    
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        data = super().get_context_data(**kwargs)
+        data["most_liked_plants"] = Plant.objects.annotate(
+                like_count=Count('plant_like')).order_by('-like_count')
+        return data
+    
+class MostViewedPlantView(LoginRequiredMixin, ListView):
+    model = Plant
+    template_name = 'plants/list/most_viewed.html'
+    
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        data = super().get_context_data(**kwargs)
+        data["most_viewed_plants"] = Plant.objects.annotate(
+                view_count=Count('seen_by')).order_by('-view_count')
+        return data
 
 class FavoritesPlantView(LoginRequiredMixin, ListView):
-    pass
+    model = Plant
+    template_name = 'plants/list/favorites_plant_list.html'
+    
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        data = super().get_context_data(**kwargs)
+        profile = get_object_or_404(Profile, id=self.kwargs['pk'])
+        data["favor_plants"] = Plant.objects.filter(fav_plants=profile)
+        return data
 
 @login_required
-def PlantLike(request):
-    pass
+def PlantLike(request, slug):
+    plant = get_object_or_404(Plant, slug=slug)
+    if plant.likes.filter(id=request.user.profile.id).exists():
+        plant.likes.remove(request.user.profile)
+    else:
+        plant.likes.add(request.user.profile)
+    return redirect(request.META.get("HTTP_REFERER"))
 
 @login_required
-def AddFavorites(request):
-    pass
+def AddFavorites(request, slug):
+    plant = get_object_or_404(Plant, slug=slug)
+    if request.user.profile != plant.owner:
+        if plant.fav_plants.filter(id=request.user.profile.id).exists():
+            plant.fav_plants.remove(request.user.profile)
+        else:
+            plant.fav_plants.add(request.user.profile)
+    return redirect(request.META.get("HTTP_REFERER"))
