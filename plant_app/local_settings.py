@@ -10,20 +10,3 @@ DATABASES = {
     }
 }
 
-'''
-MySQL settings
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'plant_app', 
-        'USER': 'root',
-        'PASSWORD': 'VtC$Az@khsD6V@!H4THN',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {  
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"  
-        } 
-    }
-}
-'''

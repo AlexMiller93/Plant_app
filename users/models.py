@@ -66,15 +66,6 @@ class Profile(models.Model):
                 self.age -= 1
         return super().save(*args, **kwargs)
         
-        '''
-        img = Image.open(self.avatar.url) # Open image
-        
-        # resize image
-        if img.height > 300 or img.width > 300:
-            output_size = (300, 300)
-            img.thumbnail(output_size) # Resize image
-            img.save(self.avatar.url) # Save it again and override the larger image
-        '''
     
     
     

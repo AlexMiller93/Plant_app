@@ -32,7 +32,7 @@ urlpatterns = [
     path('delete/<slug:slug>/', PlantDeleteView.as_view(), 
         name='plant_delete'),
     
-    # other plant func
+    # other plant classes
     path('category_plants/<str:category>', CategoryPlantView.as_view(),
         name='category_plants'),
     path('latin_plants/<str:latin_title>', LatinNamePlantView.as_view(),
@@ -44,6 +44,7 @@ urlpatterns = [
     path('most_viewed/', MostViewedPlantView.as_view(), 
         name='most_viewed_plants'),
     
+    # some functions
     path('plant_like/<slug:slug>/', PlantLike, name='plant_like'),
     path('plant_favorites/<slug:slug>', AddFavorites, name='add_plant_favorites'),
 ]

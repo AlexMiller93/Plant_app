@@ -1,22 +1,18 @@
-{% extends 'base.html' %}
-
-{% block title %}Delete Post{% endblock title %}
-
+{% extends 'base/base.html' %} {% block title %}Delete Post{% endblock title %}
 {% block content %}
-<h3 style="text-align:center;">Delete post</h3>
-<br>
-<div class="container col-md-6 col-4 ">
-    
-    <div class="form-group card border-bg-success p-3 my-2">
-        <form action="" method="post">
-            {% csrf_token %}
-            <p>Are you sure you want to delete "{{ post.title }}" post?</p>
-            <button type="submit" class="btn btn-danger">Delete</button>
-            <a href="{% url 'home' %}" 
-                class="btn btn-secondary">Cancel</a><br>
-        </form>
-    </div>
+
+<br />
+<h3 style="text-align: center">Delete post</h3>
+<br />
+<div class="container col-md-6 col-4">
+  <div class="form-group card border-bg-success p-3 my-2">
+    <form action="" method="post">
+      {% csrf_token %}
+      <p>Are you sure you want to delete "{{ post.title }}" post?</p>
+      <button type="submit" class="btn btn-danger">Delete</button>
+      <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a><br />
+    </form>
+  </div>
 </div>
-<br>
+<br />
 {% endblock content %}
-    

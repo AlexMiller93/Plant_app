@@ -1,32 +1,20 @@
-{% extends 'base.html' %}
-
-
-{% block content %}
-    <h2 style="text-align:center;">
-    Plants with category "{{ category }}"
-</h2>
-<br>
+{% extends 'base/base.html' %} {% block content %}
+<h2 style="text-align: center">Plants with category "{{ category }}"</h2>
+<br />
 <div class="container">
-    
-    <div class="row">
+  <div class="row">
+    <div class="col-auto col-sm-3 col-md-2 col-lg-2"></div>
 
-        <div class="col-auto col-sm-3 col-md-2 col-lg-2"></div>
+    <div class="col-sm-8 col-md-8">
+      <a href="{% url 'home' %}">Home</a><br /><br />
 
-        <div class="col-sm-8 col-md-8">
-            <a href="{% url 'home' %}">Home</a><br><br>
-            
-            {% if category_plants %}
-                {% for plant in category_plants %}
-                    {% include 'plants/plant.html' %}
-                {% endfor %}
-            {% else %}
-                <p>Nobody has shared any plant with category "{{ plant.category }}"</p>
-            {% endif %}
-        </div>
-
-        <div class="col col-md-2"></div>
+      {% for plant in category_plants %} {% include 'plants/plant.html' %} {%
+      endfor %}
     </div>
+
+    <div class="col col-md-2"></div>
+  </div>
 </div>
 
-<br><br><br>
+<br /><br /><br />
 {% endblock content %}

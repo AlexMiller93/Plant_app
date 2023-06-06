@@ -1,9 +1,10 @@
 <article class="card border-success-subtle shadow rounded-3 mb-2">
-    <!-- Plant info -->
+    
     <div class="card-body">
 
         <!-- 1 row Picture and main info -->
         <div class="row g-4">
+
             <div class="col-auto">
                 <div class="card border-1 shadow-sm">
                     <a href="{% url 'plant_detail' plant.slug %}">
@@ -29,6 +30,7 @@
 
                     <!-- Like and favorites system -->
                     <div class="col-auto">
+
                         <!--  Like plant-->
                         {% if plant.likes.count %}
                             {% if request.user.profile in plant.likes.all %}
@@ -50,6 +52,7 @@
                         <!--  Favorites plant-->
                         {% if request.user.profile != plant.owner %}
                             {% if plant.fav_plants.count %}
+
                                 <!-- Add post to favorites -->
                                 {% if request.user.profile in plant.fav_plants.all %}
                                     <a href="{% url 'add_plant_favorites' plant.slug %}">
@@ -70,7 +73,10 @@
                             {% endif %}
                         {% else %}
                             {% if post.favorites.count %}
-                                <i class="bi bi-bookmark-fill me-1" style="color:gray"></i>{{ post.favorites.count }}
+                                <i class="bi bi-bookmark-fill me-1" style="color:gray"></i>
+                                <strong class="text-dark me-2">
+                                    {{ post.favorites.count }}
+                                </strong>
                             {% else %}
                                 <i class="bi bi-bookmark me-1" style="color:gray"></i>
                             {% endif %}
@@ -105,7 +111,7 @@
                         {% if plant.latin_title %}
                             <a href="{% url 'latin_plants' plant.latin_title %}">
                                 <i>{{ plant.latin_title | capfirst | truncatewords:2 }}</i>
-                            </a>  ·
+                            </a> ·
                         {% endif %}
     
                         {% if plant.category %}
@@ -132,7 +138,7 @@
                         {% if plant.appear_date %} 
                             <small> ·
                                 <i class="ti ti-plant"></i>
-                                from {{ plant.appear_date | date:"M Y"}} ·
+                                    from {{ plant.appear_date | date:"M Y"}} ·
                                 <i class="ti ti-calendar-time"></i>
                                 about {{ plant.duration }} year
                             </small>
@@ -143,10 +149,10 @@
         </div>
 
 
-        <!-- 2 row Plant content -->
+        <!-- 2 row plant content -->
         <p class="card-text mt-2 mb-0">{{ plant.description| safe | truncatewords:5}}</p>
 
-        <!-- 3 row when plant added -->
+        <!-- 3 row plant date added -->
         <p class="m-0">
             <small>
                 <i> added in {{ plant.created_on | date:"d M Y" }} </i>

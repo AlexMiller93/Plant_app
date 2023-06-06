@@ -1,31 +1,23 @@
-{% extends 'base.html' %}
+{% extends 'base/base.html' %} {% block content %}
+<h2 style="text-align: center">My favorites posts</h2>
+<br /><br />
 
-{% block content %}
-<h2 style="text-align:center;">
-    My favorites posts
-</h2>
-<br><br>
 <div class="container">
-    <a href="{% url 'home' %}" 
-        >Back</a><br>
-    <div class="row">
-        <div class="col-auto col-sm-3 col-md-2 col-lg-2"></div>
-        
-        <div class="col-sm-8 col-md-8">
-            {% if favor_posts %}
-                {% for post in favor_posts %}
-                    {% include 'blog/post.html' %}
-                {% endfor %}
-            {% else %}
-                <p>{{ profile.user.username }} hasn't noted any post yet ...</p>
-            {% endif %}
-        </div>
+  <a href="{% url 'home' %}">Back</a><br />
+  <div class="row">
+    <div class="col-auto col-sm-3 col-md-2 col-lg-2"></div>
 
-        <div class="col col-md-2"></div>
+    <div class="col-sm-8 col-md-8">
+      {% if favor_posts %} {% for post in favor_posts %} {% include
+      'blog/post.html' %} {% endfor %} {% else %}
+      <p>{{ profile.user.username }} hasn't noted any post yet ...</p>
+      {% endif %}
     </div>
+
+    <div class="col col-md-2"></div>
+  </div>
 </div>
 
-<br><br><br>
-        
-{% endblock content %}
+<br /><br /><br />
 
+{% endblock content %}

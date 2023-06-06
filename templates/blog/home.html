@@ -1,38 +1,38 @@
-{% extends 'base.html' %}
-
-{% block content %}
-
+{% extends 'base/base.html' %} {% block content %}
 
 <main class="container">
     <div class="row">
-
         <!-- Users list -->
         <div class="col-auto col-sm-3 col-lg-3 text-center">
-            {% include 'left_sidebar.html' %}
+            {% include 'base/left_sidebar.html' %}
         </div>
 
         <!-- Feed with posts -->
-        <div class="col-sm-8 col-lg-6 ">
+        <div class="col-sm-8 col-lg-6">
             <h5 class="text-center">Feed</h5>
-            <hr>
+            <hr />
             <div class="row">
                 {% if user.is_authenticated %}
                     <p>Hello, {{ request.user | capfirst }}!</p>
                 {% else %}
                     <h6>You're not logged.</h6>
-                    <p>Please, <a href="{% url 'login' %}">login</a> to write posts or add plants</p>
+                    <p>
+                        Please, <a href="{% url 'login' %}">login</a> 
+                        to write posts or add plants
+                    </p>
                 {% endif %}
             </div>
 
+            <!-- Row with buttons -->
             <div class="row">
                 <div class="col-auto mb-0">
                     {% if user.is_authenticated %}
-                        <a href="{% url 'post_create' %}" 
-                            class="btn btn-primary"><i class="ti ti-writing"></i>
+                        <a href="{% url 'post_create' %}" class="btn btn-primary"
+                            ><i class="ti ti-writing"></i>
                             + Post
                         </a>
-                        <a href="{% url 'plant_add' %}" 
-                            class="btn btn-success"><i class="ti ti-plant"></i>
+                        <a href="{% url 'plant_add' %}" class="btn btn-success"
+                            ><i class="ti ti-plant"></i>
                             + Plant
                         </a>
                     {% endif %}
@@ -43,37 +43,44 @@
 
                 <!-- Additional post options  -->
                 <div class="col-auto dropdown">
-                    <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button
+                        class="btn btn-info dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         See another post options
                     </button>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="{% url 'most_liked_posts' %}" 
-                            class="btn btn-info btn-sm dropdown-item">
-                            <i class="bi bi-heart-fill me-1" style="color:red"></i> 
-                            Most Liked
+                            <a  href="{% url 'most_liked_posts' %}"
+                                class="btn btn-info btn-sm dropdown-item">
+                                <i class="bi bi-heart-fill me-1" 
+                                style="color: red"></i>
+                                Most Liked
                             </a>
                         </li>
                         <li>
-                            <a href="{% url 'most_commented_posts' %}" 
+                            <a  href="{% url 'most_commented_posts' %}"
                                 class="btn btn-info btn-sm dropdown-item">
-                                <i class="ti ti-message-circle-2-filled" style="color:red"></i> 
+                                <i class="ti ti-message-circle-2-filled" 
+                                style="color: red"></i>
                                 Most Commented
                             </a>
                         </li>
                         <li>
-                            <a href="{% url 'change_order' %}" 
+                            <a  href="{% url 'change_order' %}"
                                 class="btn btn-info btn-sm dropdown-item">
                                 <i class="ti ti-transform"></i>
                                 Change order
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
-                        {% if request.user.is_authenticated %}
+                        <li><hr class="dropdown-divider" /></li>
+                            {% if request.user.is_authenticated %}
                             <li>
-                                <a href="{% url 'feed_plants' request.user.profile.pk %}" 
+                                <a  href="{% url 'feed_plants' request.user.profile.pk %}"
                                     class="btn btn-info btn-sm dropdown-item">
-                                    <i class="ti ti-plant me-1" style="color:green"></i> 
+                                    <i class="ti ti-plant me-1" 
+                                    style="color: green"></i>
                                     Watch followers plants
                                 </a>
                             </li>
@@ -81,43 +88,38 @@
                     </ul>
                 </div>
             </div>
-            <br>
+            <br />
 
             <!-- Error messages -->
             {% if messages %}
                 <div class="messages">
                     {% for message in messages %}
-                    <div {% if message.tags %} 
-                        class="alert alert-{{ message.tags }}" role="alert">
-                        {% endif %}{{ message }}
-                    </div>
+                        <div>
+                            {% if message.tags %}
+                                class="alert alert-{{ message.tags }}"
+                                role="alert"
+                            {% endif %}{{ message }}
+                        </div>
                     {% endfor %}
                 </div>
             {% endif %}
 
-
             <!-- Posts -->
-            {% if posts %}
-                {% for post in posts %}
-                    {% include 'blog/post.html' %}
-                {% endfor %}
+            {% if posts %} 
+                {% for post in posts %} 
+                    {% include 'blog/post.html' %} 
+                {% endfor %} 
             {% endif %}
-            
         </div>
 
         <!-- Tags list -->
         <div class="col-auto col-lg-3 text-center">
-            {% include 'right_sidebar.html' %}
+        {% include 'base/right_sidebar.html' %}
         </div>
-
     </div>
-    {% include 'pagination.html' %}
+    {% include 'base/pagination.html' %}
 
-<br><br><br>
-
+    <br /><br /><br />
 </main>
 
-
 {% endblock content %}
-
-

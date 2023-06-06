@@ -1,235 +1,229 @@
-{% extends 'base.html' %}
+{% extends 'base/base.html' %} {% block title %}{{ post.title }}{% endblock
+title %} {% block content %}
+<br />
+<div class="container col-8">
+  <a href="{% url 'home' %}">Back</a><br /><br />
 
-{% block title %}{{ post.title }}{% endblock title %}
+  <!-- Error messages -->
+  {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+    <div
+      {%
+      if
+      message.tags
+      %}
+      class="alert alert-{{ message.tags }}"
+      role="alert"
+    >
+      {% endif %}{{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
-{% block content %}
-    <br>
-    <div class="container col-8">
-        <a href="{% url 'home' %}">Back</a><br><br>
+  <!--  Post Start-->
+  <article class="container card border-success-subtle mb-3 p-3 col-8">
+    <!-- 1 row - Avatar, Post attributes, Icons -->
+    <div class="row">
+      <!-- Avatar-->
+      <div class="col-auto m-2 p-1">
+        <a href="{% url 'user_profile' post.author.user.profile.pk %}">
+          <img
+            src="{{ post.author.user.profile.avatar.url }}"
+            class="rounded-circle article-img"
+            height="60px"
+            width="60px"
+          />
+        </a>
+      </div>
 
-        <!-- Error messages -->
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                <div {% if message.tags %} 
-                    class="alert alert-{{ message.tags }}" role="alert">
-                    {% endif %}{{ message }}
-                </div>
-                {% endfor %}
-            </div>
+      <!-- Post attributes -->
+      <div class="col my-2">
+        <h5 class="card-title mb-0">
+          {{ post.title }} {% if post.created_on != post.updated_on %}
+          <sup>
+            <i
+              class="bi bi-pencil-fill"
+              style="color: #03f; font-size: 15px"
+            ></i>
+          </sup>
+          {% endif %}
+        </h5>
+        <span class="badge bg-info text-dark">#{{ post.tag }}</span><br />
+        <strong class="fw-bold">{{ post.author | capfirst }}</strong>
+        {% if post.author.user.profile.user_status %} ·
+        <span class="badge text-bg-success" id="user_status">
+          {{ post.author.user.profile.user_status }}
+        </span>
+        {% endif %} {% if post.author.user.profile.location %} ·
+        <small>
+          <i class="bi bi-globe"></i>
+          {{ post.author.user.profile.location }}
+        </small>
+        {% endif %}
+      </div>
+
+      <!-- Edit/ delete post and other icons, Follow system -->
+      <div class="col-auto my-2">
+        <!-- Follow system -->
+        <form action="" method="post">
+          {% csrf_token %} {% if post.author in user.profile.follows.all %}
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            name="follow"
+            value="Unfollow"
+            type="submit"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            data-bs-custom-class="custom-tooltip"
+            data-bs-title="Unfollow @{{ profile.user }}"
+          >
+            - Unfollow
+          </button>
+          {% else %}
+          <button
+            class="btn btn-outline-success btn-sm"
+            name="follow"
+            value="Follow"
+            type="submit"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            data-bs-custom-class="custom-tooltip"
+            data-bs-title="Follow @{{ profile.user }}"
+          >
+            + Follow
+          </button>
+          {% endif %}
+        </form>
+
+        <!-- Edit/delete post-->
+        {% if request.user == post.author.user %}
+        <a href="{% url 'post_edit' post.slug %}">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </a>
+        <a href="{% url 'post_delete' post.slug %}">
+          <i class="fa-solid fa-trash-can px-2"></i>
+        </a>
         {% endif %}
 
-        <!--  Post Start-->
-        <article class="container card border-success-subtle mb-3 p-3 col-8">
+        <!-- Add post to favorites -->
+        {% if request.user.profile != post.author %} {% if request.user.profile
+        in post.favorites.all %}
+        <a href="{% url 'add_post_favorites' post.slug %}">
+          <i class="bi bi-bookmark-star-fill"></i>
+        </a>
+        {% else %}
+        <a href="{% url 'add_post_favorites' post.slug %}">
+          <i class="bi bi-bookmark-star"></i>
+        </a>
+        {% endif %} {% endif %}
 
-            <!-- 1 row -- Avatar, Post attributes, Icons -->
-            <div class="row">
+        <!-- Future extension (some settings or spam note)-->
+        <i class="bi bi-three-dots-vertical"></i>
+      </div>
 
-                <!-- Avatar-->
-                <div class="col-auto m-2 p-1">
-                    <a href="{% url 'user_profile' post.author.user.profile.pk %}">
-                        <img src="{{ post.author.user.profile.avatar.url }}" 
-                        class="rounded-circle article-img" 
-                            height="60px" width="60px">
-                    </a>
-                </div>
-
-                <!-- Post attributes -->
-                <div class="col my-2">
-                    <h5 class="card-title mb-0">{{ post.title }}
-                        {% if post.created_on != post.updated_on %}
-                        <sup>
-                            <i class="bi bi-pencil-fill" style="color:#03f; font-size:15px;"></i>
-                        </sup>
-                            
-                        {% endif %}
-                    </h5>
-                    <span class="badge bg-info text-dark">#{{ post.tag }}</span><br>
-                    <strong class="fw-bold">{{ post.author | capfirst }}</strong>
-                    {% if post.author.user.profile.user_status %} ·
-                        <span class="badge text-bg-success" id="user_status">
-                            {{ post.author.user.profile.user_status }}
-                        </span>  
-                    {% endif %}
-                    {% if post.author.user.profile.location %} ·
-                        <small> 
-                            <i class="bi bi-globe"></i>
-                            {{ post.author.user.profile.location }}
-                        </small>
-                    {% endif %}
-                    
-                </div>
-
-                <!-- Edit/ delete post and other icons, Follow system -->
-                <div class="col-auto my-2">
-
-                    <!-- Follow system -->
-                    <form action="" method="post">
-                        {% csrf_token %}
-                        {% if post.author in user.profile.follows.all %}
-                            <button class="btn btn-outline-secondary btn-sm" 
-                                name="follow" value="Unfollow" type="submit"
-                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                data-bs-custom-class="custom-tooltip" data-bs-title="Unfollow @{{ profile.user }}">
-                                    - Unfollow
-                            </button>
-                        {% else %}
-                            <button class="btn btn-outline-success btn-sm" 
-                                name="follow" value="Follow" type="submit"
-                                data-bs-toggle="tooltip" data-bs-placement="top" 
-                                data-bs-custom-class="custom-tooltip" data-bs-title="Follow @{{ profile.user }}">
-                                    + Follow 
-                            </button>
-                        {% endif %}
-                    </form>
-
-                    <!-- Edit/delete post-->
-                    {% if request.user == post.author.user %}
-                        <a href="{% url 'post_edit' post.slug %}">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </a>
-                        <a href="{% url 'post_delete' post.slug %}">
-                            <i class="fa-solid fa-trash-can px-2"></i>
-                        </a>
-                    {% endif %}
-
-                    <!-- Add post to favorites -->
-                    {% if request.user.profile != post.author %}
-                        {% if request.user.profile in post.favorites.all %}
-                            <a href="{% url 'add_post_favorites' post.slug %}">
-                                <i class="bi bi-bookmark-star-fill"></i>
-                            </a>
-                        {% else %}
-                            <a href="{% url 'add_post_favorites' post.slug %}">
-                                <i class="bi bi-bookmark-star"></i>
-                            </a>
-                        {% endif %}
-                    {% endif %}
-                    
-                    <!-- Future extension (some settings or spam note)-->
-                    <i class="bi bi-three-dots-vertical"></i>
-                </div>
-
-                <br>
-            </div>
-            
-            <!-- Post content -->
-            <p class="card-text lh-base my-2">
-                {{ post.content }}</p>
-            <hr>
-            
-            <!-- Post date created -->
-            <div class="row">
-                <small>
-                    {{ post.created_on | time:"H:i" }} ·
-                    {{ post.created_on | date:"d M Y"}} ·
-                    {{ post.created_on | date:"D"}}
-                    {% if post.created_on != post.updated_on %} · 
-                    <em style="color: blue;">
-                        last update in {{ post.updated_on | timesince }}
-                    </em>
-                    {% endif %}
-                </small>
-            </div>
-            <hr>
-
-            <!-- Post info -->
-            <div class="row ">
-                <h6 class="m-0">
-                    {{ post.likes.count}} likes ·
-                    {{ post.get_comments.count}} comments ·
-                    {{ post.get_replies.count}} replies ·
-                    {{ post.share.count}} shared ·
-                    {{ post.seen_by.count}} views
-                </h6>
-            </div>
-            <hr>
-
-            <!-- 2 row like button, comment and replies count -->
-            <div class="row text-secondary justify-content-between">
-                <div class="col-auto">
-
-                    <!-- Like system and count -->
-                    {% include 'blog/add/post_likes.html' %}
-
-                    
-                    <!-- Comments count if exist -->
-                    {% if post.get_comments %}
-                        <i class="bi bi-chat-fill me-1"></i>
-                        <strong class="text-dark me-2">
-                            {{ post.get_comments.count }}
-                        </strong>
-                    {% else %}
-                        <i class="bi bi-chat me-3"></i>
-                    {% endif %}
-
-                    <!-- Replies  count if exist-->
-                    {% if post.get_replies %}
-                        <i class="bi bi-reply-all-fill me-1"></i>
-                        <strong class="text-dark me-2">
-                            {{ post.get_replies.count }}
-                        </strong>
-                    {% else %}
-                        <i class="bi bi-reply-all me-3"></i>
-                    {% endif %}
-                    
-                    <!-- Share system and count if exist -->
-                    {% include 'blog/add/post_share.html' %}
-                    
-                    <!-- Favorites system and count if exist -->
-                    {% if post.favorites.count %}
-                        <i class="bi bi-bookmark-fill"></i>
-                        <strong class="text-dark me-2">
-                            {{ post.favorites.count }}
-                        </strong>
-                    {% else %}
-                        <i class="bi bi-bookmark me-3"></i>
-                    {% endif %}
-                    
-                    <!-- Count of post visitors if exist -->
-                    {% if post.seen_by %}
-                        <i class="bi bi-eye-fill"></i>
-                        <strong class="text-dark me-2">
-                            {{ post.seen_by.count }}
-                        </strong>
-                    {% else %}
-                        <i class="bi bi-eye"></i>
-                    {% endif %}
-                </div>
-            </div>
-
-
-            <!-- 3 row Comment form -->
-            <div class="row my-2">
-                <form action="" method="POST">
-                    <div class="col-auto">
-                        <label for="comment">Add comment:&nbsp;</label>
-                        {% csrf_token %}
-                        {{ comment_form.content }}
-                        <input type="submit" value="Post" 
-                        class="btn btn-outline-primary btn-sm">
-                    </div>
-                </form>
-            </div>
-
-            <!-- 4 row Render Comments and replies -->
-            <div class="row">
-                {% if comments %}
-                    {% include 'blog/comment/comments.html' %}
-                {% else %}
-                    <div class="row">
-                        <h6>No one wrote any comment ...</h6>
-                    </div>
-                {% endif %}
-            </div>
-
-        </article>
-        <!-- End Post -->
+      <br />
     </div>
 
-            
-    <br><br>
-    <br><br>
+    <!-- Post content -->
+    <p class="card-text lh-base my-2">{{ post.content }}</p>
+    <hr />
 
+    <!-- 2 row - Post date created -->
+    <div class="row">
+      <small>
+        {{ post.created_on | time:"H:i" }} · {{ post.created_on | date:"d M Y"}}
+        · {{ post.created_on | date:"D"}} {% if post.created_on !=
+        post.updated_on %} ·
+        <em style="color: blue">
+          last update in {{ post.updated_on | timesince }}
+        </em>
+        {% endif %}
+      </small>
+    </div>
+    <hr />
+
+    <!-- 3 row - Post info -->
+    <div class="row">
+      <h6 class="m-0">
+        {{ post.likes.count}} likes · {{ post.get_comments.count}} comments · {{
+        post.get_replies.count}} replies · {{ post.share.count}} shared · {{
+        post.seen_by.count}} views
+      </h6>
+    </div>
+    <hr />
+
+    <!-- 4 row like button, comment and replies count -->
+    <div class="row text-secondary justify-content-between">
+      <div class="col-auto">
+        <!-- Like system and count -->
+        {% include 'blog/add/post_likes.html' %}
+
+        <!-- Comments count if exist -->
+        {% if post.get_comments %}
+        <i class="bi bi-chat-fill me-1"></i>
+        <strong class="text-dark me-2"> {{ post.get_comments.count }} </strong>
+        {% else %}
+        <i class="bi bi-chat me-3"></i>
+        {% endif %}
+
+        <!-- Replies  count if exist-->
+        {% if post.get_replies %}
+        <i class="bi bi-reply-all-fill me-1"></i>
+        <strong class="text-dark me-2"> {{ post.get_replies.count }} </strong>
+        {% else %}
+        <i class="bi bi-reply-all me-3"></i>
+        {% endif %}
+
+        <!-- Share system and count if exist -->
+        {% include 'blog/add/post_share.html' %}
+
+        <!-- Favorites system and count if exist -->
+        {% if post.favorites.count %}
+        <i class="bi bi-bookmark-fill"></i>
+        <strong class="text-dark me-2"> {{ post.favorites.count }} </strong>
+        {% else %}
+        <i class="bi bi-bookmark me-3"></i>
+        {% endif %}
+
+        <!-- Count of post visitors if exist -->
+        {% if post.seen_by %}
+        <i class="bi bi-eye-fill"></i>
+        <strong class="text-dark me-2"> {{ post.seen_by.count }} </strong>
+        {% else %}
+        <i class="bi bi-eye"></i>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- 3 row Comment form -->
+    <div class="row my-2">
+      <form action="" method="POST">
+        <div class="col-auto">
+          <label for="comment">Add comment:&nbsp;</label>
+          {% csrf_token %} {{ comment_form.content }}
+          <input
+            type="submit"
+            value="Post"
+            class="btn btn-outline-primary btn-sm"
+          />
+        </div>
+      </form>
+    </div>
+
+    <!-- 4 row Render Comments and replies -->
+    <div class="row">
+      {% if comments %} {% include 'blog/comment/comments.html' %} {% else %}
+      <div class="row">
+        <h6>No one wrote any comment ...</h6>
+      </div>
+      {% endif %}
+    </div>
+  </article>
+  <!-- End Post -->
+</div>
+
+<br /><br />
 
 {% endblock %}

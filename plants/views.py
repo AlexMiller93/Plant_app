@@ -1,10 +1,9 @@
 from typing import Any, Dict
-from django.contrib import messages
+
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models import Q, Count
-from django.db.models.query import QuerySet
-from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import (
@@ -18,9 +17,14 @@ from .forms import PlantForm, PlantEditForm
 
 # Create your views here.
 class UserFeedPlantsView(ListView):
+    """ For rendering plants from user followers
+
+    Returns:
+        dict: dict data with key feed_plants
+    """
+    
     model = Plant
     template_name = 'plants/list/follow_plants.html'
-    # context_object_name = 'plants'
     
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         data = super().get_context_data(**kwargs)
@@ -33,10 +37,15 @@ class UserFeedPlantsView(ListView):
         return data
 
 class UserPlantsView(ListView):
+    """ For rendering plants from certain user 
+
+    Returns:
+        dict: dict data with key user_plants
+    """
+    
     model = Plant
     template_name = 'plants/list/user_plants.html'
     context_object_name = 'plants'
-    paginate_by = 3
     
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         data = super().get_context_data(**kwargs)
@@ -46,12 +55,19 @@ class UserPlantsView(ListView):
         return data
 
 class PlantDetailView(DetailView):
+    
+    """ For rendering plant info with certain slug. 
+    When user visited plant view increase.
+    
+    Returns:
+        dict: dict data with key plant
+    """
+    
     model = Plant
     template_name = 'plants/crud/plant_detail.html'
     
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        
         plant = get_object_or_404(Plant, slug=self.kwargs['slug'])
         
         # who seen plant
@@ -62,6 +78,8 @@ class PlantDetailView(DetailView):
         return context
 
 class PlantCreateView(LoginRequiredMixin, CreateView):
+    """ Add a new plant. User should be authorized.  """
+    
     model = Plant
     form_class = PlantForm
     template_name = 'plants/crud/plant_add.html'
@@ -72,16 +90,28 @@ class PlantCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
     
 class PlantUpdateView(LoginRequiredMixin, UpdateView):
+    """ For update user plant. User should be authorized.  """
+    
     model = Plant
     form_class = PlantEditForm
     template_name = 'plants/crud/plant_update.html'
 
 class PlantDeleteView(LoginRequiredMixin, DeleteView):
+    """
+        For delete user plant. User should be authorized.
+    """
+    
     model = Plant
     template_name = 'plants/crud/plant_delete.html'
     success_url = reverse_lazy('home')
 
 class CategoryPlantView(ListView):
+    """ For rendering plants with certain category. 
+
+    Returns:
+        dict: dict context with keys - category and category_plants
+    """
+    
     model = Plant
     template_name = 'plants/list/category_plant_list.html'
     
@@ -94,6 +124,12 @@ class CategoryPlantView(ListView):
         return context
 
 class LatinNamePlantView(ListView):
+    """ For rendering plants with certain latin name. 
+
+    Returns:
+        dict: dict context with keys - latin_title and latin_plants
+    """
+    
     model = Plant
     template_name = 'plants/list/latin_plant_list.html'
     
@@ -106,6 +142,13 @@ class LatinNamePlantView(ListView):
         return context
 
 class MostLikedPlantView(LoginRequiredMixin, ListView):
+    """ For rendering most liked plants. 
+        User should be authorized.
+
+    Returns:
+        dict: dict data with key most_liked_plants
+    """
+    
     model = Plant
     template_name = 'plants/list/most_liked.html'
     
@@ -116,6 +159,13 @@ class MostLikedPlantView(LoginRequiredMixin, ListView):
         return data
     
 class MostViewedPlantView(LoginRequiredMixin, ListView):
+    """ For rendering most visited plants. 
+        User should be authorized.
+
+    Returns:
+        dict: dict data with key most_viewed_plants
+    """
+    
     model = Plant
     template_name = 'plants/list/most_viewed.html'
     
@@ -126,6 +176,13 @@ class MostViewedPlantView(LoginRequiredMixin, ListView):
         return data
 
 class FavoritesPlantView(LoginRequiredMixin, ListView):
+    """ For rendering user favorites plants . 
+        User should be authorized.
+
+    Returns:
+        dict: dict data with key favor_plants
+    """
+    
     model = Plant
     template_name = 'plants/list/favorites_plant_list.html'
     
@@ -137,6 +194,8 @@ class FavoritesPlantView(LoginRequiredMixin, ListView):
 
 @login_required
 def PlantLike(request, slug):
+    """ Like plant with certain slug  """
+    
     plant = get_object_or_404(Plant, slug=slug)
     if plant.likes.filter(id=request.user.profile.id).exists():
         plant.likes.remove(request.user.profile)
@@ -146,6 +205,8 @@ def PlantLike(request, slug):
 
 @login_required
 def AddFavorites(request, slug):
+    """  Add plant to user's favorites  """
+    
     plant = get_object_or_404(Plant, slug=slug)
     if request.user.profile != plant.owner:
         if plant.fav_plants.filter(id=request.user.profile.id).exists():

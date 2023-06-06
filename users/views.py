@@ -1,13 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse, reverse_lazy
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView
 from django.views.generic.detail import DetailView
-from django.views.generic.list import ListView
 
 from .forms import ProfileForm, UserForm
 from .models import Profile
@@ -16,12 +14,22 @@ from blog.models import Post, Comment
 # Create your views here.
 
 class SignUpView(CreateView):
+    """ Create a new user account  """
+    
     form_class = UserCreationForm
     template_name = 'registration/register.html'
     success_url = reverse_lazy('login')
     success_message = "Your profile was created successfully"
     
 class ProfileView(LoginRequiredMixin, DetailView):
+    """ For render profile page. User should be authorized.
+    Current user can follow or unfollow user from profile page.
+
+    Returns:
+        dict: dict context with keys - profile, posts, 
+            shared_posts, comments and replies
+    """
+    
     model = Profile
     template_name = 'users/profile.html'
     
@@ -39,9 +47,9 @@ class ProfileView(LoginRequiredMixin, DetailView):
         context['shared_posts'] = shared_posts
         context['comments'] = comments
         context['replies'] = replies
-        
         return context
     
+    # to follow, unfollow 
     def post(self, request, **kwargs):
         current_user = request.user.profile
         profile = get_object_or_404(Profile, id=self.kwargs['pk'])
@@ -52,12 +60,17 @@ class ProfileView(LoginRequiredMixin, DetailView):
             current_user.follows.add(profile)
         current_user.save()
         return redirect(request.META.get("HTTP_REFERER"))
-    
-        
+
 class ProfileUpdateView(LoginRequiredMixin, TemplateView):
+    """ Update profile settings. User should be authorized.
+
+    Returns:
+        dict: dict context with keys - user_from and profile_form
+    """
+    
     user_form = UserForm
     profile_form = ProfileForm
-    template_name = 'users/profile-update.html'
+    template_name = 'users/profile_update.html'
     
     def get(self, request, *args, **kwargs):
         return self.post(request)
@@ -66,7 +79,6 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
     def post(self, request):
         post_data = request.POST or None
         file_data = request.FILES or None
-
         user_form = UserForm(post_data, instance=request.user)
         profile_form = ProfileForm(post_data, file_data, instance=request.user.profile)
 
@@ -83,11 +95,3 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
 
         return self.render_to_response(context)     
 
-# def calculate_rating(request):
-#     profiles = Profile.objects.all()
-#     user_rating = 0
-#     for profile in profiles:
-#         rating = request.POST['rating']
-#         user_rating += rating
-#     user_rating = user_rating / Profile.objects.count()
-#     return user_rating

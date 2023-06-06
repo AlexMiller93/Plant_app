@@ -1,27 +1,23 @@
-{% extends 'base.html' %}
-
-{% block title %}Delete Comment{% endblock title %}
-
-{% block content %}
-<h3 style="text-align:center;">Delete comment</h3>
-<br>
-<div class="container col-md-6 col-4 ">
-    
-    <div class="form-group card border-bg-success p-3 my-2">
-        <form action="" method="post">
-            {% csrf_token %}
-            {% if comment.is_parent %}
-                <p>Are you sure you want to delete your comment "{{ comment.content }}" ?</p>
-            {% else %}
-                <p>Are you sure you want to delete your reply "{{ comment.content }}"?</p>
-            {% endif %}
-            <button type="submit" class="btn btn-danger">Delete</button>
-            <a href="{% url 'home' %}" 
-                class="btn btn-secondary">Cancel</a><br>
-        </form>
-    </div>
+{% extends 'base/base.html' %} {% block title %}Delete Comment{% endblock title
+%} {% block content %}
+<h3 style="text-align: center">Delete comment</h3>
+<br />
+<div class="container col-md-6 col-4">
+  <div class="form-group card border-bg-success p-3 my-2">
+    <form action="" method="post">
+      {% csrf_token %} {% if comment.is_parent %}
+      <p>
+        Are you sure you want to delete your comment "{{ comment.content }}" ?
+      </p>
+      {% else %}
+      <p>
+        Are you sure you want to delete your reply "{{ comment.content }}" ?
+      </p>
+      {% endif %}
+      <button type="submit" class="btn btn-danger">Delete</button>
+      <a href="{% url 'home' %}" class="btn btn-secondary">Cancel </a><br />
+    </form>
+  </div>
 </div>
-<br>
+<br />
 {% endblock content %}
-
-

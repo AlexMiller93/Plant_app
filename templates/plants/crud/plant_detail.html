@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base/base.html' %}
 
 {% block title %}{{ plant.title }}{% endblock title %}
 
@@ -74,7 +74,8 @@
                                 </span>
                             </a> · 
                             <i>{{ plant.created_on | time:"H:i" }} ·
-                                {{ plant.created_on | date:"d M Y" }} </i> ·
+                                {{ plant.created_on | date:"d M Y" }} 
+                            </i> ·
 
                             {% if plant.appear_date %}
                                 <small>
@@ -134,7 +135,7 @@
                                 <i class="bi bi-bookmark me-1" style="color:gray"></i>
                             {% endif %}
                         {% endif %}
-
+                        
                         {% if plant.seen_by %}
                             <i class="bi bi-eye-fill me-1"></i>
                             <strong class="text-dark me-1">
@@ -143,7 +144,8 @@
                         {% else %}
                             <i class="bi bi-eye me-2"></i>
                         {% endif %}
-
+                        
+                        <!-- Edit/delete plant -->
                         {% if request.user == plant.owner.user %}
                             <a href="{% url 'plant_edit' plant.slug %}">
                                 <i class="fa-solid fa-pen-to-square"></i>
@@ -157,7 +159,6 @@
 
                 <!-- 2 row Plant content -->
                 <p class="card-text">{{ plant.description }}</p>
-
 
             </div>
         </article>

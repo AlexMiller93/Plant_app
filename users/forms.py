@@ -45,14 +45,15 @@ class UserForm(forms.ModelForm):
         'first_name':TextInput(attrs={'type': 'text'}),
         'last_name':TextInput(attrs={'type': 'text'}),
         'email': EmailInput(attrs={'type': 'email'})
-    }
+        }
+        
     def clean_avatar(self):
         avatar = self.cleaned_data['avatar']
 
         try:
             w, h = get_image_dimensions(avatar)
 
-            #validate dimensions
+            #  dimensions
             max_width = max_height = 100
             if w > max_width or h > max_height:
                 raise forms.ValidationError(

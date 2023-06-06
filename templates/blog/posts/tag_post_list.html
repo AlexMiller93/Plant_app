@@ -1,32 +1,20 @@
-{% extends 'base.html' %}
+{% extends 'base/base.html' %} {% block content %}
+<h2 style="text-align: center">Posts with tag "{{ tag }}"</h2>
+<br /><br />
 
-{% block content %}
-<h2 style="text-align:center;">
-    Posts with tag "{{ tag }}"
-</h2>
-<br><br>
 <div class="container">
-    <a href="{% url 'home' %}" 
-        >Home</a><br>
-    <div class="row">
+  <a href="{% url 'home' %}">Home</a><br />
+  <div class="row">
+    <div class="col-auto col-sm-3 col-md-2 col-lg-2"></div>
 
-        <div class="col-auto col-sm-3 col-md-2 col-lg-2">
-        </div>
-
-        <div class="col-sm-8 col-md-8">
-            {% if tag_posts %}
-                {% for post in tag_posts %}
-                    {% include 'blog/post.html' %}
-                {% endfor %}
-            {% else %}
-                <p> No one post has published with tag "{{ tag }}"</p>
-            {% endif %}
-        </div>
-
-        <div class="col col-md-2"></div>
+    <div class="col-sm-8 col-md-8">
+      {% for post in tag_posts %} {% include 'blog/post.html' %} {% endfor %}
     </div>
+
+    <div class="col col-md-2"></div>
+  </div>
 </div>
 
-<br><br><br>
-        
+<br /><br /><br />
+
 {% endblock content %}
