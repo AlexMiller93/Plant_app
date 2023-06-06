@@ -294,6 +294,23 @@ class MostCommentedPostListView(LoginRequiredMixin, ListView):
         data["most_commented_posts"] = Post.objects.annotate(
                 comment_count=Count('comments')).order_by('-comment_count')
         return data
+    
+class MostViewPostListView(LoginRequiredMixin, ListView):
+    """ For rendering most visited posts. 
+        User should be authorized.
+
+    Returns:
+        dict: dict data with key most_visited_posts
+    """
+    
+    model = Post
+    template_name = 'blog/posts/most_visited.html'
+    
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        data = super().get_context_data(**kwargs)
+        data["most_visited_posts"] = Post.objects.annotate(
+                view_count=Count('seen_by')).order_by('-view_count')
+        return data
 
 class ChangeOrderPostListView(ListView):
     """ For rendering with reverse order posts.

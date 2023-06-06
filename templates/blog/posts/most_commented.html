@@ -9,8 +9,11 @@
     <div class="col-sm-8 col-md-8">
       <a href="{% url 'home' %}">Home</a><br /><br />
 
-      {% if most_commented_posts %} {% for post in most_commented_posts %} {%
-      include 'blog/post.html' %} {% endfor %} {% else %}
+      {% if most_commented_posts %} 
+        {% for post in most_commented_posts %} 
+      {% include 'blog/post.html' %} 
+        {% endfor %} 
+      {% else %}
       <p>No one post has published yet ...</p>
       {% endif %}
     </div>

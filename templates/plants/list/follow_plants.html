@@ -8,9 +8,12 @@
     <div class="col-sm-8 col-md-8">
       <a href="{% url 'home' %}">Home</a><br /><br />
 
-      {% if feed_plants %} {% for plant in feed_plants %} {% include
-      'plants/plant.html' %} {% endfor %} {% else %}
-      <p>Nobody from your follows has shared any plant</p>
+      {% if feed_plants %} 
+        {% for plant in feed_plants %} 
+          {% include 'plants/plant.html' %} 
+        {% endfor %} 
+      {% else %}
+        <p>Nobody from your follows has shared any plant</p>
       {% endif %}
     </div>
 
