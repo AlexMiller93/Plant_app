@@ -8,8 +8,9 @@
     <div class="col-sm-8 col-md-8">
       <a href="{% url 'home' %}">Home</a><br /><br />
 
-      {% for plant in favor_plants %} {% include 'plants/plant.html' %} {%
-      endfor %}
+      {% for plant in favor_plants %} 
+        {% include 'plants/plant.html' %} 
+      {% endfor %}
     </div>
 
     <div class="col col-md-2"></div>

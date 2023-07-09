@@ -1,4 +1,8 @@
-{% extends 'base/base.html' %} {% block content %}
+{% extends 'base/base.html' %} 
+
+{% load static %} 
+
+{% block content %}
 <h2 style="text-align: center">My favorites posts</h2>
 <br /><br />
 
@@ -8,9 +12,12 @@
     <div class="col-auto col-sm-3 col-md-2 col-lg-2"></div>
 
     <div class="col-sm-8 col-md-8">
-      {% if favor_posts %} {% for post in favor_posts %} {% include
-      'blog/post.html' %} {% endfor %} {% else %}
-      <p>{{ profile.user.username }} hasn't noted any post yet ...</p>
+      {% if favor_posts %} 
+        {% for post in favor_posts %} 
+          {% include 'blog/post.html' %} 
+        {% endfor %} 
+      {% else %}
+        <p>{{ profile.user.username }} hasn't noted any post yet ...</p>
       {% endif %}
     </div>
 
@@ -20,4 +27,4 @@
 
 <br /><br /><br />
 
-{% endblock content %}
+{% endblock %}
