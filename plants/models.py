@@ -1,3 +1,6 @@
+import random
+from datetime import datetime
+
 from django.db import models
 from django.conf import settings
 from users.models import Profile
@@ -59,13 +62,11 @@ class Plant(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            import random
             self.slug = random.randint(1, 10000)
 
         if self.appear_date:
-            import datetime
             today = datetime.date.today()
             self.duration = today.year - self.appear_date.year
-            if today.month < self.appear_date.month or today.month == self.appear_date.month and today.day < self.appear_date.day:
+            if today < self.appear_date:
                 self.duration -= 1
         return super().save(*args, **kwargs)

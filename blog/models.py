@@ -1,3 +1,6 @@
+import random
+import string
+
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
@@ -48,10 +51,10 @@ class Post(models.Model):
         return reverse("post_detail", kwargs={"slug": self.slug})
 
     def get_comments(self):
-        return self.comments.filter(reply=None)
+        return self.comments.exclude(reply__isnull=False)
 
     def get_replies(self):
-        return self.comments.exclude(reply=None)
+        return self.comments.filter(reply__isnull=False)
 
     def save(self, *args, **kwargs):
         self.slug = self.generate_slug()
@@ -67,20 +70,9 @@ class Post(models.Model):
 
         `add_random_suffix ` is to make sure that slug field has unique value.
         """
-
-        # We rely on django's slugify function here. But if
-        # it is not sufficient for you needs, you can implement
-        # you own way of generating slugs.
         generated_slug = slugify(self.title)
-
-        # Generate random suffix here.
-        import random, string
-        random_suffix = ""
         if add_random_suffix:
-            random_suffix = ''.join([
-                random.choice(string.digits)
-                for i in range(3)
-            ])
+            random_suffix = ''.join(random.choices(string.digits, k=3))
             generated_slug += '-%s' % random_suffix
 
         if save_to_obj:
@@ -113,10 +105,8 @@ class Comment(models.Model):
 
     @property
     def children(self):
-        return Comment.objects.filter(reply=self).reverse()
+        return Comment.objects.filter(reply=self).order_by('-id')
 
     @property
     def is_parent(self):
-        if self.reply is None:
-            return True
-        return False
+        return self.reply is None

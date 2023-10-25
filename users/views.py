@@ -59,11 +59,14 @@ class ProfileView(LoginRequiredMixin, DetailView):
         profile_id = self.kwargs['pk']
         profile = get_object_or_404(Profile, id=profile_id)
         action = request.POST['follow']
+
         if action == "Unfollow":
             current_user.follows.remove(profile)
         elif action == "Follow":
             current_user.follows.add(profile)
+
         current_user.save()
+
         return redirect(request.META.get("HTTP_REFERER"))
 
 
