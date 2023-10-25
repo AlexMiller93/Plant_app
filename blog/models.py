@@ -1,22 +1,23 @@
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
 from users.models import Profile
 
+
 # Create your models here.
 
 class Post(models.Model):
+    objects = None
     title = models.CharField(max_length=128)
     tag = models.CharField(max_length=128)
-    author = models.ForeignKey(Profile, 
-            related_name='posts',
-            on_delete=models.CASCADE)
+    author = models.ForeignKey(Profile,
+                               related_name='posts',
+                               on_delete=models.CASCADE)
     slug = models.SlugField(unique=True)
     content = models.TextField(
-        help_text="You can write your thoughts here...", 
+        help_text="You can write your thoughts here...",
         blank=True, null=True)
     images = models.ImageField(
         upload_to='images/users/plants/',
@@ -35,23 +36,23 @@ class Post(models.Model):
         Profile, related_name="favorites", default=None, blank=True)
     share = models.ManyToManyField(
         Profile, related_name="shared_post", default=None, blank=True)
-    
+
     class Meta:
         verbose_name = "post"
         ordering = ['-created_on']
-    
+
     def __str__(self):
         return self.title
-    
+
     def get_absolute_url(self):
         return reverse("post_detail", kwargs={"slug": self.slug})
-    
+
     def get_comments(self):
         return self.comments.filter(reply=None)
-    
+
     def get_replies(self):
         return self.comments.exclude(reply=None)
-    
+
     def save(self, *args, **kwargs):
         self.slug = self.generate_slug()
         return super().save(*args, **kwargs)
@@ -85,11 +86,12 @@ class Post(models.Model):
         if save_to_obj:
             self.slug = generated_slug
             self.save(update_fields=['slug'])
-        
+
         return generated_slug
-    
+
 
 class Comment(models.Model):
+    objects = None
     post = models.ForeignKey(Post, related_name="comments", on_delete=models.CASCADE)
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     content = models.TextField(
@@ -101,14 +103,14 @@ class Comment(models.Model):
     reply = models.ForeignKey(
         'self', null=True, blank=True,
         on_delete=models.CASCADE, related_name='replies')
-    
+
     class Meta:
         verbose_name = "comment"
-        ordering=['-created_on']
-    
+        ordering = ['-created_on']
+
     def __str__(self):
-        return self.content 
-    
+        return self.content
+
     @property
     def children(self):
         return Comment.objects.filter(reply=self).reverse()
@@ -118,4 +120,3 @@ class Comment(models.Model):
         if self.reply is None:
             return True
         return False
-    

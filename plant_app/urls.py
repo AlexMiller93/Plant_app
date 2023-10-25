@@ -18,28 +18,22 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from users.views import (
-    ProfileUpdateView, 
-    ProfileView, 
-    SignUpView,
-    # calculate_rating
-    )
-
+from users import views
 
 urlpatterns = [
     path('admin/', admin.site.urls, name="admin"),
-    
+
     path('', include('blog.urls')),
     path('plants/', include('plants.urls')),
+    path('users/', include('users.urls')),
     path('users/', include("django.contrib.auth.urls")),
-    
-    path('signup/', SignUpView.as_view(), name='signup'),
-    path('profile/<int:pk>/', ProfileView.as_view(), 
-        name='user_profile'),
-    path('profile/edit/', ProfileUpdateView.as_view(), 
-        name='update_profile'),
-    
-    # path('', calculate_rating, name='calc_rating'),
+
+    path('signup/', views.SignUpView.as_view(), name='signup'),
+    path('profile/<int:pk>/', views.ProfileView.as_view(),
+         name='user_profile'),
+    path('profile/edit/', views.ProfileUpdateView.as_view(),
+         name='update_profile'),
+
 ]
 
 if settings.DEBUG:

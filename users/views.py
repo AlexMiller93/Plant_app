@@ -11,16 +11,18 @@ from .forms import ProfileForm, UserForm
 from .models import Profile
 from blog.models import Post, Comment
 
+
 # Create your views here.
 
 class SignUpView(CreateView):
     """ Create a new user account  """
-    
+
     form_class = UserCreationForm
     template_name = 'registration/register.html'
     success_url = reverse_lazy('login')
     success_message = "Your profile was created successfully"
-    
+
+
 class ProfileView(LoginRequiredMixin, DetailView):
     """ For render profile page. User should be authorized.
     Current user can follow or unfollow user from profile page.
@@ -29,30 +31,33 @@ class ProfileView(LoginRequiredMixin, DetailView):
         dict: dict context with keys - profile, posts, 
             shared_posts, comments and replies
     """
-    
+
     model = Profile
     template_name = 'users/profile.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super(ProfileView, self).get_context_data(**kwargs)
         profile = get_object_or_404(Profile, id=self.kwargs['pk'])
-        
+
         posts = Post.objects.filter(author=profile)
         shared_posts = Post.objects.filter(share=profile)
         comments = Comment.objects.filter(author=profile).exclude(reply=None)
         replies = Comment.objects.filter(author=profile)
-        
-        context['profile'] = profile
-        context['posts'] = posts
-        context['shared_posts'] = shared_posts
-        context['comments'] = comments
-        context['replies'] = replies
+
+        context.update({
+            'profile': profile,
+            'posts': posts,
+            'shared_posts': shared_posts,
+            'comments': comments,
+            'replies': replies
+        })
         return context
-    
+
     # to follow, unfollow 
     def post(self, request, **kwargs):
         current_user = request.user.profile
-        profile = get_object_or_404(Profile, id=self.kwargs['pk'])
+        profile_id = self.kwargs['pk']
+        profile = get_object_or_404(Profile, id=profile_id)
         action = request.POST['follow']
         if action == "Unfollow":
             current_user.follows.remove(profile)
@@ -61,20 +66,21 @@ class ProfileView(LoginRequiredMixin, DetailView):
         current_user.save()
         return redirect(request.META.get("HTTP_REFERER"))
 
+
 class ProfileUpdateView(LoginRequiredMixin, TemplateView):
     """ Update profile settings. User should be authorized.
 
     Returns:
         dict: dict context with keys - user_from and profile_form
     """
-    
+
     user_form = UserForm
     profile_form = ProfileForm
     template_name = 'users/profile_update.html'
-    
+
     def get(self, request, *args, **kwargs):
         return self.post(request)
-    
+
     # when post new data - use post method
     def post(self, request):
         post_data = request.POST or None
@@ -88,10 +94,5 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
             messages.success(request, 'Your profile is updated successfully!')
             return HttpResponseRedirect(reverse_lazy('home'))
 
-        context = self.get_context_data(
-                                        user_form=user_form,
-                                        profile_form=profile_form
-                                    )
-
-        return self.render_to_response(context)     
-
+        context = self.get_context_data(user_form=user_form, profile_form=profile_form)
+        return self.render_to_response(context)
