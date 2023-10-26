@@ -2,22 +2,17 @@ from itertools import chain
 from typing import Any, Dict
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q
-from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from users.models import Profile
+from ..forms import CommentForm, PostEditForm, PostForm
+from ..models import Comment, Post
 
-from .forms import CommentForm, PostEditForm, PostForm
-from .models import Comment, Post
-
-
-# Create your views here.
 
 class HomeView(ListView):
     """ For rendering all posts, users and tags on main page
@@ -43,14 +38,14 @@ class HomeView(ListView):
 
 
 class PostDetailView(DetailView):
-    """ For rendering one post for your pk, 
+    """ For rendering one post for your pk,
         - to calculate quantity of comments, replies
         - to write comment under the post
         - to write reply under comment
         - to like current post
 
     Returns:
-        dict: dict data with keys - post_is_liked, 
+        dict: dict data with keys - post_is_liked,
         comments, replies, comment_form
     """
 
@@ -113,8 +108,8 @@ class PostDetailView(DetailView):
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
-    """ Create post. 
-        User should be authorized. Post's author will be current user.  
+    """ Create post.
+        User should be authorized. Post's author will be current user.
     """
 
     model = Post
@@ -202,7 +197,7 @@ class TagPostListView(ListView):
 class SearchPostListView(ListView):
     """ For rendering posts which found for certain search request
     User can find for plant title, plant tag, plant content
-    
+
 
     Returns:
         dict: dict context with keys - query and posts
@@ -267,7 +262,7 @@ class FavoritesPostListView(LoginRequiredMixin, ListView):
 
 
 class MostLikedPostListView(LoginRequiredMixin, ListView):
-    """ For rendering most liked posts. 
+    """ For rendering most liked posts.
         User should be authorized.
 
     Returns:
@@ -286,7 +281,7 @@ class MostLikedPostListView(LoginRequiredMixin, ListView):
 
 
 class MostCommentedPostListView(LoginRequiredMixin, ListView):
-    """ For rendering most commented posts. 
+    """ For rendering most commented posts.
         User should be authorized.
 
     Returns:
@@ -305,7 +300,7 @@ class MostCommentedPostListView(LoginRequiredMixin, ListView):
 
 
 class MostViewPostListView(LoginRequiredMixin, ListView):
-    """ For rendering most visited posts. 
+    """ For rendering most visited posts.
         User should be authorized.
 
     Returns:
@@ -338,130 +333,3 @@ class ChangeOrderPostListView(ListView):
         context = super().get_context_data(**kwargs)
         context["posts"] = Post.objects.order_by('created_on')
         return context
-
-
-class CommentUpdateView(LoginRequiredMixin, UpdateView):
-    """ For edit comment.
-    Redirects after checking form
-    User should be authorized.
-
-    Args:
-        LoginRequiredMixin (_type_): _description_
-        UpdateView (_type_): _description_
-
-    Returns:
-        dict: dict data with keys - post and comment
-    """
-
-    model = Comment
-    fields = ['content']
-    template_name = 'blog/comment/comment_update.html'  # <app>/<model>_<viewtype>.html
-
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        post = get_object_or_404(Post, slug=self.kwargs['slug'])
-        comment = get_object_or_404(Comment, post=post, pk=self.kwargs['pk'])
-        return {
-            'post': post,
-            'comment': comment,
-            **super().get_context_data(**kwargs)
-        }
-
-    def form_invalid(self, form):
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        post = Post.objects.get(slug=self.object.post.slug)
-        return post.get_absolute_url()
-
-
-class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    """ For delete comment.  
-    User should be authorized.
-
-    Returns:
-        dict: dict data with keys - post and comment
-    """
-
-    model = Comment
-    template_name = 'blog/comment/comment_confirm_delete.html'  # <app>/<model>_<viewtype>.html
-
-    def get_success_url(self):
-        post = Post.objects.get(slug=self.object.post.slug)
-        return post.get_absolute_url()
-
-    def test_func(self):
-        comment = self.get_object()
-        if self.request.user.profile == comment.author:
-            return True
-        return False
-
-
-@login_required
-def post_like(request, slug):
-    """
-    Like or unlike a post based on the user's preference.
-
-    Args:
-        request (HttpRequest): The HTTP request object.
-        slug (str): The slug of the post to be liked or unliked.
-
-    Returns:
-        HttpResponseRedirect: Redirects the user back to the previous page.
-    """
-
-    post = get_object_or_404(Post, slug=slug)
-    is_liked = post.likes.filter(id=request.user.profile.id).exists()
-
-    if is_liked:
-        post.likes.remove(request.user.profile)
-    else:
-        post.likes.add(request.user.profile)
-
-    return redirect(request.META.get("HTTP_REFERER"))
-
-
-@login_required
-def comment_like(request, slug, pk):
-    """ Like comment post from certain slug """
-
-    post = get_object_or_404(Post, slug=slug)
-    comment = get_object_or_404(Comment, post=post, pk=pk)
-
-    profile_id = request.user.profile.id
-    likes = comment.likes
-    if profile_id in likes.values_list('id', flat=True):
-        likes.remove(request.user.profile)
-    else:
-        likes.add(request.user.profile)
-    return redirect(request.META.get("HTTP_REFERER"))
-
-
-@login_required
-def add_favorites(request, slug):
-    """ Add post from certain slug to favorites  """
-
-    post = get_object_or_404(Post, slug=slug)
-    user_profile = request.user.profile
-    favorites = post.favorites
-
-    if user_profile != post.author:
-        if user_profile.id in favorites:
-            favorites.remove(user_profile)
-        else:
-            favorites.add(user_profile)
-    return redirect(request.META.get("HTTP_REFERER"))
-
-
-@login_required
-def share_post(request, slug):
-    """ To share post from certain slug """
-
-    post = get_object_or_404(Post, slug=slug)
-    user_profile = request.user.profile
-
-    if user_profile != post.author:
-        if post.share.filter(id=user_profile.id).exists():
-            post.share.remove(user_profile)
-        else:
-            post.share.add(user_profile)
-    return redirect(request.META.get("HTTP_REFERER"))
