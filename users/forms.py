@@ -18,17 +18,18 @@ class ProfileForm(forms.ModelForm):
             'user_status',
             'sex'
         ]
-        
+
         labels = {
             'birth_date': 'Your birthday'
         }
-        
+
         widgets = {
-        'avatar': FileInput(attrs={'type': 'file'}),
-        'bio':TextInput(attrs={'type': 'text'}),
-        'location':TextInput(attrs={'type': 'text'}),
-        'birth_date': DateInput(attrs={'type': 'date'})
-    }
+            'avatar': FileInput(attrs={'type': 'file'}),
+            'bio': TextInput(attrs={'type': 'text'}),
+            'location': TextInput(attrs={'type': 'text'}),
+            'birth_date': DateInput(attrs={'type': 'date'})
+        }
+
 
 class UserForm(forms.ModelForm):
     class Meta:
@@ -41,12 +42,12 @@ class UserForm(forms.ModelForm):
         ]
 
         widgets = {
-        'username':TextInput(attrs={'type': 'text'}),
-        'first_name':TextInput(attrs={'type': 'text'}),
-        'last_name':TextInput(attrs={'type': 'text'}),
-        'email': EmailInput(attrs={'type': 'email'})
+            'username': TextInput(attrs={'type': 'text'}),
+            'first_name': TextInput(attrs={'type': 'text'}),
+            'last_name': TextInput(attrs={'type': 'text'}),
+            'email': EmailInput(attrs={'type': 'email'})
         }
-        
+
     def clean_avatar(self):
         avatar = self.cleaned_data['avatar']
 
@@ -60,13 +61,13 @@ class UserForm(forms.ModelForm):
                     u'Please use an image that is '
                     '%s x %s pixels or smaller.' % (max_width, max_height))
 
-            #validate content type
+            # validate content type
             main, sub = avatar.content_type.split('/')
             if not (main == 'image' and sub in ['jpeg', 'jpg', 'gif', 'png']):
                 raise forms.ValidationError(u'Please use a JPEG, '
-                    'GIF or PNG image.')
+                                            'GIF or PNG image.')
 
-            #validate file size
+            # validate file size
             if len(avatar) > (20 * 1024):
                 raise forms.ValidationError(
                     u'Avatar file size may not exceed 20k.')

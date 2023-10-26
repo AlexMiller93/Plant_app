@@ -35,7 +35,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
     model = Profile
     template_name = 'users/profile.html'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: object) -> object:
         context = super(ProfileView, self).get_context_data(**kwargs)
         profile = get_object_or_404(Profile, id=self.kwargs['pk'])
 
@@ -54,7 +54,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
         return context
 
     # to follow, unfollow 
-    def post(self, request, **kwargs):
+    def post(self, request: object, **kwargs: object) -> object:
         current_user = request.user.profile
         profile_id = self.kwargs['pk']
         profile = get_object_or_404(Profile, id=profile_id)
@@ -81,11 +81,11 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
     profile_form = ProfileForm
     template_name = 'users/profile_update.html'
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: object, *args: object, **kwargs: object) -> object:
         return self.post(request)
 
     # when post new data - use post method
-    def post(self, request):
+    def post(self, request: object) -> object:
         post_data = request.POST or None
         file_data = request.FILES or None
         user_form = UserForm(post_data, instance=request.user)
@@ -99,3 +99,6 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
 
         context = self.get_context_data(user_form=user_form, profile_form=profile_form)
         return self.render_to_response(context)
+
+    def put(self):
+        pass

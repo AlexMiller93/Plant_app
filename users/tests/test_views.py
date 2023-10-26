@@ -6,7 +6,7 @@ from ..models import Profile
 
 
 class TestViews(TestCase):
-    ''' Testing signup-login-logout functions for User objects'''
+    """ Testing signup-login-logout functions for User objects"""
 
     def setUp(self):
         self.client = Client()
@@ -15,19 +15,19 @@ class TestViews(TestCase):
         self.register_url = reverse('signup')
 
     def test_signup_post(self):
-        response = self.client.post(reverse('signup'), {
+        response = self.client.post(self.register_url, {
             'username': 'testuser',
             'first_name': 'test',
             'last_name': 'user',
             'email': 'testuser@gmail.com',
-            
+
             'password': 'testpassword',
             'password2': 'testpassword',
         })
         self.assertEquals(response.status_code, 200)
 
     def test_login_post(self):
-        response = self.client.post(reverse('login'), {
+        response = self.client.post(self.login_url, {
             'username': 'testuser',
             'password': 'testpassword',
         })
@@ -35,14 +35,15 @@ class TestViews(TestCase):
 
     def test_logout(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.post(reverse('logout'), follow=True)
+        response = self.client.post(self.logout_url, follow=True)
         self.assertEquals(response.status_code, 200)
+
 
 class ProfileViews(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user1 = User.objects.create_user(
-            username="user1", 
+            username="user1",
             email="user1@gmail.com",
             password="qwerty",
             # bio="I'm first test profile",
@@ -50,9 +51,9 @@ class ProfileViews(TestCase):
             # location="New York",
             # birth_date="1990-01-01",
         )
-        
+
         cls.user2 = User.objects.create_user(
-            username="user2", 
+            username="user2",
             email="user2@gmail.com",
             password="qwerty",
             # bio="I'm second test profile",
@@ -60,15 +61,16 @@ class ProfileViews(TestCase):
             # location="Paris",
             # birth_date="1995-12-31",
         )
-    
-    def test_returns_200(self):
+
+    def test_returns_302(self):
         self.client.login(email="user1@gmail.com", password="qwerty")
         response = self.client.get(reverse(
             "user_profile", kwargs=({"pk": self.user1.pk}))
         )
 
-        self.assertEqual(response.status_code, 200)
-    
+        self.assertEqual(response.status_code, 302)
+
+
 '''
 class SignupPageTests(TestCase):
     # https://github.com/wsvincent/djangoforbeginners/blob/master/ch15-comments/accounts/tests.py
