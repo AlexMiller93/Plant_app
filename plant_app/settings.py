@@ -43,7 +43,8 @@ DEFAULT_APPS = [
 THIRD_PARTY_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
-    'fontawesomefree'
+    'fontawesomefree',
+    'taggit',
 ]
 
 # add local apps which you create using startapp

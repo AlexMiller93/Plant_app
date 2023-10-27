@@ -29,23 +29,25 @@
                         {{ post.title }}
                     </a>
                 </h6>
-                {% if post.tag %}
-                    <a href="{% url 'tag_posts' post.tag %}">
-                        <span class="badge bg-warning text-dark">#{{ post.tag }}</span>
-                    </a>
+                {% if post.tags %} <!-- If post has one tag or several tags-->
+                    {% for tag in post.tags.all %}
+                        <a href="{% url 'tag_posts' tag.slug %}">
+                            <span class="badge bg-warning text-dark">#{{ tag }}</span>
+                        </a>
+                    {% endfor %}
                 {% endif %}
                 <p class="mb-2 text-body-secondary">
-                    by <strong>{{ post.author | capfirst }}</strong> · 
+                    by <strong>{{ post.author | capfirst }}</strong> ·
                     <a href="{% url 'status_posts' post.author.user_status %}">
                         <span class="badge rounded-pill text-bg-success" id="user_status">
                             {{ post.author.user_status }}
                         </span>
-                    </a> · 
+                    </a> ·
                     <i>
                         {{ post.created_on | time:"H:i" }} ·
-                        {{ post.created_on | date:"d M Y" }} 
+                        {{ post.created_on | date:"d M Y" }}
                     </i>
-                    {% if post.created_on != post.updated_on %} 
+                    {% if post.created_on != post.updated_on %}
                     · <small class="text-decoration-none">last updated in {{ post.updated_on | timesince }}</small>
                     {% endif %}
                 </p>

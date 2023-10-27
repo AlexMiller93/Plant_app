@@ -3,11 +3,14 @@ from typing import Any, Dict
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
+from taggit.models import Tag
 
 from users.models import Profile
 from ..forms import CommentForm, PostEditForm, PostForm
@@ -29,11 +32,33 @@ class HomeView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        profiles = Profile.objects.order_by('-created_on')
-        context["profiles"] = profiles
 
-        posts = Post.objects.values_list('tag', flat=True).distinct().order_by('-created_on')
-        context["tags"] = posts
+        profiles = Profile.objects.order_by('-created_on')
+
+        # TODO: do backend to show for unique tags
+        # posts = Post.objects.values_list('tags', flat=True).distinct().order_by('-created_on')
+
+
+        posts = Post.objects.all()  # all posts in db
+        # tags = Tag.objects.all() # all tags in Tag model
+        # tags = [post.tags for post in posts]
+        # tags = list(set(tags))
+        # tags = Tag.objects.filter(post__in=posts).distinct()
+        tags = Tag.objects.filter(post__id__in=posts).distinct()
+
+        context["profiles"] = profiles
+        context["tags"] = tags
+        context["posts"] = posts
+        return context
+
+    def get_context(self, request):
+        context = super(HomeView, self).get_context(request)
+
+        blog_content_type = ContentType.objects.get_for_model(Post)
+        tags = Tag.objects.filter(
+            taggit_taggeditem_items__content_type=blog_content_type
+        )
+        context["tags"] = tags
         return context
 
 
@@ -65,7 +90,8 @@ class PostDetailView(DetailView):
             post.seen_by.add(self.request.user)
 
         # calculate quantity of comments and replies
-        comments = Comment.objects.filter(post=self.get_object(), reply=None)
+        comments = post.comments.all()
+        # comments = Comment.objects.filter(post=self.get_object(), reply=None)
         replies = Comment.objects.exclude(post=self.get_object(), reply=None)
 
         data['comments'] = comments
@@ -119,7 +145,20 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user.profile
+        # form.save_m2m()
         return super().form_valid(form)
+
+
+"""
+if request.method == "POST":
+    form = MyFormClass(request.POST)
+    if form.is_valid():
+        obj = form.save(commit=False)
+        obj.user = request.user
+        obj.save()
+        # Without this next line the tags won't be saved.
+        form.save_m2m()
+"""
 
 
 class PostUpdateView(LoginRequiredMixin, UpdateView):
@@ -188,9 +227,12 @@ class TagPostListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        tag = self.kwargs['tag']
-        context["tag_posts"] = Post.objects.filter(tag=tag).order_by('-created_on')
-        context["tag"] = tag
+        tag = get_object_or_404(Tag, slug=self.kwargs['tag_slug'])
+        tags_posts = Post.objects.filter(tags=tag)
+        context.update({
+            'tag': tag,
+            'tag_posts': tags_posts
+        })
         return context
 
 

@@ -1,17 +1,17 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from .models import Post, Comment
-
+from taggit.forms import TagWidget
 
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = (
-            'title', 'tag', 'content')
+            'title', 'tags', 'content')
 
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'tag': forms.TextInput(attrs={'class': 'form-control'}),
+            'tags': TagWidget(),
             'content': forms.Textarea(attrs={'class': 'form-control'}),
         }
 
@@ -20,11 +20,11 @@ class PostEditForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = (
-            'title', 'tag', 'content')
+            'title', 'tags', 'content')
 
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'tag': forms.TextInput(attrs={'class': 'form-control'}),
+            'tags': TagWidget(),
             'content': forms.Textarea(attrs={'class': 'form-control'}),
         }
 

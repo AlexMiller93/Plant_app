@@ -6,6 +6,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
+from taggit.managers import TaggableManager
+
 from users.models import Profile
 
 
@@ -14,10 +16,8 @@ from users.models import Profile
 class Post(models.Model):
     objects = None
     title = models.CharField(max_length=128)
-    tag = models.CharField(max_length=128)
-    author = models.ForeignKey(Profile,
-                               related_name='posts',
-                               on_delete=models.CASCADE)
+    tags = TaggableManager()
+    author = models.ForeignKey(Profile, related_name='posts', on_delete=models.CASCADE)
     slug = models.SlugField(unique=True)
     content = models.TextField(
         help_text="You can write your thoughts here...",
@@ -101,7 +101,7 @@ class Comment(models.Model):
         ordering = ['-created_on']
 
     def __str__(self):
-        return self.content
+        return f'Comment by {self.author} on {self.post}'
 
     @property
     def children(self):

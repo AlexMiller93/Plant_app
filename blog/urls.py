@@ -1,8 +1,8 @@
 from django.urls import path
 
-from views.comment_views import *
-from views.post_views import *
-from views.func_views import *
+from .views.comment_views import *
+from .views.post_views import *
+from .views.func_views import *
 
 
 urlpatterns = [
@@ -21,7 +21,7 @@ urlpatterns = [
     # post list classes
     path('user_posts/<int:pk>/', UserPostListView.as_view(),
          name='user_posts'),
-    path('tag_posts/<str:tag>/', TagPostListView.as_view(),
+    path('tag_posts/<slug:tag_slug>/', TagPostListView.as_view(),
          name='tag_posts'),
     path('search_posts/', SearchPostListView.as_view(),
          name='search_posts'),
