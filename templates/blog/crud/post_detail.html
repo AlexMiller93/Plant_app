@@ -202,7 +202,7 @@
       </div>
     </div>
 
-    <!-- 3 row Comment form -->
+    <!-- 5 row Comment form -->
     <div class="row my-2">
       <form action="" method="POST">
         <div class="col-auto">
@@ -217,7 +217,7 @@
       </form>
     </div>
 
-    <!-- 4 row Render Comments and replies -->
+    <!-- 6 row Render Comments and replies -->
     <div class="row">
       {% if comments %} {% include 'blog/comment/comments.html' %} {% else %}
       <div class="row">
@@ -225,8 +225,23 @@
       </div>
       {% endif %}
     </div>
+    <hr>
+
+    <!-- 7 row Render links to similar posts -->
+    <div class="row">
+      <h6>Read this posts</h6>
+      {% for post in similar_posts %}
+        <p>
+          <a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
+        </p>
+      {% empty %}
+        <p>No one similar posts</p>
+      {% endfor %}
+    </div>
   </article>
   <!-- End Post -->
+
+
 </div>
 
 <br /><br />

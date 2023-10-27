@@ -38,7 +38,6 @@ class HomeView(ListView):
         # TODO: do backend to show for unique tags
         # posts = Post.objects.values_list('tags', flat=True).distinct().order_by('-created_on')
 
-
         posts = Post.objects.all()  # all posts in db
         # tags = Tag.objects.all() # all tags in Tag model
         # tags = [post.tags for post in posts]
@@ -94,9 +93,20 @@ class PostDetailView(DetailView):
         # comments = Comment.objects.filter(post=self.get_object(), reply=None)
         replies = Comment.objects.exclude(post=self.get_object(), reply=None)
 
-        data['comments'] = comments
-        data['replies'] = replies
-        data['comment_form'] = CommentForm()
+        # find similar posts
+        # if post.tags:
+        post_tags_id = post.tags.values_list('id', flat=True)
+        similar_posts = Post.objects.filter(tags__in=post_tags_id).exclude(id=post.id)
+        similar_posts = similar_posts.annotate(
+            same_tags=Count('tags')).order_by('-same_tags', '-created_on')[:3]
+
+        data.update({
+            'comments': comments,
+            'replies': replies,
+            'comment_form': CommentForm(),
+            'similar_posts': similar_posts,
+
+        })
         return data
 
     # write comment or reply
@@ -147,18 +157,6 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user.profile
         # form.save_m2m()
         return super().form_valid(form)
-
-
-"""
-if request.method == "POST":
-    form = MyFormClass(request.POST)
-    if form.is_valid():
-        obj = form.save(commit=False)
-        obj.user = request.user
-        obj.save()
-        # Without this next line the tags won't be saved.
-        form.save_m2m()
-"""
 
 
 class PostUpdateView(LoginRequiredMixin, UpdateView):
