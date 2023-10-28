@@ -41,6 +41,7 @@ DEFAULT_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.sitemaps',
+    'django.contrib.postgres',
 ]
 
 # add apps which you install using pip

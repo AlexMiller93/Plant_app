@@ -4,6 +4,7 @@ from typing import Any, Dict
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.search import SearchVector
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -249,10 +250,10 @@ class SearchPostListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         query = self.request.GET.get('q')
-        posts = self.model.objects.filter(
-            Q(content__icontains=query) |
-            Q(title__icontains=query) |
-            Q(tag__icontains=query)).order_by('-created_on') if query else self.model.objects.none()
+
+        posts = self.model.objects.annotate(
+            search=SearchVector('content', 'title'),
+                ).filter(search=query).distinct().order_by('-created_on')
 
         context["query"] = query
         context["posts"] = posts
