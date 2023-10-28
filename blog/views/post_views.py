@@ -4,7 +4,7 @@ from typing import Any, Dict
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -251,13 +251,35 @@ class SearchPostListView(ListView):
         context = super().get_context_data(**kwargs)
         query = self.request.GET.get('q')
 
+        """
+        
+        # -- search against multiple fields
+        posts = self.model.objects.annotate(
+            search=SearchVector('content', 'title'),
+                ).filter(search=query).order_by('-created_on')
+        
+        # -- stemming and ranking search
         search_vector = SearchVector('content', 'title')
         search_query = SearchQuery(query)
-
+        
         posts = self.model.objects.annotate(
             search=search_vector,
             rank=SearchRank(search_vector, search_query)
                 ).filter(search=search_query).order_by('-rank')
+                
+        # -- weighting queries
+        search_vector = SearchVector('title', weight='A') + SearchVector('content', weight='B')
+        search_query = SearchQuery(query)
+        posts = self.model.objects.annotate(
+            rank=SearchRank(search_vector, search_query)
+        ).filter(rank__gte=0.2).order_by('-rank')
+        
+        """
+
+        # search with trigram similarity
+        posts = self.model.objects.annotate(
+            similarity=TrigramSimilarity('title', query),
+        ).filter(similarity__gt=0.2).order_by('similarity')
 
         context["query"] = query
         context["posts"] = posts
