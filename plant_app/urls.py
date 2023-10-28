@@ -16,9 +16,17 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
 
+from blog.sitemaps import PostSitemap, CommentSitemap
+
 from users import views
+
+sitemaps = {
+    'posts': PostSitemap,
+    # 'comments': CommentSitemap
+}
 
 urlpatterns = [
     path('admin/', admin.site.urls, name="admin"),
@@ -33,6 +41,10 @@ urlpatterns = [
          name='user_profile'),
     path('profile/edit/', views.ProfileUpdateView.as_view(),
          name='update_profile'),
+
+    # sitemap staff
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps},
+         name='django.contrib.sitemaps.views.sitemap')
 
 ]
 

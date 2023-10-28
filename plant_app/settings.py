@@ -30,6 +30,8 @@ DEBUG = os.environ.get("DEBUG")
 
 ALLOWED_HOSTS = ['*']
 
+SITE_ID = 1
+
 DEFAULT_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,6 +39,8 @@ DEFAULT_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
 ]
 
 # add apps which you install using pip
