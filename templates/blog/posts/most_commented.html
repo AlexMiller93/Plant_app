@@ -1,6 +1,10 @@
-{% extends 'base/base.html' %} {% block content %}
+{% extends 'base/base.html' %}
+{% load blog_tags %}
+
+{% block content %}
 <h2 style="text-align: center">Most commented posts</h2>
 <br /><br />
+
 
 <div class="container">
   <div class="row">
@@ -8,13 +12,12 @@
 
     <div class="col-sm-8 col-md-8">
       <a href="{% url 'home' %}">Home</a><br /><br />
-
-      {% if most_commented_posts %} 
-        {% for post in most_commented_posts %} 
-      {% include 'blog/post.html' %} 
-        {% endfor %} 
+      {% if most_commented_posts %}
+        {% for post in most_commented_posts %}
+          {% include 'blog/post.html' %}
+        {% endfor %}
       {% else %}
-      <p>No one post has published yet ...</p>
+        <p>Nobody wrote any comment to {{ profile.user.username }}'s post yet ...</p>
       {% endif %}
     </div>
 

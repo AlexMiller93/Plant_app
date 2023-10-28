@@ -1,0 +1,47 @@
+from django import template
+from django.db.models import Count
+
+from ..models import Post
+
+register = template.Library()
+
+
+@register.inclusion_tag('blog/posts/latest_posts.html')
+def show_latest_posts(pk=None, count=5):
+    if pk:
+        latest_posts = Post.objects.filter(author__id=pk).order_by('-created_on')[:count]
+    else:
+        latest_posts = Post.objects.all().order_by('-created_on')[:count]
+    return {'latest_posts': latest_posts}
+
+
+@register.simple_tag()
+def get_most_liked_posts(pk=None, count=2):
+    if pk:
+        return Post.objects.filter(author__id=pk).annotate(
+            total_likes=Count('likes')).order_by('-created_on')[:count]
+    else:
+        return Post.objects.annotate(
+            total_likes=Count('likes')).order_by('-created_on')[:count]
+
+
+@register.simple_tag()
+def get_most_commented_posts(pk=None, count=2):
+    if pk:
+        return Post.objects.filter(author__id=pk).annotate(
+            total_likes=Count('comments')).order_by('-created_on')[:count]
+    else:
+        return Post.objects.annotate(
+            total_likes=Count('comments')).order_by('-created_on')[:count]
+
+
+@register.simple_tag()
+def get_most_visited_posts(pk=None, count=5):
+    if pk:
+        return Post.objects.filter(author__id=pk).annotate(
+            total_likes=Count('seen_by')).order_by('-created_on')[:count]
+    else:
+        return Post.objects.annotate(
+            total_likes=Count('seen_by')).order_by('-created_on')[:count]
+
+

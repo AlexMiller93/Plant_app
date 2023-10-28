@@ -82,7 +82,7 @@
 
                 <!-- 2 row Comment form -->
                 <div class="row">
-                    <!-- For nested comments - replyes -->
+                    <!-- For nested comments - replies -->
                     <form action=" " method="POST" id="main_form" class="comment_form">
                         <div class="">
                             <label for="comment">&nbsp;Reply here: </label>
@@ -97,6 +97,7 @@
             
             <!-- For replied comments (child comments)-->
             {% if comment.children %}
+
                 {% for replies in comment.replies.all %}
                     <div class="row m-2">
                         &nbsp; &nbsp; &nbsp; &nbsp;

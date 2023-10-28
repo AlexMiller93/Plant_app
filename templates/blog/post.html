@@ -25,9 +25,7 @@
             <!-- Post attributes -->
             <div class="col-auto px-0">
                 <h6 class="card-title">
-                    <a href="{% url 'post_detail' post.slug %}">
-                        {{ post.title }}
-                    </a>
+                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
                 </h6>
                 {% if post.tags %} <!-- If post has one tag or several tags-->
                     {% for tag in post.tags.all %}

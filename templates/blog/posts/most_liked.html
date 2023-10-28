@@ -1,5 +1,11 @@
-{% extends 'base/base.html' %} {% block content %}
+{% extends 'base/base.html' %}
+
+
+{% block content %}
+
 <h2 style="text-align: center">Most liked posts</h2>
+{% get_most_liked_posts 1 as most_liked_posts %}
+
 <br /><br />
 
 <div class="container">
@@ -8,13 +14,12 @@
 
     <div class="col-sm-8 col-md-8">
       <a href="{% url 'home' %}">Home</a><br /><br />
-
-      {% if most_liked_posts %} 
-        {% for post in most_liked_posts %} 
-          {% include 'blog/post.html' %} 
-        {% endfor %} 
+      {% if most_liked_posts %}
+        {% for post in most_liked_posts %}
+          {% include 'blog/post.html' %}
+        {% endfor %}
       {% else %}
-        <p>No one post has published yet ...</p>
+        <p>Nobody put likes to  any {{ profile.user.username }}'s post yet ...</p>
       {% endif %}
     </div>
 

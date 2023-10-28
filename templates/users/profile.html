@@ -1,10 +1,7 @@
 {% extends 'base/base.html' %}
+{% load blog_tags %}
 
-<head>
-    {% block title %}Profile Page{% endblock title %}
-
-    <script type="text/javascript"></script>
-</head>
+{% block title %}Profile Page{% endblock title %}
 
 {% block content %}
 <br /><br />
@@ -12,7 +9,11 @@
 <main class="container card border-success col-6 rounded-3 mb-3 p-3">
     <!-- 1 row Name of page  -->
     <div class="row text-center">
-        <h4>{{ profile.user.username | capfirst }} profile</h4>
+        {% if request.user == profile.user %}
+            <h4>Your profile</h4>
+        {% else %}
+            <h4>{{ profile.user.username | capfirst }} profile</h4>
+        {% endif %}
     </div>
 
     <!-- 2 row avatar, profile info and some staticstic -->
@@ -256,8 +257,43 @@
                 </ul>
             </div>
         </div>
+        <br><hr>
+
+        <!-- Profile stats posts -->
+        <div class="row p-2 m-1 justify-content-between g-2">
+            <div class="col-auto">
+                <h6>Latest posts</h6>
+                {% show_latest_posts profile.pk 3 %}
+            </div>
+
+            <div class="col-auto">
+                {% get_most_liked_posts profile.pk 3 as most_liked_posts %}
+                <h6>Most liked</h6>
+                {% for post in most_liked_posts %}
+                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a><br>
+                {% endfor %}
+            </div>
+
+            <div class="col-auto">
+                {% get_most_commented_posts profile.pk 3 as most_commented_posts %}
+                <h6>Most commented</h6>
+                {% for post in most_commented_posts %}
+                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a><br>
+                {% endfor %}
+            </div>
+
+            <div class="col-auto">
+                {% get_most_visited_posts profile.pk 3 as most_visited_posts %}
+                <h6>Most visited</h6>
+                {% for post in most_visited_posts %}
+                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a><br>
+                {% endfor %}
+            </div>
+
+        </div>
+
     </div>
 </main>
 <br /><br /><br />
 
-{% endblock content %}
+{% endblock %}
