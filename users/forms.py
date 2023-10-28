@@ -80,3 +80,8 @@ class UserForm(forms.ModelForm):
             pass
 
         return avatar
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)

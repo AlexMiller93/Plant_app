@@ -1,0 +1,22 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Logout Page{% endblock title %}
+
+{% block content %}
+
+<br />
+<main class="container col-4 text-start">
+    <a href="{% url 'home' %}"> Home</a><br /><br />
+    <div class="card border-success p-4 pb-0 col-auto">
+        <h3>Logout page</h3>
+
+        <p>
+            Your have been successfully logged out.
+            You can <a href="{% url 'login' %}">log in again</a>
+        </p>
+
+    </div>
+</main>
+
+<br /><br /><br /><br />
+{% endblock content %}
