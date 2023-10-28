@@ -1,3 +1,5 @@
+{% load blog_tags %}
+
 <article class="card border-success shadow rounded-4 mb-3">
     <div class="card-body">
 
@@ -21,7 +23,6 @@
                     height="50px" width="50px">
                 </a>
             </div>
-            
             <!-- Post attributes -->
             <div class="col-auto px-0">
                 <h6 class="card-title">
@@ -54,7 +55,7 @@
         </div>
 
         <!-- 3 row Post content -->
-        <p class="card-text">{{ post.content| safe | truncatewords:10}}</p>
+        <p class="card-text">{{ post.content| markdown | safe | truncatewords_html:20}}</p>
 
         <!-- 4 row Post info -->
         <div class="row text-secondary justify-content-between">

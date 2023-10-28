@@ -1,4 +1,6 @@
-{% extends 'base/base.html' %} 
+{% extends 'base/base.html' %}
+
+{% load blog_tags %}
 
 {% block title %}{{ post.title }}{% endblock title %} 
 
@@ -132,7 +134,7 @@
     </div>
 
     <!-- Post content -->
-    <p class="card-text lh-base my-2">{{ post.content }}</p>
+    <p class="card-text lh-base my-2">{{ post.content | markdown | safe | truncatewords_html:20 }}</p>
     <hr />
 
     <!-- 2 row - Post date created -->

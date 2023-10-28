@@ -262,8 +262,11 @@
         <!-- Profile stats posts -->
         <div class="row p-2 m-1 justify-content-between g-2">
             <div class="col-auto">
+                {% show_latest_posts profile.pk 3 as latest_posts %}
                 <h6>Latest posts</h6>
-                {% show_latest_posts profile.pk 3 %}
+                {% for post in latest_posts %}
+                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a><br>
+                {% endfor %}
             </div>
 
             <div class="col-auto">
