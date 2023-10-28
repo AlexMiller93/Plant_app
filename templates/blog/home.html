@@ -81,6 +81,7 @@
                                 Change order
                             </a>
                         </li>
+
                         <li><hr class="dropdown-divider" /></li>
                             {% if request.user.is_authenticated %}
                             <li>
@@ -89,6 +90,14 @@
                                     <i class="ti ti-plant me-1" 
                                     style="color: green"></i>
                                     Watch followers plants
+                                </a>
+                            </li>
+                        <li><hr class="dropdown-divider"/></li>
+                            <li>
+                                <a  href="{% url 'post_feed' %}"
+                                    class="btn btn-danger btn-sm dropdown-item">
+
+                                    Subscribe to RSS feed
                                 </a>
                             </li>
                         {% endif %}

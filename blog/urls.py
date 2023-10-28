@@ -1,5 +1,6 @@
 from django.urls import path
 
+from .feeds import LatestPostsFeed
 from .views.comment_views import *
 from .views.post_views import *
 from .views.func_views import *
@@ -52,4 +53,7 @@ urlpatterns = [
     path('post_favorites/<slug:slug>', add_favorites,
          name='add_post_favorites'),
     path('post_shared/<slug:slug>', share_post, name='share_post'),
+
+    # posts feed
+    path('feed/', LatestPostsFeed(), name='post_feed'),
 ]
