@@ -100,5 +100,4 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
         context = self.get_context_data(user_form=user_form, profile_form=profile_form)
         return self.render_to_response(context)
 
-    def put(self):
-        pass
+
