@@ -2,12 +2,12 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView
 from django.views.generic.detail import DetailView
 
-from .forms import ProfileForm, UserForm
+from .forms import ProfileForm, UserForm, SignUpForm
 from .models import Profile
 from blog.models import Post, Comment
 
@@ -21,6 +21,28 @@ class SignUpView(CreateView):
     template_name = 'registration/register.html'
     success_url = reverse_lazy('login')
     success_message = "Your profile was created successfully"
+
+    """
+    
+    def get(self, request, **kwargs):
+        user_form = SignUpForm()
+        return render(
+            request, 'registration/register.html',
+            {'user_form': user_form}
+        )
+
+    def post(self, request, **kwargs):
+        user_form = SignUpForm(request.POST)
+        if user_form.is_valid():
+            new_user = user_form.save(commit=False)
+            new_user.set_password(
+                user_form.cleaned_data['password'])
+            new_user.save()
+            return render(
+                request, 'registration/register_done.html',
+                {'new_user': new_user}
+            )
+    """
 
 
 class ProfileView(LoginRequiredMixin, DetailView):
@@ -99,5 +121,3 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
 
         context = self.get_context_data(user_form=user_form, profile_form=profile_form)
         return self.render_to_response(context)
-
-
