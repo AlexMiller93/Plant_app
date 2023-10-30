@@ -36,6 +36,8 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('users/', include("django.contrib.auth.urls")),
 
+    # auth social media
+    path('social-auth/', include('social_django.urls', namespace='social')),
 
     # sitemap staff
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps},

@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG")
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['mysite.com', 'localhost', '127.0.0.1']
 
 SITE_ID = 1
 
@@ -50,6 +50,10 @@ THIRD_PARTY_APPS = [
     'crispy_bootstrap5',
     'fontawesomefree',
     'taggit',
+    'social_django',
+    'django_extensions',
+    # 'sslserver',
+
 ]
 
 # add local apps which you create using startapp
@@ -125,7 +129,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Media Files
@@ -151,6 +155,15 @@ LOGIN_URL = "login"
 LOGOUT_REDIRECT_URL = "home"
 LOGOUT_URL = "logout"
 
-
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.facebook.FacebookOAuth2',
+]
+
+# Auth with Facebook staff
+SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get("SOCIAL_AUTH_FACEBOOK_KEY")
+SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get("SOCIAL_AUTH_FACEBOOK_SECRET")
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
