@@ -26,13 +26,20 @@
             </form>
         </div>
 
-        <!-- TODO: Facebook login don't work -> error -->
+
         <div class="social">
-            <a href="{% url 'social:begin' 'facebook' %}">
+
+            <!-- TODO: Facebook login don't work -> error -->
+            <a href="#">
                 <i class="bi bi-facebook-fill"></i>
                 Sign in with Facebook
+            </a><br />
+
+            <a href="#">
+                <i class="bi bi-google-fill"></i>
+                Login with Google
             </a>
-        </div>
+        </div><br />
         <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
     </div>
 </main>
