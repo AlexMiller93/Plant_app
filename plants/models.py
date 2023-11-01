@@ -1,17 +1,30 @@
+import os
 import random
-from datetime import datetime
+import datetime
 
 from django.db import models
 from django.conf import settings
 from users.models import Profile
 from blog.models import Post
+from .utils import check_path_or_create_dir
+
+
+def picture_directory_path(instance, filename):
+    path = f"images/users/{instance.owner.user.username}/plants/picture/"
+    return check_path_or_create_dir(path, filename)
+
+
+def images_directory_path(instance, filename):
+    path = f"images/users/{instance.owner.user.username}/plants/images/{filename}"
+    return check_path_or_create_dir(path, filename)
 
 
 # Create your models here.
 class Plant(models.Model):
+    objects = None
     title = models.CharField(max_length=128)
     short_title = models.CharField(max_length=128, null=True, blank=True)
-    latin_title = models.CharField(max_length=128)
+    latin_title = models.CharField(max_length=128, null=True, blank=True)
     category = models.CharField(max_length=128, null=True, blank=True)
     description = models.TextField(
         help_text="You can write some description about your plant ...",
@@ -23,18 +36,18 @@ class Plant(models.Model):
 
     picture = models.ImageField(
         default='images/plant_default.png',
-        upload_to='images/users/plants/picture/',
+        upload_to=picture_directory_path,
         null=True, blank=True)
-
     appear_date = models.DateField(null=True, blank=True)
     duration = models.PositiveSmallIntegerField(null=True)
     slug = models.SlugField(unique=True)
 
     real_images = models.ImageField(
-        upload_to='images/users/plants/images/',
+        upload_to=images_directory_path,
         help_text="Upload images with your plants",
         height_field=100, width_field=200,
         null=True, blank=True)
+    # url = models.URLField()
 
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
@@ -42,12 +55,12 @@ class Plant(models.Model):
     fav_plants = models.ManyToManyField(
         Profile, related_name="favorites_plants", blank=True)
     likes = models.ManyToManyField(
-        Profile, related_name="plant_like", blank=True)
+        Profile, related_name="plant_likes", blank=True)
 
     rel_posts = models.ManyToManyField(
         Post, related_name="plant_posts", blank=True)
     seen_by = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="plant_view"
+        settings.AUTH_USER_MODEL, related_name="plant_views"
     )
 
     class Meta:

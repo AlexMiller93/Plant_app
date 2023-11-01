@@ -6,13 +6,11 @@
         <div class="row g-4">
 
             <div class="col-auto">
-                <div class="card border-1 shadow-sm">
-                    <a href="{% url 'plant_detail' plant.slug %}">
-                    <img src="{{ plant.picture.url }}" 
-                    class="rounded-circle article-img" 
-                        height="50px" width="50px">
-                    </a>
-                </div>
+                <a href="{% url 'plant_detail' plant.slug %}">
+                <img src="{{ plant.picture.url }}"
+                class="rounded-circle article-img"
+                    height="50px" width="50px">
+                </a>
             </div>
 
             <!-- Plant attributes -->
@@ -117,7 +115,7 @@
                         {% if plant.category %}
                             <a href="{% url 'category_plants' plant.category %}">
                                 <span class="badge bg-info text-dark">
-                                    {{ plant.category }}
+                                    &#35;{{ plant.category }}
                                 </span>
                             </a>
                         {% endif %} 
@@ -161,3 +159,4 @@
 
     </div>
 </article>
+

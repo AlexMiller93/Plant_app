@@ -3,6 +3,12 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from PIL import Image
+from plants.utils import check_path_or_create_dir
+
+
+def avatar_directory_path(instance, filename):
+    path = f"images/users/{instance.user.username}/avatar/"
+    return check_path_or_create_dir(path, filename)
 
 
 # Create your models here.
@@ -13,7 +19,7 @@ class Profile(models.Model):
     bio = models.TextField(blank=True, null=True)
     avatar = models.ImageField(
         default='images/default.png',
-        upload_to='images/users/{{ user.username }}/avatar/',
+        upload_to=avatar_directory_path,
         null=True, blank=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
@@ -42,7 +48,7 @@ class Profile(models.Model):
         MEN = 'M'
 
     sex = models.CharField(
-        max_length=10, choices=Sex.choices, default=Sex.WOMEN)
+        max_length=10, choices=Sex.choices, default=Sex.MEN)
 
     class Meta:
         verbose_name = "profile"

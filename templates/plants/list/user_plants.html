@@ -10,11 +10,11 @@
 
 <div class="container">
 	<div class="row">
-		<div class="col-3"></div>
+		<div class="col-2"></div>
 		
-		<div class="col-6">
+		<div class="col-8">
 			<a href="{% url 'user_profile' request.user.profile.pk %}">
-				Profile page</a>
+				Profile page</a><br>
 			<a href="{% url 'home' %}">Home</a><br><br>
 
 			<div class="row justify-content-between">
@@ -63,7 +63,7 @@
 			{% endif %}
 		</div>
 
-		<div class="col-3"></div>
+		<div class="col-2"></div>
 	</div>
 </div>
 

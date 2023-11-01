@@ -13,14 +13,7 @@
 
         <!-- Error messages -->
         {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                <div {% if message.tags %} 
-                    class="alert alert-{{ message.tags }}" role="alert">
-                    {% endif %}{{ message }}
-                </div>
-                {% endfor %}
-            </div>
+            {% include 'base/messages.html' %}
         {% endif %}
         
         <article class="card border-success-subtle shadow rounded-3 mb-2 col-8">
@@ -30,13 +23,11 @@
                 <!-- 1 row Picture and main info -->
                 <div class="row g-4">
                     <div class="col-auto">
-                        <div class="card border-1 shadow-sm">
-                            <a href="{% url 'plant_detail' plant.slug %}">
-                            <img src="{{ plant.picture.url }}" 
-                            class="rounded-circle article-img" 
-                                height="50px" width="50px">
-                            </a>
-                        </div>
+                        <a href="{% url 'plant_detail' plant.slug %}">
+                        <img src="{{ plant.picture.url }}"
+                        class="rounded-circle article-img"
+                            height="50px" width="50px">
+                        </a>
                     </div>
 
                     <!-- Plant attributes -->
@@ -57,8 +48,8 @@
                         </p>
 
                         {% if plant.category %}
-                            <a href="#">
-                                <span class="badge bg-info text-dark">#{{ plant.category }}</span>
+                            <a href="{% url 'category_plants' plant.category %}">
+                                <span class="badge bg-info text-dark">&#35;{{ plant.category }}</span>
                             </a><br>
                         {% endif %}
 

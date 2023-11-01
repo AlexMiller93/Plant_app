@@ -76,7 +76,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
         return context
 
     # to follow, unfollow 
-    def post(self, request: object, **kwargs: object) -> object:
+    def post(self, request):
         current_user = request.user.profile
         profile_id = self.kwargs['pk']
         profile = get_object_or_404(Profile, id=profile_id)

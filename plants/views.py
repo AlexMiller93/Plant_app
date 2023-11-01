@@ -3,7 +3,8 @@ from typing import Any, Dict
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
-from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import (
@@ -85,11 +86,24 @@ class PlantCreateView(LoginRequiredMixin, CreateView):
     model = Plant
     form_class = PlantForm
     template_name = 'plants/crud/plant_add.html'
-    success_url = reverse_lazy('home')
+    # success_url = reverse_lazy('user_plants', kwargs={'pk': model.owner.pk})
 
     def form_valid(self, form):
         form.instance.owner = self.request.user.profile
         return super().form_valid(form)
+
+    def get(self, request, *args, **kwargs):
+        context = {'form': PlantForm()}
+        return render(request, 'plants/crud/plant_add.html', context)
+
+    def post(self, request, *args, **kwargs):
+        form = PlantForm(request.POST)
+        if form.is_valid():
+            plant = form.save(commit=False)
+            self.form_valid(form)
+            plant.save()
+            return HttpResponseRedirect(reverse_lazy('user_plants', args=[plant.owner.pk]))
+        return render(request, 'plants/crud/plant_add.html', {'form': form})
 
 
 class PlantUpdateView(LoginRequiredMixin, UpdateView):
@@ -192,7 +206,6 @@ class FavoritesPlantView(LoginRequiredMixin, ListView):
     template_name = 'plants/list/favorites_plant_list.html'
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-
         profile = get_object_or_404(Profile, id=self.kwargs['pk'])
         favor_plants = Plant.objects.filter(fav_plants=profile)
         return {"favor_plants": favor_plants}
