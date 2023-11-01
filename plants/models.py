@@ -45,7 +45,6 @@ class Plant(models.Model):
     real_images = models.ImageField(
         upload_to=images_directory_path,
         help_text="Upload images with your plants",
-        height_field=100, width_field=200,
         null=True, blank=True)
     # url = models.URLField()
 

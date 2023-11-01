@@ -151,10 +151,24 @@
                 <!-- 2 row Plant content -->
                 <p class="card-text">{{ plant.description }}</p>
 
+                <!-- Plant images -->
+                <div class="row g-4">
+                    <div class="col-auto">
+                        {% if plant.real_images %}
+                            <!-- TODO: make responsive design   -->
+                            <img alt="" class="card-img-bottom"
+                                 src="{{ plant.real_images.url }}"
+                                 style="height: 100px, width: 100px">
+                            <p>Height: {{ plant.real_images.height }} Width: {{ plant.real_images.width }}</p>
+                        {% endif %}
+                    </div>
+
+                </div>
             </div>
         </article>
 
         <div class="col-3"></div>
     </div>
+<br><br><br><br>
 {% endblock content %}
     
