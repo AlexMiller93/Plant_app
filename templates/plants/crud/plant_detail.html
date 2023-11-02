@@ -2,6 +2,7 @@
 
 {% block title %}{{ plant.title }}{% endblock title %}
 
+{% load thumbnail %}
 
 {% block content %}
     <br>
@@ -155,14 +156,10 @@
                 <div class="row g-4">
                     <div class="col-auto">
                         {% if plant.real_images %}
-                            <!-- TODO: make responsive design   -->
                             <img alt="" class="card-img-bottom"
-                                 src="{{ plant.real_images.url }}"
-                                 style="height: 100px, width: 100px">
-                            <p>Height: {{ plant.real_images.height }} Width: {{ plant.real_images.width }}</p>
+                                 src="{% thumbnail plant.real_images 200x0 quality=100 %}">
                         {% endif %}
                     </div>
-
                 </div>
             </div>
         </article>

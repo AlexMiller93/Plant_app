@@ -52,7 +52,7 @@ THIRD_PARTY_APPS = [
     'taggit',
     'social_django',
     'django_extensions',
-    # 'sslserver',
+    'easy_thumbnails',
 
 ]
 
