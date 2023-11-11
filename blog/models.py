@@ -31,7 +31,7 @@ class Post(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     post_noted = models.BooleanField(default=False)
     likes = models.ManyToManyField(
-        Profile, related_name="post_like", blank=True)
+        Profile)
     seen_by = models.ManyToManyField(
         settings.AUTH_USER_MODEL
         )
@@ -110,3 +110,9 @@ class Comment(models.Model):
     @property
     def is_parent(self):
         return self.reply is None
+
+
+class Like(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_now_add=True)

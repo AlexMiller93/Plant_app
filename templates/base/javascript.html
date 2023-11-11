@@ -1,0 +1,26 @@
+<script type="text/javascript">
+    $('.like').click(function(){
+    $.ajax({
+        type: "POST",
+        url: "{% url 'like_post' %}",
+        data: {
+            'post_id': $(this).attr('name'),
+            'operation':'like_submit',
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function(response) {
+            selector = document.getElementsByName(response.post_id);
+            $('#likes-count').html(response.total_likes);
+            if(response.liked==true){
+              $(selector).css("color","red");
+//              console.log('Liked');
+            }
+            else if(response.liked==false){
+              $(selector).css("color","black");
+//              console.log('Disliked');
+            }
+        },
+    });
+});
+</script>

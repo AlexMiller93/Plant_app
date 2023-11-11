@@ -1,11 +1,61 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect
+try:
+    from django.utils import simplejson as json
+except ImportError:
+    import json
 
-from blog.models import Post, Comment
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
+from blog.models import Post, Comment, Like
+from users.models import Profile
+
+
+def is_ajax(request):
+    return request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
 
 @login_required
-def post_like(request, slug):
+@require_POST
+def like_post(request):
+    if request.method == "POST" and request.POST.get("operation") == "like_submit" and is_ajax(request):
+        post_id = request.POST.get('post_id', None)
+        post = get_object_or_404(Post, pk=post_id)
+
+        if post.likes.filter(id=request.user.profile.id).exists():
+            post.likes.remove(request.user.profile)
+            liked = False
+        else:
+            post.likes.add(request.user.profile)
+            liked = True
+
+        data = {
+            'post_id': post_id,
+            'liked': liked,
+            'total_likes': post.likes.count()
+        }
+        return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+def like_post_ajax_test(request):
+    if request.method == 'GET':
+        post_id = request.GET.get('post_id')
+        liked_post = Post.objects.get(id=post_id)  # getting the liked posts
+        liked_profile = Profile.objects.get(user=request.user)  # getting the profile
+        m = Like(post=liked_post, profile=liked_profile)  # Creating Like Object
+        m.save()  # saving it to store in database
+        return HttpResponse("Success!")  # Sending an success response
+    else:
+        return HttpResponse("Request method is not a GET")
+
+
+@csrf_exempt
+@login_required
+@require_POST
+def post_like(request):
     """
     Like or unlike a post based on the user's preference.
 
@@ -16,16 +66,20 @@ def post_like(request, slug):
     Returns:
         HttpResponseRedirect: Redirects the user back to the previous page.
     """
+    post_id = request.POST.get('id', None)
+    post = get_object_or_404(Post, id=post_id)
 
-    post = get_object_or_404(Post, slug=slug)
-    is_liked = post.likes.filter(id=request.user.profile.id).exists()
+    # Check if the user liked the post
+    user_liked = request.user in post.likes.all()  # True/ False
 
-    if is_liked:
-        post.likes.remove(request.user.profile)
+    if user_liked:
+        post.likes.remove(request.user)
+        user_liked = False  # The user now no longer likes the post
     else:
-        post.likes.add(request.user.profile)
+        post.likes.add(request.user)
+        user_liked = True  # The user now likes the post
 
-    return redirect(request.META.get("HTTP_REFERER"))
+    return JsonResponse({'likes': post.likes.count(), 'user_liked': user_liked})
 
 
 @login_required

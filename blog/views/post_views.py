@@ -82,8 +82,8 @@ class PostDetailView(DetailView):
 
         # post like system
         post = get_object_or_404(Post, slug=self.kwargs['slug'])
-        liked = self.request.user.id in post.likes.values_list('id', flat=True)
-        data['post_is_liked'] = liked
+        # liked = self.request.user.id in post.likes.values_list('id', flat=True)
+        # data['post_is_liked'] = liked
 
         # who have been seen the post
         if self.request.user.is_authenticated:

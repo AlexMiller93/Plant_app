@@ -1,18 +1,26 @@
-{% if post.likes.count %}
-    {% if request.user.profile in post.likes.all %}
-        <a href="{% url 'post_like' post.slug %}">
-            <i class="bi bi-heart-fill me-1" style="color:red"></i>
-        </a>
-    {% else %}
-        <a href="{% url 'post_like' post.slug %}">
-            <i class="bi bi-heart-fill me-1" style="color:gray"></i>
-        </a>
+
+<!--!!! variant with <a> tag -->
+
+{% if post.likes.count %} <!-- if like or likes-->
+
+    {% if request.user.is_authenticated %} <!-- check if user logged in - to watch own likes or likes another users -->
+
+        {% if liked %}  <!-- to watch own likes -> red fill -->
+            <a name="{{ post.id }}" style="font-size:15px; color: red ;" class="like"><i class="bi bi-heart-fill" aria-hidden="true"></i></a>
+
+        {% else %} <!-- to watch likes another users -> black fill-->
+            <a name="{{ post.id }}" style="font-size:15px; color: black ;" class="like"><i class="bi bi-heart-fill" aria-hidden="true"></i></a>
+        {% endif %}
+
+    {% else %} <!-- user not logged in -> to watch likes another users -->
+        <a name="{{ post.id }}" style="font-size:15px; color: black ;" class="like"><i class="bi bi-heart-fill" aria-hidden="true"></i></a>
     {% endif %}
-    <strong class="text-dark me-2">
-        {{ post.likes.count }}
-    </strong>
-{% else %}
-    <a href="{% url 'post_like' post.slug %}">
-        <i class="bi bi-heart me-3" style="color:black"></i>
-    </a>
+
+    <!-- Count likes -->
+    <!-- TODO: total_likes doesn't render-->
+    <span class="text-dark me-2" id="likes-count">{{ total_likes }}</span>
+    <!---->
+
+{% else %} <!-- if no one likes-->
+    <a name="{{ post.id }}" style="font-size:15px; color: black ;" class="like"><i class="bi bi-heart" aria-hidden="true"></i></a>
 {% endif %}

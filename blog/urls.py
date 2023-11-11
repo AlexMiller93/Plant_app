@@ -47,7 +47,10 @@ urlpatterns = [
          CommentDeleteView.as_view(), name='delete_comment'),
 
     # post functions
-    path('post_like/<slug:slug>/', post_like, name='post_like'),
+    # path('post_like/', post_like, name='post_like'),
+
+    path('like_post', like_post, name='like_post'),
+
     path('comment_like/<slug:slug>/comment/<int:pk>', comment_like,
          name='comment_like'),
     path('post_favorites/<slug:slug>', add_favorites,
@@ -56,4 +59,5 @@ urlpatterns = [
 
     # posts feed
     path('feed/', LatestPostsFeed(), name='post_feed'),
+
 ]

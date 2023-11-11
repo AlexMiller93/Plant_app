@@ -144,10 +144,13 @@
     <!-- 3 row - Post info -->
     <div class="row">
       <h6 class="m-0">
-        {{ post.likes.count}} likes · {{ post.get_comments.count }} comments · 
-        {{ post.get_replies.count}} replies · {{ post.share.count}} shared · 
-        {{ post.seen_by.count}} views
+        <span id="likes-count">{{ post.likes.count }}</span> like{{ post.likes.count|pluralize }}
+        · {{ post.get_comments.count }} comment{{ post.get_comments.count|pluralize }}
+        · {{ post.get_replies.count}} repl{{ post.get_replies.count|pluralize:"y,ies" }}
+        · {{ post.share.count}} shared
+        · {{ post.seen_by.count}} view{{ post.seen_by.count|pluralize }}
       </h6>
+<!--      You have {{ num_cherries }} cherr{{ num_cherries|pluralize:"y,ies" }}-->
     </div>
     <hr />
 
