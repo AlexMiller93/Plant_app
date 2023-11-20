@@ -21,7 +21,7 @@ def is_ajax(request):
 @login_required
 @require_POST
 def like_post(request):
-    if request.method == "POST" and request.POST.get("operation") == "like_submit" and is_ajax(request):
+    if request.method == "POST" and is_ajax(request):
         post_id = request.POST.get('post_id', None)
         post = get_object_or_404(Post, pk=post_id)
 
@@ -39,17 +39,6 @@ def like_post(request):
         }
         return HttpResponse(json.dumps(data), content_type='application/json')
 
-
-def like_post_ajax_test(request):
-    if request.method == 'GET':
-        post_id = request.GET.get('post_id')
-        liked_post = Post.objects.get(id=post_id)  # getting the liked posts
-        liked_profile = Profile.objects.get(user=request.user)  # getting the profile
-        m = Like(post=liked_post, profile=liked_profile)  # Creating Like Object
-        m.save()  # saving it to store in database
-        return HttpResponse("Success!")  # Sending an success response
-    else:
-        return HttpResponse("Request method is not a GET")
 
 
 @csrf_exempt

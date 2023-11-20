@@ -144,13 +144,12 @@
     <!-- 3 row - Post info -->
     <div class="row">
       <h6 class="m-0">
-        <span id="likes-count">{{ post.likes.count }}</span> like{{ post.likes.count|pluralize }}
+        <span class="like-count"></span> like{{ post.likes.count|pluralize }}
         · {{ post.get_comments.count }} comment{{ post.get_comments.count|pluralize }}
         · {{ post.get_replies.count}} repl{{ post.get_replies.count|pluralize:"y,ies" }}
         · {{ post.share.count}} shared
         · {{ post.seen_by.count}} view{{ post.seen_by.count|pluralize }}
       </h6>
-<!--      You have {{ num_cherries }} cherr{{ num_cherries|pluralize:"y,ies" }}-->
     </div>
     <hr />
 
@@ -205,6 +204,7 @@
           {% csrf_token %} {{ comment_form.content }}
           <input
             type="submit"
+            id="comment"
             value="Post"
             class="btn btn-outline-primary btn-sm"
           />

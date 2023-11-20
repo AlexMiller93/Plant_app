@@ -1,26 +1,29 @@
 
-<!--!!! variant with <a> tag -->
+<!--{% if post.total_likes %}-->
 
-{% if post.likes.count %} <!-- if like or likes-->
+<!--  {% if post.liked %}-->
+<!--    <a>-->
+<!--      <i class="like-btn bi bi-heart-fill heart-icon liked" data-post-id="{{ post.id }}"></i>-->
+<!--    </a>-->
 
-    {% if request.user.is_authenticated %} <!-- check if user logged in - to watch own likes or likes another users -->
+<!--  {% else %}-->
+<!--    <a>-->
+<!--      <i class="like-btn bi bi-heart-fill heart-icon" data-post-id="{{ post.id }}"></i>-->
+<!--    </a>-->
+<!--  {% endif %}-->
 
-        {% if liked %}  <!-- to watch own likes -> red fill -->
-            <a name="{{ post.id }}" style="font-size:15px; color: red ;" class="like"><i class="bi bi-heart-fill" aria-hidden="true"></i></a>
+<!--  <strong class="like-count text-dark me-2">{{ post.likes.count }}</strong>-->
+<!--{% else %}-->
+<!--  <a>-->
+<!--    <i class="like-btn bi bi-heart-fill heart-icon non_liked" data-post-id="{{ post.id }}"></i>-->
+<!--  </a>-->
+<!--{% endif %}-->
 
-        {% else %} <!-- to watch likes another users -> black fill-->
-            <a name="{{ post.id }}" style="font-size:15px; color: black ;" class="like"><i class="bi bi-heart-fill" aria-hidden="true"></i></a>
-        {% endif %}
 
-    {% else %} <!-- user not logged in -> to watch likes another users -->
-        <a name="{{ post.id }}" style="font-size:15px; color: black ;" class="like"><i class="bi bi-heart-fill" aria-hidden="true"></i></a>
-    {% endif %}
+<a>
+  <i class="like-btn bi bi-heart-fill heart-icon" data-post-id="{{ post.id }}"></i>
+</a>
+<strong class="like-count text-dark me-2">{{ post.likes.count }}</strong>
 
-    <!-- Count likes -->
-    <!-- TODO: total_likes doesn't render-->
-    <span class="text-dark me-2" id="likes-count">{{ total_likes }}</span>
-    <!---->
 
-{% else %} <!-- if no one likes-->
-    <a name="{{ post.id }}" style="font-size:15px; color: black ;" class="like"><i class="bi bi-heart" aria-hidden="true"></i></a>
-{% endif %}
+
