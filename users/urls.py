@@ -35,4 +35,7 @@ urlpatterns = [
          name='user_profile'),
     path('profile/edit/', views.ProfileUpdateView.as_view(),
          name='update_profile'),
+
+
+    path('toggle_follow/', views.toggle_follow, name='toggle_follow'),
 ]

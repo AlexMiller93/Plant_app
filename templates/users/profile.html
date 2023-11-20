@@ -88,35 +88,8 @@
 
         <!-- Follow system -->
         <div class="col-auto m-2">
-            <form action="" method="post">
-                {% csrf_token %} 
-                {% if profile in user.profile.follows.all %}
-                    <button
-                    class="btn btn-outline-secondary btn-sm"
-                    name="follow"
-                    value="Unfollow"
-                    type="submit"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    data-bs-custom-class="custom-tooltip"
-                    data-bs-title="Unfollow @{{ profile.user }}">
-                    - Unfollow
-                    </button>
-                {% else %}
-                    <button
-                    class="btn btn-outline-success btn-sm"
-                    name="follow"
-                    value="Follow"
-                    type="submit"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    data-bs-custom-class="custom-tooltip"
-                    data-bs-title="Follow @{{ profile.user }}">
-                    + Follow
-                    </button>
-                {% endif %}
-            </form>
-            <br />
+            {% include 'users/follow.html' %}
+            <br /><br />
 
             <!-- Buttons,  Profile options - dropdown-->
             <div class="dropdown">
@@ -206,11 +179,11 @@
                 Followers:
                 </button>
                 <ul class="dropdown-menu">
-                {% for following in profile.follows.all %}
+                {% for profile in profile.following.all %}
                     <a
                         href="{% url 'user_profile' following.user.id %}"
                         class="dropdown-item link-offset-1">
-                        @{{ following | lower }}
+                        @{{ profile | lower }}
                     </a>
 
                 {% empty %} 
@@ -238,11 +211,12 @@
                     Followed by:
                 </button>
                 <ul class="dropdown-menu">
-                {% for following in profile.followed_by.all %}
+                {% for profile in profile.followers.all %}
+                    <!--  TODO: link to follower's profile doesn't work -->
                     <a
-                        href="{% url 'user_profile' following.user.id %}"
+                        href="#"
                         class="dropdown-item link-offset-1">
-                        @{{ following | lower }}
+                        @{{ profile | lower }}
                     </a>
 
                 {% empty %} 

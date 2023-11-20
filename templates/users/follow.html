@@ -1,0 +1,30 @@
+<!-- Ваш шаблон -->
+{% if user.is_authenticated %}
+  <button class="btn btn-outline-success btn-sm" id="toggle-follow" name="{{ profile.pk }}">+ Follow</button>
+{% endif %}
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#toggle-follow').click(function() {
+      $.ajax({
+      type: "POST",
+      url: "{% url 'toggle_follow' %}",
+      data: {
+      'profile_id': $(this).attr('name'),
+      'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+      dataType: "json",
+      success: function(response) {
+        if (response.is_following) {
+          $('#toggle-follow').text('+ Follow');
+          $('#toggle-follow').removeClass("btn btn-outline-secondary btn-sm").addClass("btn btn-outline-success btn-sm");
+        } else {
+          $('#toggle-follow').text('- Unfollow');
+          $('#toggle-follow').removeClass("btn btn-outline-success btn-sm").addClass("btn btn-outline-secondary btn-sm");
+        }
+      }
+    });
+  });
+  });
+</script>

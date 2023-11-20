@@ -23,9 +23,9 @@ class Profile(models.Model):
         null=True, blank=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
-    follows = models.ManyToManyField("self",
-                                     related_name="followed_by",
-                                     symmetrical=False, blank=True)
+    followers = models.ManyToManyField(User,
+                                       related_name='following',
+                                       blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     age = models.PositiveSmallIntegerField(null=True)
     rating = models.DecimalField(
@@ -72,3 +72,11 @@ class Profile(models.Model):
             if today.month < self.birth_date.month or today.month == self.birth_date.month and today.day < self.birth_date.day:
                 self.age -= 1
         return super().save(*args, **kwargs)
+
+# class UserFollowing(models.Model):
+#     user_id = models.ForeignKey(Profile, related_name="following", on_delete=models.CASCADE)
+#     following_user_id = models.ForeignKey(Profile, related_name="followers", on_delete=models.CASCADE)
+#     created = models.DateTimeField(auto_now_add=True, db_index=True)
+#
+#     def __str__(self):
+#         return f'{self.user_id} follows {self.following_user_id}'

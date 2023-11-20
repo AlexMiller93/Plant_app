@@ -1,12 +1,17 @@
+import json
+
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, TemplateView
 from django.views.generic.detail import DetailView
 
+from blog.views.func_views import is_ajax
 from .forms import ProfileForm, UserForm, SignUpForm
 from .models import Profile
 from blog.models import Post, Comment
@@ -76,16 +81,21 @@ class ProfileView(LoginRequiredMixin, DetailView):
         return context
 
     # to follow, unfollow 
-    def post(self, request):
+    def post(self, request, pk):
         current_user = request.user.profile
-        profile_id = self.kwargs['pk']
-        profile = get_object_or_404(Profile, id=profile_id)
+
+        # profile_id = self.kwargs['pk']
+        profile = get_object_or_404(Profile, id=pk)
         action = request.POST['follow']
 
-        if action == "Unfollow":
-            current_user.follows.remove(profile)
-        elif action == "Follow":
-            current_user.follows.add(profile)
+        # if action == "Unfollow":
+        #     #     current_user.follows.remove(profile)
+        #     follow = UserFollowing.objects.get(user_id=current_user, following_user_id=profile)
+        #     follow.delete()
+        #
+        # elif action == "Follow":
+        #     #     current_user.follows.add(profile)
+        #     UserFollowing.objects.create(user_id=current_user, following_user_id=profile)
 
         current_user.save()
 
@@ -121,3 +131,26 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
 
         context = self.get_context_data(user_form=user_form, profile_form=profile_form)
         return self.render_to_response(context)
+
+
+@require_POST
+@login_required
+def toggle_follow(request):
+    if request.method == "POST" and is_ajax(request):
+        profile_id = request.POST.get('profile_id', None)
+        profile_to_follow = get_object_or_404(Profile, pk=profile_id)
+        user_profile = request.user
+
+        if profile_to_follow.followers.filter(id=user_profile.id).exists():
+            profile_to_follow.followers.remove(user_profile)
+            is_following = False
+        else:
+            profile_to_follow.followers.add(user_profile)
+            is_following = True
+
+        data = {
+            'profile_id': profile_id,
+            'is_following': is_following,
+        }
+
+        return HttpResponse(json.dumps(data), content_type='application/json')
