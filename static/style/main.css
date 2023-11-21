@@ -19,11 +19,3 @@ a .heart-icon {
     color: black;
     font-size: 15px;
 }
-
-a .liked {
-    color: red;
-}
-
-a .non_liked {
-    color: lightgrey;
-}

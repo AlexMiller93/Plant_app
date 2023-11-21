@@ -21,9 +21,47 @@
 
 
 <a>
-  <i class="like-btn bi bi-heart-fill heart-icon" data-post-id="{{ post.id }}"></i>
+  <i class="like-btn bi bi-heart-fill heart-icon" id="post-like" data-post-id="{{ post.id }}"></i>
 </a>
 <strong class="like-count text-dark me-2">{{ post.likes.count }}</strong>
 
+<script type="text/javascript">
+    $('.like-btn').click(function(){
+        var post_id = $(this).data("post-id");
 
+        $.ajax({
+            type: "POST",
+            url: "{% url 'like_post' %}",
+            data: {
+                'post_id': post_id,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            dataType: "json",
+            success: function(data) {
+                var icon = document.getElementsByClassName('heart-icon');
+
+                if (data.liked){
+                    $('#post-like').css({'color': 'red'});
+                    console.log('User liked post');
+                    $('.like-count').show().html(data.total_likes);
+                }
+
+                else if (data.total_likes==0 ){
+                    $('#post-like').css({'color': 'lightgrey'});
+                    console.log('No post likes');
+                    $('.like-count').hide();
+                }
+
+                else {
+                    $('#post-like').css({'color': 'black'});
+                    $('.like-count').show().html(data.total_likes);
+                    console.log('Someone liked post');
+                }
+
+            }
+        });
+
+    });
+
+</script>
 

@@ -50,23 +50,7 @@
 
                     <!-- Icons for comment - like, edit, delete-->
                     <div class="col-auto px-0">
-                        {% if request.user.is_authenticated %}
-                            {% if comment.likes.count %}
-                                {% if request.user.profile in comment.likes.all %}
-                                    <a href="{% url 'comment_like' post.slug comment.pk %}">
-                                        <i class="bi bi-heart-fill me-1" style="color:red"></i>
-                                    </a>
-                                {% else %}
-                                    <a href="{% url 'comment_like' post.slug comment.pk %}">
-                                        <i class="bi bi-heart-fill me-1" style="color:gray"></i>
-                                    </a>
-                                {% endif %}{{ comment.likes.count }}
-                            {% else %}
-                                <a href="{% url 'comment_like' post.slug comment.pk %}">
-                                    <i class="bi bi-heart me-1" style="color:black"></i>
-                                </a>
-                            {% endif %}
-                        {% endif %}
+                        {% include 'blog/comment/comment_likes.html' %}
 
                         {% if request.user == comment.author.user %}
                             <a href="{% url 'edit_comment' post.slug comment.pk %}">

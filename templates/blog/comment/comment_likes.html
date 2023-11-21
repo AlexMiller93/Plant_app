@@ -1,0 +1,59 @@
+<!--{% if request.user.is_authenticated %}-->
+<!--    {% if comment.likes.count %}-->
+<!--        {% if request.user.profile in comment.likes.all %}-->
+<!--            <a>-->
+<!--                <i class="bi bi-heart-fill me-1"></i>-->
+<!--            </a>-->
+<!--        {% else %}-->
+<!--            <a>-->
+<!--                <i class="bi bi-heart-fill me-1"></i>-->
+<!--            </a>-->
+<!--        {% endif %}{{ comment.likes.count }}-->
+<!--    {% else %}-->
+<!--        <a>-->
+<!--            <i class="bi bi-heart me-1"></i>-->
+<!--        </a>-->
+<!--    {% endif %}-->
+<!--{% endif %}-->
+
+<a>
+    <i class="cmt-like-btn bi bi-heart-fill heart-icon me-1" id='comment-like' data-comment-id="{{ comment.id }}"></i>
+</a>
+<strong class="cmt-like-count text-dark"></strong>
+
+<script type="text/javascript">
+    $('.cmt-like-btn').click(function(){
+        var comment_id = $(this).data("comment-id");
+
+        $.ajax({
+            type: "POST",
+            url: "{% url 'like_comment' %}",
+            data: {
+                'comment_id': comment_id,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            dataType: "json",
+            success: function(data) {
+
+                if (data.liked){
+                    $('#comment-like').css({'color': 'red'});
+                    console.log('User liked comment');
+                    $('.cmt-like-count').show().html(data.total_likes);
+                }
+
+                else if (data.total_likes==0){
+                    $('#comment-like').css({'color': 'lightgrey'});
+                    console.log('No comment likes');
+                    $('.cmt-like-count').hide();
+                }
+
+                else {
+                    $('#comment-like').css({'color': 'black'});
+                    console.log('Someone liked comment');
+                    $('.cmt-like-count').show().html(data.total_likes);
+                }
+            }
+        });
+    });
+
+</script>

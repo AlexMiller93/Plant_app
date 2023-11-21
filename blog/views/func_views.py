@@ -40,7 +40,6 @@ def like_post(request):
         return HttpResponse(json.dumps(data), content_type='application/json')
 
 
-
 @csrf_exempt
 @login_required
 @require_POST
@@ -69,6 +68,28 @@ def post_like(request):
         user_liked = True  # The user now likes the post
 
     return JsonResponse({'likes': post.likes.count(), 'user_liked': user_liked})
+
+
+@login_required
+@require_POST
+def like_comment(request):
+    if request.method == "POST" and is_ajax(request):
+        comment_id = request.POST.get('comment_id', None)
+        comment = get_object_or_404(Comment, pk=comment_id)
+
+        if comment.likes.filter(id=request.user.profile.id).exists():
+            comment.likes.remove(request.user.profile)
+            liked = False
+        else:
+            comment.likes.add(request.user.profile)
+            liked = True
+
+        data = {
+            'comment_id': comment_id,
+            'liked': liked,
+            'total_likes': comment.likes.count()
+        }
+        return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 @login_required

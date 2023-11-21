@@ -47,12 +47,11 @@ urlpatterns = [
          CommentDeleteView.as_view(), name='delete_comment'),
 
     # post functions
-    # path('post_like/', post_like, name='post_like'),
-
     path('like_post', like_post, name='like_post'),
+    path('like_comment', like_comment, name='like_comment'),
 
-    path('comment_like/<slug:slug>/comment/<int:pk>', comment_like,
-         name='comment_like'),
+    # path('comment_like/<slug:slug>/comment/<int:pk>', comment_like,
+    #      name='comment_like'),
     path('post_favorites/<slug:slug>', add_favorites,
          name='add_post_favorites'),
     path('post_shared/<slug:slug>', share_post, name='share_post'),
