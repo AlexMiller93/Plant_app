@@ -1,0 +1,75 @@
+{% if children %}
+
+    {% for child in children %}
+        <div class="row m-2">
+
+            <!-- Avatar of comment author -->
+            <div class="col-auto px-0">
+                <a href="{% url 'user_profile' child.author.user.profile.pk %}">
+                <img src="{{ child.author.user.profile.avatar.url }}"
+                class="rounded-circle article-img"
+                    height="40px" width="40px"></a>
+            </div>
+
+            <!-- Reply attributes-->
+            <div class="col">
+                <div class="row px-0">
+                    <p class="m-0">
+                        <i class="bi bi-reply-fill"></i>
+                        <strong>{{ child.author | capfirst }}: </strong>
+                        <b>{{ child.content }}</b>
+
+                        ·<small> in {{ child.created_on | timesince }}</small>
+                            {% if child.created_on != child.updated_on %}
+                        · <i style="color: #03f;">
+                            last update in
+                            <small>
+                                {{ child.updated_on | timesince }}
+                            </small>
+                        </i>
+                        {% endif %}
+                    </p>
+                    <p class="my-0">to answer from
+                        <a href="{% url 'user_profile' comment.author.user.profile.pk %}">
+                            @{{ comment.author | lower }}
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Icons for replies - like, edit, delete-->
+            <div class="col-auto px-0">
+                {% include 'blog/comment/comment_likes.html' %}
+
+<!--                                {% if request.user.is_authenticated %}-->
+<!--                                    {% if child.likes.count %}-->
+<!--                                        {% if request.user.profile in replies.likes.all %}-->
+<!--                                            <a href="{% url 'comment_like' post.slug replies.pk %}">-->
+<!--                                                <i class="bi bi-heart-fill" style="color:red"></i>-->
+<!--                                            </a>-->
+<!--                                        {% else %}-->
+<!--                                            <a href="{% url 'comment_like' post.slug replies.pk %}">-->
+<!--                                                <i class="bi bi-heart-fill" style="color:gray"></i>-->
+<!--                                            </a>-->
+<!--                                        {% endif %}{{ child.likes.count }}-->
+<!--                                    {% else %}-->
+<!--                                        <a href="{% url 'comment_like' post.slug replies.pk %}">-->
+<!--                                            <i class="bi bi-heart me-1" style="color:black"></i>-->
+<!--                                        </a>-->
+<!--                                    {% endif %}-->
+<!--                                {% endif %}-->
+
+                {% if request.user == replies.author.user %}
+                    <a href="{% url 'edit_comment' post.slug replies.pk %}">
+                        <i class="fa-solid fa-pen-to-square me-1"></i>
+                    </a>
+                    <a href="{% url 'delete_comment' post.slug replies.pk %}">
+                        <i class="fa-solid fa-trash-can me-1"></i>
+                    </a>
+
+                {% endif %}
+                <i class="bi bi-three-dots-vertical"></i>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}

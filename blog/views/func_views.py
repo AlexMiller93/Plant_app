@@ -5,13 +5,11 @@ except ImportError:
 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from blog.models import Post, Comment, Like
-from users.models import Profile
+from blog.models import Post, Comment
 
 
 def is_ajax(request):
@@ -136,4 +134,6 @@ def share_post(request, slug):
             post.share.remove(user_profile)
         else:
             post.share.add(user_profile)
+
     return redirect(request.META.get("HTTP_REFERER"))
+

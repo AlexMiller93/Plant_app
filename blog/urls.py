@@ -56,6 +56,7 @@ urlpatterns = [
          name='add_post_favorites'),
     path('post_shared/<slug:slug>', share_post, name='share_post'),
 
+
     # posts feed
     path('feed/', LatestPostsFeed(), name='post_feed'),
 

@@ -4,13 +4,12 @@ from typing import Any, Dict
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity
-from django.db.models import Count, Q
+from django.contrib.postgres.search import TrigramSimilarity
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-
 from taggit.models import Tag
 
 from users.models import Profile
@@ -40,10 +39,6 @@ class HomeView(ListView):
         # posts = Post.objects.values_list('tags', flat=True).distinct().order_by('-created_on')
 
         posts = Post.objects.all()  # all posts in db
-        # tags = Tag.objects.all() # all tags in Tag model
-        # tags = [post.tags for post in posts]
-        # tags = list(set(tags))
-        # tags = Tag.objects.filter(post__in=posts).distinct()
         tags = Tag.objects.filter(post__id__in=posts).distinct()
 
         context["profiles"] = profiles
@@ -82,8 +77,6 @@ class PostDetailView(DetailView):
 
         # post like system
         post = get_object_or_404(Post, slug=self.kwargs['slug'])
-        # liked = self.request.user.id in post.likes.values_list('id', flat=True)
-        # data['post_is_liked'] = liked
 
         # who have been seen the post
         if self.request.user.is_authenticated:
@@ -91,11 +84,9 @@ class PostDetailView(DetailView):
 
         # calculate quantity of comments and replies
         comments = post.comments.all()
-        # comments = Comment.objects.filter(post=self.get_object(), reply=None)
         replies = Comment.objects.exclude(post=self.get_object(), reply=None)
 
         # find similar posts
-        # if post.tags:
         post_tags_id = post.tags.values_list('id', flat=True)
         similar_posts = Post.objects.filter(tags__in=post_tags_id).exclude(id=post.id)
         similar_posts = similar_posts.annotate(
@@ -106,42 +97,46 @@ class PostDetailView(DetailView):
             'replies': replies,
             'comment_form': CommentForm(),
             'similar_posts': similar_posts,
-
         })
+
         return data
 
     # write comment or reply
     def post(self, request, *args, **kwargs):
+
+        post = get_object_or_404(Post, slug=self.kwargs['slug'])
+
         if not self.request.user.is_authenticated:
             messages.warning(request, 'You should login to write comment or reply')
             return redirect(self.request.path_info)
 
-        if self.request.method != 'POST':
-            return redirect(self.request.path_info)
-
+        new_comment = None
         comment_form = CommentForm(self.request.POST)
+
         if not comment_form.is_valid():
             return redirect(self.request.path_info)
 
-        content = comment_form.cleaned_data['content']
-        reply = comment_form.cleaned_data['reply']
+        if comment_form.is_valid():
+            content = comment_form.cleaned_data['content']
+            reply = comment_form.cleaned_data['reply']
 
-        if not content:
-            messages.warning(request, 'You posted an empty comment. Write something ...')
+            if not content:
+                messages.warning(request, 'You posted an empty comment. Write something ...')
+                return redirect(self.request.path_info)
+
+            new_comment = comment_form.save(commit=False)
+            new_comment.post = post
+            new_comment.save()
+
+            # new_comment = Comment(
+            #     content=content,
+            #     author=self.request.user.profile,
+            #     post=self.get_object()
+            # )
+
+        else:
+            comment_form = CommentForm()
             return redirect(self.request.path_info)
-
-        new_comment = Comment(
-            content=content,
-            author=self.request.user.profile,
-            post=self.get_object()
-        )
-
-        if reply:
-            new_comment.reply = reply
-
-        new_comment.save()
-
-        return redirect(self.request.path_info)
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
